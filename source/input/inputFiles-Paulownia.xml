@@ -1,0 +1,9 @@
+<INPUT_FILES>
+
+<!--  sys_input - System Inputs File, contains settings, sim/sat/rec/gnd inputs -->  
+<!--  veg_input - Vegetation Inputs File -->  
+
+<sys_input>sysInput-Paulownia.xml</sys_input>
+<veg_input>vegHomInput-Paulownia.xml</veg_input>
+
+</INPUT_FILES>

@@ -1,0 +1,133 @@
+<SYS_INPUT>
+    <SIM_SETTINGS>
+
+        <!--  sim_mode - 0: Cross Simulation between Incidence Angle, VSM, and RMSH values,  1: Time-series -->  
+        <!--  ground_cover - 0: Bare Soil, 1: Vegetation, 2: Bare + Vegetation -->  
+        <!--  calc_meta_data - 0/1 for whether to calculate Metadata or directly calculate outputs --> 
+        <!--  calc_direct_term - 0/1 for whether to calculate Direct Term -->  
+        <!--  calc_specular_term - 0/1 for whether to calculate Specular Term  --> 
+        <!--  calc_diffuse_term - 0/1 for whether to calculate Diffuse Term --> 
+        <!--   --> 
+
+        <sim_mode>1</sim_mode>
+        <ground_cover>1</ground_cover>
+
+        <calc_meta_data>1</calc_meta_data>
+        <calc_direct_term>1</calc_direct_term>
+        <calc_specular_term>1</calc_specular_term>
+        <calc_diffuse_term>1</calc_diffuse_term>
+    </SIM_SETTINGS>
+
+
+    <SIM_INPUT>
+        <!--  sim_name - The specific name to distinguish simulations -->
+        <!--  campaign - Field campaign -->  
+        <!--  date - Field campaign date -->  
+        <!--  plot - Plot within the campaign --> 
+        <!--  vegetation_method - Method of vegetation - vir (virtual) OR hom (homogenous) -->  
+        <!--  vegetation_isRow - Usable when vegetation_method is "vir" (virtual). For making the virtual vegetation fields row-structured - can take 1 OR 0 -->  
+        <!--  vegetation_plant - Plant of vegetation -->   
+        <!--  Nr - Number of realizations -->  
+        <!--  Nfz  - Number of Fresnel Zones -->
+
+        <sim_name>kurum</sim_name>
+        <campaign>MSU</campaign>
+        <campaign_date>20171103</campaign_date>
+        <plot>01</plot>
+
+        <vegetation_method>vir</vegetation_method>
+        <vegetation_isRow>1</vegetation_isRow>
+        <vegetation_plant>Corn</vegetation_plant>
+
+        <Nr>2</Nr>
+
+        <Nfz>10</Nfz>
+    </SIM_INPUT>
+    
+    
+    <SAT_INPUT>    
+        <!--  fMHz - Operating frequency (MHz) -->  
+        <!--  rsat_km - Satellite radius from Earth's center (km) -->
+        <!--  th0_deg - Incidence angle - measured between ground zenith and the ground-satellite direction (degrees) -->
+        <!--  PH0_deg - Azimuth angle - the horizontal angle measured at 
+                     the transmitter's position on the earth to North 
+                     pole, i.e. measured clockwise from the North pole
+                     IMPORTANT: It is used in Geo Staellite comm. and 
+                     different from standard spherical azimuth
+                     direction that is measured from local East in the
+                     counter-clockwise direction -->
+        <!--  EIRP_dB - Pt * G0t - Equivalent Isotropic Radiated Power -->
+        <!--  polT - Satellite polarization -->
+
+        <fMHz>1575.42</fMHz>
+
+        <rsat_km>26578</rsat_km>  <!-- GNSS, 20200 + re (6378) -->
+
+        <th0_deg>
+            <rows>1</rows>
+            <cols>3</cols>
+            <val>30</val>
+            <val>40</val>
+            <val>50</val>
+        </th0_deg>
+        <PH0_deg>
+            <rows>1</rows>
+            <cols>1</cols>
+            <val>0</val>
+        </PH0_deg>
+
+        <EIRP_dB>0</EIRP_dB>
+
+        <polT>R</polT>
+    </SAT_INPUT>
+    
+    
+    <RECEIVER_INPUT>     
+        <!--  hr - Antenna Height (m) -->  
+        <!--  G0r_dB - Receive Antenna Gain (dB)  -->
+        <!--  hpbw_deg - Beamwidth (degrees) -->
+        <!--  SLL_dB - Sidelobe Level (dB) -->
+        <!--  XPL_dB - X-pol level (dB) -->
+        <!--  polR - Antenna polarization -->
+
+        <hr>20</hr>
+
+        <G0r_dB>0</G0r_dB>
+
+        <hpbw_deg>30</hpbw_deg>
+        <SLL_dB>15</SLL_dB>
+        <XPL_dB>25</XPL_dB>
+
+        <polR>R</polR>
+    </RECEIVER_INPUT>
+    
+    
+    <GROUND_INPUT>
+        <!--  VSM - Theta probe - soil moisture (cm3/cm3) [0,1] -->  
+        <!--  sand - Sand content ratio of the soil texture [0,1] -->  
+        <!--  polG - Clay content ratio of the soil texture [0,1] -->  
+        <!--  rho_b - Soil bulk density --> 
+        <!--  RMSH - Surface rms height (cm) -->  
+
+        <VSM>
+            <rows>1</rows>
+            <cols>3</cols>
+            <val>0.05</val>
+            <val>0.10</val>
+            <val>0.15</val>
+        </VSM>
+
+        <sand>0.80</sand>
+        <clay>0.07</clay>
+        <rho_b>1.25</rho_b>
+
+        <RMSH>
+            <rows>1</rows>
+            <cols>3</cols>
+            <val>0.5</val>
+            <val>1.0</val>
+            <val>1.5</val>
+        </RMSH>
+     </GROUND_INPUT>
+    
+</SYS_INPUT>
