@@ -54,7 +54,7 @@ classdef Directories < handle
             % Initialize attribute for each source code or input directory
 
             obj.main_dir = fileparts(mfilename('fullpath'));
-            obj.main_dir = erase(obj.main_dir, '\lib\dir');
+            obj.main_dir = strrep(obj.main_dir, '\lib\dir', '');
 
             obj.lib = fullfile(obj.main_dir, 'lib');
 

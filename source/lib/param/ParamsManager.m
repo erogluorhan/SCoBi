@@ -345,7 +345,7 @@ classdef ParamsManager
             
         end
         
-        function [result, Nr_current, dispMsg] = isToCalculateFwdScatAmp()
+        function [result, Nr_current, dispMsg] = isToCalculateFScatAmp()
             
             calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
             
@@ -356,7 +356,7 @@ classdef ParamsManager
                         
             % First check the user preferences
             if ~calc_diffuse_term
-                dispMsg = 'Forward Scatterer Amplitudes - SKIPPED (User Preferences - No Diffuse Term)';
+                dispMsg = 'Scattering Amplitudes - SKIPPED (User Preferences - No Diffuse Term)';
                 Nr_current = NaN;
                 result = Constants.need_for_run.NO;
                 return
@@ -370,14 +370,14 @@ classdef ParamsManager
             if isnan(Nr_current), Nr_current = 0; end
             
             if Nr_current >= Nr
-                dispMsg = 'Forward Scatterer Amplitudes - SKIPPED - Already exists!';
+                dispMsg = 'Scattering Amplitudes - SKIPPED - Already exists!';
                 result = Constants.need_for_run.NO;
             else
                 if Nr_current > 0
-                    dispMsg = 'Forward Scatterer Amplitudes - Partially exists!';
+                    dispMsg = 'Scattering Amplitudes - Partially exists!';
                     result = Constants.need_for_run.PARTIAL;
                 else
-                    dispMsg = 'Forward Scatterer Amplitudes';
+                    dispMsg = 'Scattering Amplitudes';
                     result = Constants.need_for_run.FULL;
                 end
             end

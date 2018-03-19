@@ -46,13 +46,13 @@ end
 disp('+++++++++++++   CALCULATE SCATTERING AMPLITUDES   +++++++++++++++++')
 t = datetime('now') %#ok<NOPRT,*NASGU>
 
-[needForFwdScatAmp, Nr_current, dispMsg] = ParamsManager.isToCalculateFwdScatAmp();
+[needForFScatAmp, Nr_current, dispMsg] = ParamsManager.isToCalculateFScatAmp();
 
 disp( dispMsg );
 
-if needForFwdScatAmp ~= Constants.need_for_run.NO
+if needForFScatAmp ~= Constants.need_for_run.NO
     for ii = Nr_current + 1 : Nr % Number of Realization
-        calcFwdScatAmp(ii) ;
+        calcFScatAmp(ii) ;
     end
 end
 

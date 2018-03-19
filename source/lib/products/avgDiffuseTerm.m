@@ -287,7 +287,10 @@ ellipse_s = readVar(SimulationFolders.getInstance.config, filenamex) ;
 area_s = pi * ellipse_s(:, 1) .* ellipse_s(:, 2) ;
 % P1_areas_s = repmat(area_s, 1, 2, length(VSM)) ;
 P1_areas_s = repmat(area_s, 1, 2 ) ;
-P1_areas_s = permute(P1_areas_s, [2, 3, 1]) ;
+% TO-DO: Check the following: permutation converted to transpose due to the
+% removal of multiple SM values from the output 
+% P1_areas_s = permute(P1_areas_s, [2, 3, 1]) ;
+P1_areas_s = P1_areas_s' ;
 P1_areas_dB = 10 * log10(P1_areas_s) ;
 
 %%
