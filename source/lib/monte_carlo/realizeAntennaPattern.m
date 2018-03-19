@@ -29,29 +29,28 @@ for ii = 1 : Nlayer
             
             filename = strcat('R', num2str(indRealization), '_L', num2str(ii), '_T',...
                 num2str(jj), '_K', num2str(kk)) ;
-            disp(filename)           
-                      
-            % +++++++++++++++++++++++++
-            if jj == 1  % Leaf
-                % do not calculate (leaves contribute absrobtion mostly)
-                disp('skiped...')
-            else % cylinder
-                tic ;
-                if scat_cal_veg(kk, jj, ii) == 1
-                    disp('calculating...')
+            disp(filename)   
+                                
+            % If the particle is a scatterer
+            if scat_cal_veg(kk, jj, ii) == 1 
                     
-                    % +++++++++++++
-                    calc(filename)
-                    % +++++++++++++
-                    
-                    disp('done...')
-                    toc
-                else
-                    disp('skiped...')
-                end
+                tic
                 
-            end
-            % +++++++++++++++++++++++++                        
+                disp('calculating...')
+
+                % +++++++++++++
+                calc(filename)
+                % +++++++++++++
+
+                disp('done...')
+                
+                toc
+                
+            else
+                
+                disp('skiped...')
+                
+            end                      
             
         end % Nkind
         

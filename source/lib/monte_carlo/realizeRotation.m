@@ -31,27 +31,27 @@ for ii = 1 : Nlayer
                 num2str(jj), '_K', num2str(kk)) ;
             disp(filename)           
                       
-            % +++++++++++++++++++++++++
-            if jj == 1  % Leaf
-                % do not calculate (leaves contribute absrobtion mostly)
-                disp('skiped...')
-            else % cylinder
-                tic ;
-                if scat_cal_veg(kk, jj, ii) == 1
-                    disp('calculating...')
-                    
-                    % +++++++++++++
-                    calc(filename)
-                    % +++++++++++++
-                    
-                    disp('done...')
-                    toc
-                else
-                    disp('skiped...')
-                end
+            % If the particle is a scatterer
+            if scat_cal_veg(kk, jj, ii) == 1
                 
-            end
-            % +++++++++++++++++++++++++                        
+                tic ;
+                
+                disp('calculating...')
+
+                % +++++++++++++
+                calc(filename)
+                % +++++++++++++
+
+                disp('done...')
+                
+                toc
+                
+            else
+                
+                % do not calculate
+                disp('skiped...')
+                
+            end              
             
         end % Nkind
         
@@ -65,8 +65,6 @@ end % Nlayer
 end
 
 function calc(filename)
-
-RAD2DEG = 180 / pi ;
 
 % Npart
 % thrd
@@ -112,8 +110,8 @@ load([pathname '\u_tr.mat'], 'u_tr')
 % % load([pathname '\U_tr.mat'], 'U_tr')
 toc
 
-thd = round(2 * th * RAD2DEG) / 2 ; % rounding operation is due to accuracy concerns
-phd = round(2 * ph * RAD2DEG) / 2 ;
+thd = round( 2 * th * Constants.rad2deg ) / 2 ; % rounding operation is due to accuracy concerns
+phd = round( 2 * ph * Constants.rad2deg ) / 2 ;
 
 % 2 X 2
 u_gar2 = zeros(Npart, 2, 2) ;
