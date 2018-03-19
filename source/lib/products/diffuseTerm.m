@@ -450,13 +450,6 @@ Nfz = SimParams.getInstance.Nfz;
 
 dim_layers = VegParams.getInstance.dim_layers;
 
-%% Incremental Propagation Constant
-disp('Reading Incremental propagation constants...')
-filenamex = 'dKz' ;
-dKz = readComplexVar(SimulationFolders.getInstance.afsa, filenamex) ;
-filenamex = 'ANGDEG' ;
-ANGDEG = readVar(SimulationFolders.getInstance.afsa, filenamex) ;
-
 %% Ground Parameters
 disp('Reading ground parameters...')
 filenamex = 'G' ;
@@ -464,6 +457,13 @@ grnd_par = readVar(SimulationFolders.getInstance.gnd, filenamex) ;
 h = grnd_par(1, 1) ;
 
 epsg = grnd_par(1, 2) + ( 1i * grnd_par(1, 3) ) ;
+
+%% Incremental Propagation Constant
+disp('Reading Incremental propagation constants...')
+filenamex = 'dKz' ;
+dKz = readComplexVar(SimulationFolders.getInstance.afsa, filenamex) ;
+filenamex = 'ANGDEG' ;
+ANGDEG = readVar(SimulationFolders.getInstance.afsa, filenamex) ;
 
 %% Particle Positions
 disp('Reading the particle positions...')

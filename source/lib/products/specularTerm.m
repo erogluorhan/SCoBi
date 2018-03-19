@@ -16,7 +16,7 @@ RMSH = GndParams.getInstance.RMSH( ParamsManager.index_RMSH );
 % TO-DO: Get global directories here 
 
 
-%% Poistions
+%% Positions
 % pT: Transmitter, pS2: specular point, pR2: receiver, pG2: ground (reference), pBr2:boresight,
 % pCr2: center of footprint, pSc2: center of fresnel zone
 % AllPoints = [pT, pTI, pS2, pR, pRI, pG2, pBr2, pCr2, pSc2] ;
