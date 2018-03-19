@@ -4,7 +4,10 @@
 
 function avgDiffuseTerm
 
-% Get Global Parameters
+%% Get Global Parameters
+% Simulation Parameters
+Nr = SimParams.getInstance.Nr ;
+% Ground Parameters
 VSM = GndParams.getInstance.VSM( ParamsManager.index_VSM );
 RMSH = GndParams.getInstance.RMSH( ParamsManager.index_RMSH );
 
@@ -35,9 +38,7 @@ KKi = abs(Ki) ^ 2 / 4 / pi ;
 % sTYPKND = sum(TYPKND) ;
 % Ntype = length(sTYPKND(sTYPKND ~= 0)) ; % L, B, T
 
-%% Number of Realization
-Ntotal = SimParams.getInstance.Nr ;
-for rr = 1 : Ntotal
+for rr = 1 : Nr
     
     disp(strcat('Realization: ', num2str(rr)))
     
@@ -229,57 +230,57 @@ for rr = 1 : Ntotal
     P4_inc_t2 = P4_inc1_t2 + P4_inc2_t2 + P4_inc3_t2 + P4_inc4_t2 ;
     PP4_inc_t2 = PP4_inc_t2 + P4_inc_t2 ;
     
-end  % Ntotal
+end  % Nr
 
 
 %% Avergaging received power and converting dB ...
 % medium
-PP1_inc1_t1_dB = 10 * log10(PP1_inc1_t1(1 : 2, :, :) / Ntotal * KKi) ;
-PP1_inc2_t1_dB = 10 * log10(PP1_inc2_t1(1 : 2, :, :) / Ntotal * KKi) ;
-PP1_inc3_t1_dB = 10 * log10(PP1_inc3_t1(1 : 2, :, :) / Ntotal * KKi) ;
-PP1_inc4_t1_dB = 10 * log10(PP1_inc4_t1(1 : 2, :, :) / Ntotal * KKi) ;
-PP1_inc_t1_dB = 10 * log10(PP1_inc_t1(1 : 2, :, :) / Ntotal * KKi) ;
-PP1_inc1_t2_dB = 10 * log10(PP1_inc1_t2(1 : 2, :, :) / Ntotal * KKi) ;
-PP1_inc2_t2_dB = 10 * log10(PP1_inc2_t2(1 : 2, :, :) / Ntotal * KKi) ;
-PP1_inc3_t2_dB = 10 * log10(PP1_inc3_t2(1 : 2, :, :) / Ntotal * KKi) ;
-PP1_inc4_t2_dB = 10 * log10(PP1_inc4_t2(1 : 2, :, :) / Ntotal * KKi) ;
-PP1_inc_t2_dB = 10 * log10(PP1_inc_t2(1 : 2, :, :) / Ntotal * KKi) ;
+PP1_inc1_t1_dB = 10 * log10(PP1_inc1_t1(1 : 2, :, :) / Nr * KKi) ;
+PP1_inc2_t1_dB = 10 * log10(PP1_inc2_t1(1 : 2, :, :) / Nr * KKi) ;
+PP1_inc3_t1_dB = 10 * log10(PP1_inc3_t1(1 : 2, :, :) / Nr * KKi) ;
+PP1_inc4_t1_dB = 10 * log10(PP1_inc4_t1(1 : 2, :, :) / Nr * KKi) ;
+PP1_inc_t1_dB = 10 * log10(PP1_inc_t1(1 : 2, :, :) / Nr * KKi) ;
+PP1_inc1_t2_dB = 10 * log10(PP1_inc1_t2(1 : 2, :, :) / Nr * KKi) ;
+PP1_inc2_t2_dB = 10 * log10(PP1_inc2_t2(1 : 2, :, :) / Nr * KKi) ;
+PP1_inc3_t2_dB = 10 * log10(PP1_inc3_t2(1 : 2, :, :) / Nr * KKi) ;
+PP1_inc4_t2_dB = 10 * log10(PP1_inc4_t2(1 : 2, :, :) / Nr * KKi) ;
+PP1_inc_t2_dB = 10 * log10(PP1_inc_t2(1 : 2, :, :) / Nr * KKi) ;
 
 % layer
-PP2_inc1_t1_dB = 10 * log10(PP2_inc1_t1(1 : 2, :, :, :) / Ntotal * KKi) ;
-PP2_inc2_t1_dB = 10 * log10(PP2_inc2_t1(1 : 2, :, :, :) / Ntotal * KKi) ;
-PP2_inc3_t1_dB = 10 * log10(PP2_inc3_t1(1 : 2, :, :, :) / Ntotal * KKi) ;
-PP2_inc4_t1_dB = 10 * log10(PP2_inc4_t1(1 : 2, :, :, :) / Ntotal * KKi) ;
-PP2_inc_t1_dB = 10 * log10(PP2_inc_t1(1 : 2, :, :, :) / Ntotal * KKi) ;
-PP2_inc1_t2_dB = 10 * log10(PP2_inc1_t2(1 : 2, :, :, :) / Ntotal * KKi) ;
-PP2_inc2_t2_dB = 10 * log10(PP2_inc2_t2(1 : 2, :, :, :) / Ntotal * KKi) ;
-PP2_inc3_t2_dB = 10 * log10(PP2_inc3_t2(1 : 2, :, :, :) / Ntotal * KKi) ;
-PP2_inc4_t2_dB = 10 * log10(PP2_inc4_t2(1 : 2, :, :, :) / Ntotal * KKi) ;
-PP2_inc_t2_dB = 10 * log10(PP2_inc_t2(1 : 2, :, :, :) / Ntotal * KKi) ;
+PP2_inc1_t1_dB = 10 * log10(PP2_inc1_t1(1 : 2, :, :, :) / Nr * KKi) ;
+PP2_inc2_t1_dB = 10 * log10(PP2_inc2_t1(1 : 2, :, :, :) / Nr * KKi) ;
+PP2_inc3_t1_dB = 10 * log10(PP2_inc3_t1(1 : 2, :, :, :) / Nr * KKi) ;
+PP2_inc4_t1_dB = 10 * log10(PP2_inc4_t1(1 : 2, :, :, :) / Nr * KKi) ;
+PP2_inc_t1_dB = 10 * log10(PP2_inc_t1(1 : 2, :, :, :) / Nr * KKi) ;
+PP2_inc1_t2_dB = 10 * log10(PP2_inc1_t2(1 : 2, :, :, :) / Nr * KKi) ;
+PP2_inc2_t2_dB = 10 * log10(PP2_inc2_t2(1 : 2, :, :, :) / Nr * KKi) ;
+PP2_inc3_t2_dB = 10 * log10(PP2_inc3_t2(1 : 2, :, :, :) / Nr * KKi) ;
+PP2_inc4_t2_dB = 10 * log10(PP2_inc4_t2(1 : 2, :, :, :) / Nr * KKi) ;
+PP2_inc_t2_dB = 10 * log10(PP2_inc_t2(1 : 2, :, :, :) / Nr * KKi) ;
 
 % type
-PP3_inc1_t1_dB = 10 * log10(PP3_inc1_t1(1 : 2, :, :, :, :) / Ntotal * KKi) ;
-PP3_inc2_t1_dB = 10 * log10(PP3_inc2_t1(1 : 2, :, :, :, :) / Ntotal * KKi) ;
-PP3_inc3_t1_dB = 10 * log10(PP3_inc3_t1(1 : 2, :, :, :, :) / Ntotal * KKi) ;
-PP3_inc4_t1_dB = 10 * log10(PP3_inc4_t1(1 : 2, :, :, :, :) / Ntotal * KKi) ;
-PP3_inc_t1_dB = 10 * log10(PP3_inc_t1(1 : 2, :, :, :, :) / Ntotal * KKi) ;
-PP3_inc1_t2_dB = 10 * log10(PP3_inc1_t2(1 : 2, :, :, :, :) / Ntotal * KKi) ;
-PP3_inc2_t2_dB = 10 * log10(PP3_inc2_t2(1 : 2, :, :, :, :) / Ntotal * KKi) ;
-PP3_inc3_t2_dB = 10 * log10(PP3_inc3_t2(1 : 2, :, :, :, :) / Ntotal * KKi) ;
-PP3_inc4_t2_dB = 10 * log10(PP3_inc4_t2(1 : 2, :, :, :, :) / Ntotal * KKi) ;
-PP3_inc_t2_dB = 10 * log10(PP3_inc_t2(1 : 2, :, :, :, :) / Ntotal * KKi) ;
+PP3_inc1_t1_dB = 10 * log10(PP3_inc1_t1(1 : 2, :, :, :, :) / Nr * KKi) ;
+PP3_inc2_t1_dB = 10 * log10(PP3_inc2_t1(1 : 2, :, :, :, :) / Nr * KKi) ;
+PP3_inc3_t1_dB = 10 * log10(PP3_inc3_t1(1 : 2, :, :, :, :) / Nr * KKi) ;
+PP3_inc4_t1_dB = 10 * log10(PP3_inc4_t1(1 : 2, :, :, :, :) / Nr * KKi) ;
+PP3_inc_t1_dB = 10 * log10(PP3_inc_t1(1 : 2, :, :, :, :) / Nr * KKi) ;
+PP3_inc1_t2_dB = 10 * log10(PP3_inc1_t2(1 : 2, :, :, :, :) / Nr * KKi) ;
+PP3_inc2_t2_dB = 10 * log10(PP3_inc2_t2(1 : 2, :, :, :, :) / Nr * KKi) ;
+PP3_inc3_t2_dB = 10 * log10(PP3_inc3_t2(1 : 2, :, :, :, :) / Nr * KKi) ;
+PP3_inc4_t2_dB = 10 * log10(PP3_inc4_t2(1 : 2, :, :, :, :) / Nr * KKi) ;
+PP3_inc_t2_dB = 10 * log10(PP3_inc_t2(1 : 2, :, :, :, :) / Nr * KKi) ;
 
 % kind
-PP4_inc1_t1_dB = 10 * log10(PP4_inc1_t1(1 : 2, :, :, :, :, :) / Ntotal * KKi) ;
-PP4_inc2_t1_dB = 10 * log10(PP4_inc2_t1(1 : 2, :, :, :, :, :) / Ntotal * KKi) ;
-PP4_inc3_t1_dB = 10 * log10(PP4_inc3_t1(1 : 2, :, :, :, :, :) / Ntotal * KKi) ;
-PP4_inc4_t1_dB = 10 * log10(PP4_inc4_t1(1 : 2, :, :, :, :, :) / Ntotal * KKi) ;
-PP4_inc_t1_dB = 10 * log10(PP4_inc_t1(1 : 2, :, :, :, :, :) / Ntotal * KKi) ;
-PP4_inc1_t2_dB = 10 * log10(PP4_inc1_t2(1 : 2, :, :, :, :, :) / Ntotal * KKi) ;
-PP4_inc2_t2_dB = 10 * log10(PP4_inc2_t2(1 : 2, :, :, :, :, :) / Ntotal * KKi) ;
-PP4_inc3_t2_dB = 10 * log10(PP4_inc3_t2(1 : 2, :, :, :, :, :) / Ntotal * KKi) ;
-PP4_inc4_t2_dB = 10 * log10(PP4_inc4_t2(1 : 2, :, :, :, :, :) / Ntotal * KKi) ;
-PP4_inc_t2_dB = 10 * log10(PP4_inc_t2(1 : 2, :, :, :, :, :) / Ntotal * KKi) ;
+PP4_inc1_t1_dB = 10 * log10(PP4_inc1_t1(1 : 2, :, :, :, :, :) / Nr * KKi) ;
+PP4_inc2_t1_dB = 10 * log10(PP4_inc2_t1(1 : 2, :, :, :, :, :) / Nr * KKi) ;
+PP4_inc3_t1_dB = 10 * log10(PP4_inc3_t1(1 : 2, :, :, :, :, :) / Nr * KKi) ;
+PP4_inc4_t1_dB = 10 * log10(PP4_inc4_t1(1 : 2, :, :, :, :, :) / Nr * KKi) ;
+PP4_inc_t1_dB = 10 * log10(PP4_inc_t1(1 : 2, :, :, :, :, :) / Nr * KKi) ;
+PP4_inc1_t2_dB = 10 * log10(PP4_inc1_t2(1 : 2, :, :, :, :, :) / Nr * KKi) ;
+PP4_inc2_t2_dB = 10 * log10(PP4_inc2_t2(1 : 2, :, :, :, :, :) / Nr * KKi) ;
+PP4_inc3_t2_dB = 10 * log10(PP4_inc3_t2(1 : 2, :, :, :, :, :) / Nr * KKi) ;
+PP4_inc4_t2_dB = 10 * log10(PP4_inc4_t2(1 : 2, :, :, :, :, :) / Nr * KKi) ;
+PP4_inc_t2_dB = 10 * log10(PP4_inc_t2(1 : 2, :, :, :, :, :) / Nr * KKi) ;
 
 %% Fresnel ellipses
 filenamex = 'ellipse_s' ;
