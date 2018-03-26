@@ -8,8 +8,8 @@ function avgDiffuseTerm
 % Simulation Parameters
 Nr = SimParams.getInstance.Nr ;
 % Ground Parameters
-VSM = GndParams.getInstance.VSM( ParamsManager.index_VSM );
-RMSH = GndParams.getInstance.RMSH( ParamsManager.index_RMSH );
+VSM_cm3cm3 = GndParams.getInstance.VSM_cm3cm3( ParamsManager.index_VSM );
+RMSH_cm = GndParams.getInstance.RMSH_cm( ParamsManager.index_RMSH );
 
 
 %% Reading
@@ -44,7 +44,7 @@ for rr = 1 : Nr
     
     %% read output
     % P1
-    pathname = strcat(SimulationFolders.getInstance.freqdiff_P1, '\VSM_', num2str( VSM ), '-RMSH_', num2str(RMSH)) ;
+    pathname = strcat(SimulationFolders.getInstance.freqdiff_P1, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
     filename1 = strcat('P1_inc1_t1', '_R', num2str(rr)) ;
     P1_inc1_t1 = readVar(pathname, filename1) ;
     filename1 = strcat('P1_inc2_t1', '_R', num2str(rr)) ;
@@ -64,7 +64,7 @@ for rr = 1 : Nr
     P1_inc4_t2 = readVar(pathname, filename1) ;
     
     % P2
-    pathname = strcat(SimulationFolders.getInstance.freqdiff_P2, '\VSM_', num2str( VSM ), '-RMSH_', num2str(RMSH)) ;
+    pathname = strcat(SimulationFolders.getInstance.freqdiff_P2, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
     filename1 = strcat('P2_inc1_t1', '_R', num2str(rr)) ;
     P2_inc1_t1 = readVar(pathname, filename1) ;
     filename1 = strcat('P2_inc2_t1', '_R', num2str(rr)) ;
@@ -84,7 +84,7 @@ for rr = 1 : Nr
     P2_inc4_t2 = readVar(pathname, filename1) ;
     
     % P3
-    pathname = strcat(SimulationFolders.getInstance.freqdiff_P3, '\VSM_', num2str( VSM ), '-RMSH_', num2str(RMSH)) ;
+    pathname = strcat(SimulationFolders.getInstance.freqdiff_P3, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
     filename1 = strcat('P3_inc1_t1', '_R', num2str(rr)) ;
     P3_inc1_t1 = readVar(pathname, filename1) ;
     filename1 = strcat('P3_inc2_t1', '_R', num2str(rr)) ;
@@ -103,7 +103,7 @@ for rr = 1 : Nr
     P3_inc4_t2 = readVar(pathname, filename1) ;
     
     % P4
-    pathname = strcat(SimulationFolders.getInstance.freqdiff_P4, '\VSM_', num2str( VSM ), '-RMSH_', num2str(RMSH)) ;
+    pathname = strcat(SimulationFolders.getInstance.freqdiff_P4, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
     filename1 = strcat('P4_inc1_t1', '_R', num2str(rr)) ;
     P4_inc1_t1 = readVar(pathname, filename1) ;
     filename1 = strcat('P4_inc2_t1', '_R', num2str(rr)) ;
@@ -283,10 +283,10 @@ PP4_inc4_t2_dB = 10 * log10(PP4_inc4_t2(1 : 2, :, :, :, :, :) / Nr * KKi) ;
 PP4_inc_t2_dB = 10 * log10(PP4_inc_t2(1 : 2, :, :, :, :, :) / Nr * KKi) ;
 
 %% Fresnel ellipses
-filenamex = 'ellipse_s' ;
-ellipse_s = readVar(SimulationFolders.getInstance.config, filenamex) ;
-area_s = pi * ellipse_s(:, 1) .* ellipse_s(:, 2) ;
-% P1_areas_s = repmat(area_s, 1, 2, length(VSM)) ;
+filenamex = 'ellipse_s_m' ;
+ellipse_s_m = readVar(SimulationFolders.getInstance.config, filenamex) ;
+area_s = pi * ellipse_s_m(:, 1) .* ellipse_s_m(:, 2) ;
+% P1_areas_s = repmat(area_s, 1, 2, length(VSM_cm3cm3)) ;
 P1_areas_s = repmat(area_s, 1, 2 ) ;
 % TO-DO: Check the following: permutation converted to transpose due to the
 % removal of multiple SM values from the output 
@@ -311,7 +311,7 @@ NBRCS_t2_dB = PP1_inc_t2_dB - KKi_dB - P1_areas_dB ;
 
 %% Saving
 % P1
-pathname = strcat(SimulationFolders.getInstance.out_diffuse_P1, '\VSM_', num2str( VSM ), '-RMSH_', num2str(RMSH)) ;
+pathname = strcat(SimulationFolders.getInstance.out_diffuse_P1, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('PP1_inc1_t1_dB') ;
 writeVar(pathname, filename1, (PP1_inc1_t1_dB))
 filename1 = strcat('PP1_inc2_t1_dB') ;
@@ -335,7 +335,7 @@ filename1 = strcat('PP1_inc_t2_dB') ;
 writeVar(pathname, filename1, (PP1_inc_t2_dB))
 
 % P2
-pathname = strcat(SimulationFolders.getInstance.out_diffuse_P2, '\VSM_', num2str( VSM ), '-RMSH_', num2str(RMSH)) ;
+pathname = strcat(SimulationFolders.getInstance.out_diffuse_P2, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('PP2_inc1_t1_dB') ;
 writeVar(pathname, filename1, (PP2_inc1_t1_dB))
 filename1 = strcat('PP2_inc2_t1_dB') ;
@@ -359,7 +359,7 @@ filename1 = strcat('PP2_inc_t2_dB') ;
 writeVar(pathname, filename1, (PP2_inc_t2_dB))
 
 % P3
-pathname = strcat(SimulationFolders.getInstance.out_diffuse_P3, '\VSM_', num2str( VSM ), '-RMSH_', num2str(RMSH)) ;
+pathname = strcat(SimulationFolders.getInstance.out_diffuse_P3, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('PP3_inc1_t1_dB') ;
 writeVar(pathname, filename1, (PP3_inc1_t1_dB))
 filename1 = strcat('PP3_inc2_t1_dB') ;
@@ -383,7 +383,7 @@ filename1 = strcat('PP3_inc_t2_dB') ;
 writeVar(pathname, filename1, (PP3_inc_t2_dB))
 
 % P4
-pathname = strcat(SimulationFolders.getInstance.out_diffuse_P4, '\VSM_', num2str( VSM ), '-RMSH_', num2str(RMSH)) ;
+pathname = strcat(SimulationFolders.getInstance.out_diffuse_P4, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('PP4_inc1_t1_dB') ;
 writeVar(pathname, filename1, (PP4_inc1_t1_dB))
 filename1 = strcat('PP4_inc2_t1_dB') ;
@@ -407,7 +407,7 @@ filename1 = strcat('PP4_inc_t2_dB') ;
 writeVar(pathname, filename1, (PP4_inc_t2_dB))
 
 % NBRCS
-pathname = strcat(SimulationFolders.getInstance.out_diffuse_NBRCS, '\VSM_', num2str( VSM ), '-RMSH_', num2str(RMSH)) ;
+pathname = strcat(SimulationFolders.getInstance.out_diffuse_NBRCS, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('NBRCS1_t1_dB') ;
 writeVar(pathname, filename1, (NBRCS1_t1_dB))
 filename1 = strcat('NBRCS2_t1_dB') ;

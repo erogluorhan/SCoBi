@@ -1,66 +1,68 @@
 %% Mehmet Kurum
 % March 15, 2017
 
-function [S0x, x1, ax1, by1] = calcFresnelZones(ht, hr)
+function [S0x_m, x1_m, ax1_m, by1_m] = calcFresnelZones(ht_m, hr_m)
 
 
-%% Get Global Parameters
-f0hz = SatParams.getInstance.fMHz * 1e6 ;
+%% GET GLOBAL PARAMETERS
+%Simulation Parameters
+Nfz = SimParams.getInstance.Nfz;
+% Satellite Parameters
+f_Hz = SatParams.getInstance.f_MHz * Constants.MHz2Hz ;
 EL0_deg = SatParams.getInstance.EL0_deg( ParamsManager.index_Th );
+th0t_deg = SatParams.getInstance.th0_deg( ParamsManager.index_Th );
 
-lambda = Constants.c / f0hz ;     % Wavelength
+
+%% CALCULATIONS
+lambda_m = Constants.c / f_Hz ;     % Wavelength
 
 % Angle of Incidence of incoming signal
 % SatParams.getInstance.EL0_deg = 36.3287 ;        % Elevation angle
-th0t_deg = 90 - EL0_deg ;
-th0t = degtorad(th0t_deg) ;
+th0t_rad = degtorad(th0t_deg) ;
 
 % Transmitter Height with respect to local planar ground plane
-% ht = rd * cos(th0t) ;
+% ht_m = rd * cos(th0t_rad) ;
 % Transmitter/Reciever ground range
-% Dist = rd * sin(th0t) ;
-Dist = ht * tan(th0t) ;
-
-%% Calculations
-
+% Dist_m = rd * sin(th0t_rad) ;
+Dist_m = ht_m * tan(th0t_rad) ;
 
 % Distance of specular point away from the receiver ground projection.
-S0x = Dist / (1 + ht / hr) ;
+S0x_m = Dist_m / (1 + ht_m / hr_m) ;
 
 % Parameters for Fresnel zone calculation
-hd = ht - hr ;
-hs = ht + hr ;
-rd2 = sqrt(hd ^ 2 + Dist ^ 2) ;
-rs = sqrt(hs ^ 2 + Dist ^ 2) ;
-del0 = rs - rd2 ; % the shortest distance after the direct path
+hd_m = ht_m - hr_m ;
+hs_m = ht_m + hr_m ;
+rd2_m = sqrt(hd_m ^ 2 + Dist_m ^ 2) ;
+rs_m = sqrt(hs_m ^ 2 + Dist_m ^ 2) ;
+del0_m = rs_m - rd2_m ; % the shortest distance after the direct path
 
-tanth = hd / Dist ; %#ok<NASGU>
-sinth = hd / rd2 ;
-costh = Dist / rd2 ;
+tanth = hd_m / Dist_m ; %#ok<NASGU>
+sinth = hd_m / rd2_m ;
+costh = Dist_m / rd2_m ;
 secth = 1 / costh ;
 
-x1 = zeros(SimParams.getInstance.Nfz, 1) ;
-ax1 = zeros(SimParams.getInstance.Nfz, 1) ;
-by1 = zeros(SimParams.getInstance.Nfz, 1) ;
+x1_m = zeros(SimParams.getInstance.Nfz, 1) ;
+ax1_m = zeros(SimParams.getInstance.Nfz, 1) ;
+by1_m = zeros(SimParams.getInstance.Nfz, 1) ;
 
-for nn = 1 : SimParams.getInstance.Nfz
+for nn = 1 : Nfz
     
     % the path for the nth Fresnel Zone
-    del = del0 + nn * lambda / 2 ;
+    del_m = del0_m + nn * lambda_m / 2 ;
     
-    a = (Dist * secth + del) / 2 ;
-    b = sqrt(del ^ 2 + 2 * Dist * del * secth) / 2 ;
-    cc = (ht + hr) / 2 ;    % OE: Named 'cc' to prevent confusion with the other c - speed of light
+    a_m = (Dist_m * secth + del_m) / 2 ;
+    b_m = sqrt(del_m ^ 2 + 2 * Dist_m * del_m * secth) / 2 ;
+    c_m = (ht_m + hr_m) / 2 ;
     
-    nump = cc * (a ^ 2 - b ^ 2) * sinth * costh ;
-    denp = (b ^ 2 * costh ^ 2 + a ^ 2 * sinth ^ 2) ;
-    p = -nump / denp ;
-    x1(nn) = Dist / 2 + p ; % distance to the center of the ellipse
+    nump_m3 = c_m * (a_m ^ 2 - b_m ^ 2) * sinth * costh ;
+    denp_m2 = (b_m ^ 2 * costh ^ 2 + a_m ^ 2 * sinth ^ 2) ;
+    p_m = -nump_m3 / denp_m2 ;
+    x1_m(nn) = Dist_m / 2 + p_m ; % distance to the center of the ellipse
     
     % minor axis
-    by1(nn) = b * sqrt(1 - cc ^ 2 / denp) ;
+    by1_m(nn) = b_m * sqrt(1 - c_m ^ 2 / denp_m2) ;
     % major axis
-    ax1(nn) = by1(nn) * a / sqrt(denp) ;
+    ax1_m(nn) = by1_m(nn) * a_m / sqrt(denp_m2) ;
     
 end
 

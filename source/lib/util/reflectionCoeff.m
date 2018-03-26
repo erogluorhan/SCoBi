@@ -29,9 +29,11 @@ ESQI = sqrt(EPSG - STI ^ 2) ;
 ESQS = sqrt(EPSG - STS ^ 2) ;
 %
 RGHIF = (CTI - ESQI) ./ (CTI + ESQI) ;
-RGVIF = (EPSG * CTI - ESQI) ./ (EPSG * CTI + ESQI) ;
+% RGVIF = (EPSG * CTI - ESQI) ./ (EPSG * CTI + ESQI) ;
+RGVIF = (-EPSG * CTI + ESQI) ./ (EPSG * CTI + ESQI) ; % - sign chagned 09/24/17
 RGHSF = (CTS - ESQS) ./ (CTS + ESQS) ;
-RGVSF = (EPSG * CTS - ESQS) ./ (EPSG * CTS + ESQS) ;
+% RGVSF = (EPSG * CTS - ESQS) ./ (EPSG * CTS + ESQS) ;
+RGVSF = (-EPSG * CTS + ESQS) ./ (EPSG * CTS + ESQS) ; % - sign chagned 09/24/17
 %
 QZSGMI2 = h * CTI ^ 2 / 2.0 ;
 QZSGMS2 = h * CTS ^ 2 / 2.0 ;

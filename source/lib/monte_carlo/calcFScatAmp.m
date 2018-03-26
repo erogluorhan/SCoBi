@@ -2,10 +2,17 @@
 function calcFScatAmp(rr)
 
 
-%% Vegetation Information
+%% GET GLOBAL PARAMETERS
+% Vegetation Parameters
+vegetation_method = SimParams.getInstance.vegetation_method;
 TYPKND = VegParams.getInstance.TYPKND;
-
 scat_cal_veg = VegParams.getInstance.scat_cal_veg;
+epsr = VegParams.getInstance.epsr;
+parm1_deg = VegParams.getInstance.parm1_deg;
+parm2_deg = VegParams.getInstance.parm2_deg;
+dim1_m = VegParams.getInstance.dim1_m;
+dim3_m = VegParams.getInstance.dim3_m;
+
 
 %% Read Particle Positions
 % Option #1 - Uniform Layered Vegetation. - current implementation
@@ -29,19 +36,19 @@ for ii = 1 : Nlayer
             
             if scat_cal_veg(kk, jj, ii) == 1
                 
-                if strcmp( SimParams.getInstance.vegetation_method, Constants.veg_methods.HOMOGENOUS )
+                if strcmp( vegetation_method, Constants.veg_methods.HOMOGENOUS )
                     
-                    EPS = VegParams.getInstance.epsr(kk, jj, ii) ;
-                    PROB = [VegParams.getInstance.parm1(kk, jj, ii), ...
-                            VegParams.getInstance.parm2(kk, jj, ii)] ;
-                    % TO-DO: Should be revised regarding leaves
-                    RAD = VegParams.getInstance.dim1(kk, jj, ii) ;
-                    LEN = VegParams.getInstance.dim3(kk, jj, ii) ; % length  % for cylinders (trunks and branches)
+                    EPS = epsr(kk, jj, ii) ;
+                    PROB = [ parm1_deg(kk, jj, ii), parm2_deg(kk, jj, ii) ] ;
+                    % TO-DO: Should be revised for the case leaves are
+                    % scatterer
+                    RAD = dim1_m(kk, jj, ii) ;
+                    LEN = dim3_m(kk, jj, ii) ; % length  % for cylinders (trunks and branches)
                     
-                    fwdScatAmp(filename, PROB, RAD, LEN, EPS ) ;
+                    fScatAmp(filename, PROB, RAD, LEN, EPS ) ;
                         
-                elseif strcmp( SimParams.getInstance.vegetation_method, Constants.veg_methods.VIRTUAL )
-                    fwdScatAmp(filename);
+                elseif strcmp( vegetation_method, Constants.veg_methods.VIRTUAL )
+                    fScatAmp(filename);
                 end
                 
                 disp('done...')
@@ -59,17 +66,26 @@ end % Nlayer
 
 end
 
-function fwdScatAmp(filename, prob, RAD, LEN, epsr)
+function fScatAmp(filename, prob, RAD, LEN, epsr)
 
-%% Global
+%% GET GLOBAL DIRECTORIES
+dir_position = SimulationFolders.getInstance.position;
+dir_incidence = SimulationFolders.getInstance.incidence;
+dir_scattering = SimulationFolders.getInstance.scattering;
+dir_fscat = SimulationFolders.getInstance.fscat;
+
+
+%% GET GLOBAL PARAMETERS
+% Constant Structs
 scattererParamsStruct = Constants.scattererParamsStruct;
+% Satellite Parameters
+f_MHz = SatParams.getInstance.f_MHz;
 
-%%
-f0hz = SatParams.getInstance.fMHz * Constants.MHz2Hz ;
+
+f_Hz = f_MHz * Constants.MHz2Hz ;
 
 %% Reading the particle positions
-pathname = SimulationFolders.getInstance.position ;
-pP = readVar(pathname, filename) ;
+pP = readVar( dir_position, filename ) ;
 [N, ~] = size(pP) ;
 
 %% Bistatic scattering amplitudes
@@ -82,30 +98,28 @@ BISTATIC4 = zeros(N, 2, 2) ;   % fpq(oI_a^-, iI_a^+)   - reflected reflected
 
 disp('Reading incidence angles...')
 tic;
-pathname = SimulationFolders.getInstance.incidence;
 filenamex = strcat('thid_', filename) ;
-thid = readVar(pathname, filenamex) ;
+thid = readVar(dir_incidence, filenamex) ;
 filenamex = strcat('thidI_', filename) ;
-thidI = readVar(pathname, filenamex) ;
+thidI = readVar(dir_incidence, filenamex) ;
 filenamex = strcat('phid_', filename) ;
-phid = readVar(pathname, filenamex) ;
+phid = readVar(dir_incidence, filenamex) ;
 filenamex = strcat('phidI_', filename) ;
-phidI = readVar(pathname, filenamex) ;
+phidI = readVar(dir_incidence, filenamex) ;
 toc
 
 %% Reading Scattering Angles
 
 disp('Reading scattering angles...')
 tic;
-pathname = SimulationFolders.getInstance.scattering;
 filenamex = strcat('thsd_', filename) ;
-thsd = readVar(pathname, filenamex) ;
+thsd = readVar(dir_scattering, filenamex) ;
 filenamex = strcat('thsdI_', filename) ;
-thsdI = readVar(pathname, filenamex) ;
+thsdI = readVar(dir_scattering, filenamex) ;
 filenamex = strcat('phsd_', filename) ;
-phsd = readVar(pathname, filenamex) ;
+phsd = readVar(dir_scattering, filenamex) ;
 filenamex = strcat('phsdI_', filename) ;
-phsdI = readVar(pathname, filenamex) ;
+phsdI = readVar(dir_scattering, filenamex) ;
 toc
 
 
@@ -150,7 +164,7 @@ for ii = 1 : N
 
     % TO-DO: If leaf is counted as a scatterer in the future, add ellipse!
     % dd : direct - direct
-    x = CYLINDER(tin ,pin, ts, ps, thcyl, phcyl, f0hz, RAD, LEN, epsr) ;
+    x = CYLINDER(tin ,pin, ts, ps, thcyl, phcyl, f_Hz, RAD, LEN, epsr) ;
     
     BISTATIC1(ii, 1, 1) = x(4, 1) ; % VV
     BISTATIC1(ii, 1, 2) = x(2, 1) ; % VH    
@@ -163,7 +177,7 @@ for ii = 1 : N
     ps = phsdI(ii, 1) * Constants.deg2rad ;
 
     % rd : reflected - direct
-    x = CYLINDER(tin ,pin, ts, ps, thcyl, phcyl, f0hz, RAD, LEN, epsr) ;
+    x = CYLINDER(tin ,pin, ts, ps, thcyl, phcyl, f_Hz, RAD, LEN, epsr) ;
     
     BISTATIC2(ii, 1, 1) = x(4, 1) ; % VV
     BISTATIC2(ii, 1, 2) = x(2, 1) ; % VH    
@@ -176,7 +190,7 @@ for ii = 1 : N
     ps = phsd(ii, 1) * Constants.deg2rad ;
 
     % dr : direct - reflected
-    x = CYLINDER(tin ,pin, ts, ps, thcyl, phcyl, f0hz, RAD, LEN, epsr) ;
+    x = CYLINDER(tin ,pin, ts, ps, thcyl, phcyl, f_Hz, RAD, LEN, epsr) ;
     
     BISTATIC3(ii, 1, 1) = x(4, 1) ; % VV
     BISTATIC3(ii, 1, 2) = x(2, 1) ; % VH    
@@ -189,7 +203,7 @@ for ii = 1 : N
     ps = phsdI(ii, 1) * Constants.deg2rad ;
     
     % rr : reflected - reflected    
-    x = CYLINDER(tin ,pin, ts, ps, thcyl, phcyl, f0hz, RAD, LEN, epsr) ;
+    x = CYLINDER(tin ,pin, ts, ps, thcyl, phcyl, f_Hz, RAD, LEN, epsr) ;
     
     BISTATIC4(ii, 1, 1) = x(4, 1) ; % VV
     BISTATIC4(ii, 1, 2) = x(2, 1) ; % VH    
@@ -202,15 +216,14 @@ toc
 %% Saving scattering amplitudes..
 disp('Saving scattering amplitudes...')
 tic ;
-pathname = SimulationFolders.getInstance.fscat;
 filenamex = strcat('BISTATIC1_', filename) ;
-writeComplexVar(pathname, filenamex, BISTATIC1)
+writeComplexVar(dir_fscat, filenamex, BISTATIC1)
 filenamex = strcat('BISTATIC2_', filename) ;
-writeComplexVar(pathname, filenamex, BISTATIC2)
+writeComplexVar(dir_fscat, filenamex, BISTATIC2)
 filenamex = strcat('BISTATIC3_', filename) ;
-writeComplexVar(pathname, filenamex, BISTATIC3)
+writeComplexVar(dir_fscat, filenamex, BISTATIC3)
 filenamex = strcat('BISTATIC4_', filename) ;
-writeComplexVar(pathname, filenamex, BISTATIC4)
+writeComplexVar(dir_fscat, filenamex, BISTATIC4)
 toc
 
 end

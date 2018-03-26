@@ -17,11 +17,10 @@ classdef SimSettings < handle
         % 1: Vegtation + Bare soil
         ground_cover
         
-        % Flag for calculation of meta data or directly passing to the 
-        % output terms
-        % 0: Do not calculate meta-data and pass through output terms
-        % 1: Calculate meta-data, then pass through output terms
-        calc_meta_data
+        % Flag for whether to write attenuation to Excel file or not
+        % 0: Do not write 
+        % 1: Write
+        write_attenuation
         
         % Flag for calculation of Direct Term
         % 0: Do not calculate
@@ -67,13 +66,13 @@ classdef SimSettings < handle
     
     methods
         
-        function initialize(obj, sim_mode, ground_cover, calc_meta_data, ...
+        function initialize(obj, sim_mode, ground_cover, write_attenuation, ...
                 calc_direct_term, calc_specular_term, calc_diffuse_term )
             % INITIALIZE - Initializes all the properties
             
             obj.sim_mode = sim_mode;
             obj.ground_cover = ground_cover;
-            obj.calc_meta_data = calc_meta_data;
+            obj.write_attenuation = write_attenuation;
             obj.calc_direct_term = calc_direct_term;
             obj.calc_specular_term = calc_specular_term;
             obj.calc_diffuse_term = calc_diffuse_term; 
@@ -87,8 +86,8 @@ classdef SimSettings < handle
             out = obj.ground_cover;        
         end
         
-        function out = get.calc_meta_data(obj)
-            out = obj.calc_meta_data;
+        function out = get.write_attenuation(obj)
+            out = obj.write_attenuation;
         end        
         
         function out = get.calc_direct_term(obj)

@@ -54,7 +54,12 @@ classdef ParamsManager
         end
         
         function [validityResult, terminateResult, terminateMsg] = isInputValid()
+                        
+            %% GET GLOBAL DIRECTORIES
+            dir_hr = SimulationFolders.getInstance.hr;
             
+            
+            %% DEFINE PERSISTENT VARIABLES
             persistent isValid 
             persistent isTerminate
             persistent msg
@@ -62,7 +67,8 @@ classdef ParamsManager
             isValid = 0;
             isTerminate = 0;
             
-            if exist( strcat( SimulationFolders.getInstance.hr, '\', ConstantNames.input_params_filename), 'file') == 2 
+            
+            if exist( strcat( dir_hr, '\', ConstantNames.input_params_filename), 'file') == 2 
                         
                 isSysInputEqual = ParamsManager.isSysInputEqual();
                 isVegInputEqual = ParamsManager.isVegInputEqual();
@@ -93,7 +99,7 @@ classdef ParamsManager
                         new_sim_name = char( inputdlg(prompt,dlg_title,num_lines,defaultans) );  
 
                         if ~isempty(new_sim_name)
-                            SimParams.getInstance.updateSimName(new_sim_name);
+                            SimParams.getInstance.updateSimName( new_sim_name );
 
                             % Initializing simulations' directories for the updated simulation name
                             SimulationFolders.getInstance.initialize();
@@ -109,7 +115,7 @@ classdef ParamsManager
             else
                 
                 % The first time this simulation is being created
-                if ~exist( SimulationFolders.getInstance.hr)
+                if ~exist( dir_hr)
                 
                     isValid = ParamsManager.isInputValidForSimMode();
                 
@@ -136,8 +142,8 @@ classdef ParamsManager
                 
             num_Th = length( SatParams.getInstance.th0_deg );
             num_Ph = length( SatParams.getInstance.PH0_deg );
-            num_VSM = length( GndParams.getInstance.VSM );
-            num_RMSH = length( GndParams.getInstance.RMSH );
+            num_VSM = length( GndParams.getInstance.VSM_cm3cm3 );
+            num_RMSH = length( GndParams.getInstance.RMSH_cm );
             
             maxnum = max( [num_Th, num_Ph, num_VSM, num_RMSH] );
             
@@ -184,26 +190,36 @@ classdef ParamsManager
         
         
         function isEqual = isSysInputEqual
+                        
+            %% GET GLOBAL DIRECTORIES
+            dir_hr = SimulationFolders.getInstance.hr;            
+            
+            
+            %% GET GLOBAL PARAMETERS
+            % Simulation Parameters
+            Nfz = SimParams.getInstance.Nfz;
+            % Ground Parameters
+            sand_ratio = GndParams.getInstance.sand_ratio;
+            clay_ratio = GndParams.getInstance.clay_ratio;
+            rhob_gcm3 = GndParams.getInstance.rhob_gcm3;
+            % Satellite Parameters
+            f_MHz = SatParams.getInstance.f_MHz;
+            rsat_m = SatParams.getInstance.rsat_m;
+            EIRP_dB = SatParams.getInstance.EIRP_dB;
+            
+            
+            %% LOAD META-DATA           
+            load( strcat( dir_hr, '\', ConstantNames.input_params_filename), ConstantNames.input_params_var );
             
             isEqual = 0;
-                       
-            load( strcat( SimulationFolders.getInstance.hr, '\', ConstantNames.input_params_filename), ConstantNames.input_params_var );
-            
-            sim_Nfz = SimParams.getInstance.Nfz;
-            gnd_sand = GndParams.getInstance.sand;
-            gnd_clay = GndParams.getInstance.clay;
-            gnd_rhoB = GndParams.getInstance.rho_b;
-            sat_fMHz = SatParams.getInstance.fMHz;
-            sat_rsatKm = SatParams.getInstance.rsat;
-            sat_EIRPdB = SatParams.getInstance.EIRP_dB;
 
-            if input_params(ConstantNames.sim_Nfz) == sim_Nfz
-                if input_params(ConstantNames.gnd_sand) == gnd_sand
-                    if input_params(ConstantNames.gnd_clay) == gnd_clay
-                        if input_params(ConstantNames.gnd_rhoB) == gnd_rhoB
-                            if input_params(ConstantNames.sat_fMHz) == sat_fMHz
-                                if input_params(ConstantNames.sat_rsatKm) == sat_rsatKm
-                                    if input_params(ConstantNames.sat_EIRPdB) == sat_EIRPdB
+            if input_params(ConstantNames.sim_Nfz) == Nfz
+                if input_params(ConstantNames.gnd_sand_ratio) == sand_ratio
+                    if input_params(ConstantNames.gnd_clay_ratio) == clay_ratio
+                        if input_params(ConstantNames.gnd_rhob_gcm3) == rhob_gcm3
+                            if input_params(ConstantNames.sat_f_MHz) == f_MHz
+                                if input_params(ConstantNames.sat_rsat_m) == rsat_m
+                                    if input_params(ConstantNames.sat_EIRP_dB) == EIRP_dB
                                         isEqual = 1;
                                     end
                                 end
@@ -216,40 +232,46 @@ classdef ParamsManager
         end
         
         function isEqual = isVegInputEqual
+                        
+            %% GET GLOBAL DIRECTORIES
+            dir_hr = SimulationFolders.getInstance.hr;  
+            
+            % Load input_params
+            load( strcat( dir_hr, '\', ConstantNames.input_params_filename), ConstantNames.input_params_var );
             
             isEqual = 0;
-                       
-            load( strcat( SimulationFolders.getInstance.hr, '\', ConstantNames.input_params_filename), ConstantNames.input_params_var );
             
             if SimParams.getInstance.vegetation_method == Constants.veg_methods.HOMOGENOUS
             
+                %% GET GLOBAL PARAMETERS
+                % Vegetation Parameters
                 vegetation_stage = VegParams.getInstance.vegetation_stage;
                 TYPES = VegParams.getInstance.TYPES;
-                dim_layers = VegParams.getInstance.dim_layers;
+                dim_layers_m = VegParams.getInstance.dim_layers_m;
                 TYPKND = VegParams.getInstance.TYPKND;
                 scat_cal_veg = VegParams.getInstance.scat_cal_veg;
                 LTK = VegParams.getInstance.LTK;
                 dsty = VegParams.getInstance.dsty;
-                dim1 = VegParams.getInstance.dim1;
-                dim2 = VegParams.getInstance.dim2;
-                dim3 = VegParams.getInstance.dim3;
+                dim1_m = VegParams.getInstance.dim1_m;
+                dim2_m = VegParams.getInstance.dim2_m;
+                dim3_m = VegParams.getInstance.dim3_m;
                 epsr = VegParams.getInstance.epsr;
-                parm1 = VegParams.getInstance.parm1;
-                parm2 = VegParams.getInstance.parm2;
+                parm1_deg = VegParams.getInstance.parm1_deg;
+                parm2_deg = VegParams.getInstance.parm2_deg;
 
                 if strcmp( input_params(ConstantNames.veg_hom_vegetationStage), vegetation_stage )
                     if isequal( input_params(ConstantNames.veg_hom_TYPES), TYPES )
-                        if isequal( input_params(ConstantNames.veg_hom_dimLayers), dim_layers )
+                        if isequal( input_params(ConstantNames.veg_hom_dimLayers_m), dim_layers_m )
                             if isequal( input_params(ConstantNames.veg_hom_TYPKND), TYPKND )                                          
                                 if isequal( input_params(ConstantNames.veg_hom_scatCalVeg), scat_cal_veg )
                                     if isequal( input_params(ConstantNames.veg_hom_LTK), LTK )
                                         if isequal( input_params(ConstantNames.veg_hom_dsty), dsty )
-                                            if isequal( input_params(ConstantNames.veg_hom_dim1), dim1 )
-                                                if isequal( input_params(ConstantNames.veg_hom_dim2), dim2 )
-                                                    if isequal( input_params(ConstantNames.veg_hom_dim3), dim3 )
+                                            if isequal( input_params(ConstantNames.veg_hom_dim1_m), dim1_m )
+                                                if isequal( input_params(ConstantNames.veg_hom_dim2_m), dim2_m )
+                                                    if isequal( input_params(ConstantNames.veg_hom_dim3_m), dim3_m )
                                                         if isequal( input_params(ConstantNames.veg_hom_epsr), epsr )
-                                                            if isequal( input_params(ConstantNames.veg_hom_parm1), parm1 )
-                                                                if isequal( input_params(ConstantNames.veg_hom_parm2), parm2 )
+                                                            if isequal( input_params(ConstantNames.veg_hom_parm1_deg), parm1_deg )
+                                                                if isequal( input_params(ConstantNames.veg_hom_parm2_deg), parm2_deg )
                                                                     isEqual = 1;
                                                                 end
                                                             end
@@ -267,19 +289,21 @@ classdef ParamsManager
                 
             else
                 
+                %% GET GLOBAL PARAMETERS
+                % Virtual Row-Structured Vegetation Parameters
                 plugin = VegVirRowParams.getInstance.plugin;
-                row_space = VegVirRowParams.getInstance.row_space;
-                col_space = VegVirRowParams.getInstance.col_space;
-                phi_row = VegVirRowParams.getInstance.phi_row;
-                plant_row_spread = VegVirRowParams.getInstance.plant_row_spread;
-                plant_col_spread = VegVirRowParams.getInstance.plant_col_spread;
+                row_space_m = VegVirRowParams.getInstance.row_space_m;
+                col_space_m = VegVirRowParams.getInstance.col_space_m;
+                phi_row_deg = VegVirRowParams.getInstance.phi_row_deg;
+                plant_row_spread_m = VegVirRowParams.getInstance.plant_row_spread_m;
+                plant_col_spread_m = VegVirRowParams.getInstance.plant_col_spread_m;
 
                 if input_params(ConstantNames.veg_vir_row_plugin).isTheSame( plugin )
-                    if input_params(ConstantNames.veg_vir_row_rowSpace) == row_space
-                        if input_params(ConstantNames.veg_vir_row_colSpace) == col_space
-                            if input_params(ConstantNames.veg_vir_row_phiRow) == phi_row
-                                if input_params(ConstantNames.veg_vir_row_plantRowSpread) == plant_row_spread
-                                    if input_params(ConstantNames.veg_vir_row_plantColSpread) == plant_col_spread
+                    if input_params(ConstantNames.veg_vir_row_rowSpace_m) == row_space_m
+                        if input_params(ConstantNames.veg_vir_row_colSpace_m) == col_space_m
+                            if input_params(ConstantNames.veg_vir_row_phiRow_deg) == phi_row_deg
+                                if input_params(ConstantNames.veg_vir_row_plantRowSpread_m) == plant_row_spread_m
+                                    if input_params(ConstantNames.veg_vir_row_plantColSpread_m) == plant_col_spread_m
                                         isEqual = 1;
                                     end
                                 end
@@ -293,11 +317,19 @@ classdef ParamsManager
         
         function [result, Nr_current, dispMsg] = isToGenerateScatPos()
             
+            % GET GLOBAL DIRECTORIES
+            dir_position = SimulationFolders.getInstance.position;
+            
+            %% GET GLOBAL PARAMETERS
+            % Simulation Settings
             calc_specular_term = SimSettings.getInstance.calc_specular_term;
             calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
-            
+            % Simulation Parameters
             Nr = SimParams.getInstance.Nr;
             vegetation_method = SimParams.getInstance.vegetation_method;
+            % Vegetation Parameters
+            scat_cal_veg = VegParams.getInstance.scat_cal_veg;
+            num_scat_cal = sum(sum(sum(scat_cal_veg))) ;
             
             % First check the user preferences
             if vegetation_method == Constants.veg_methods.HOMOGENOUS
@@ -317,14 +349,10 @@ classdef ParamsManager
                 end
             end
             
-            
             readExistingVegParams;
-            
-            scat_cal_veg = VegParams.getInstance.scat_cal_veg;
-            num_scat_cal = sum(sum(sum(scat_cal_veg))) ;
-            
+                        
             % If passes user preferences, check the existence of files
-            all_files = dir(SimulationFolders.getInstance.position);
+            all_files = dir(dir_position);
             num_files = numel(all_files) - 2;
             Nr_current = num_files / num_scat_cal ;
 
@@ -346,11 +374,16 @@ classdef ParamsManager
         end
         
         function [result, Nr_current, dispMsg] = isToCalculateFScatAmp()
+                        
+            % GET GLOBAL DIRECTORIES
+            dir_fscat = SimulationFolders.getInstance.fscat;
             
+            %% GET GLOBAL PARAMETERS
+            % Simulation Settings
             calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
-            
+            % Simulation Parameters
             Nr = SimParams.getInstance.Nr;
-            
+            % Vegetation Parameters
             scat_cal_veg = VegParams.getInstance.scat_cal_veg;
             num_scat_cal = sum(sum(sum(scat_cal_veg))) ;
                         
@@ -363,7 +396,7 @@ classdef ParamsManager
             end
             
             % If passes user preferences, check the existence of files
-            all_files = dir(SimulationFolders.getInstance.fscat);
+            all_files = dir(dir_fscat);
             num_files = numel(all_files) - 2;
             Nr_current = num_files / num_scat_cal / Constants.factor_fscat ;
 
@@ -384,10 +417,16 @@ classdef ParamsManager
             
         end
         
-        function [result, dispMsg] = isToCalcPropagation()
+        function [result, write_attenuation, dispMsg] = isToCalcPropagation()
             
+            % GET GLOBAL DIRECTORIES
+            dir_afsa = SimulationFolders.getInstance.afsa;
+            
+            %% GET GLOBAL PARAMETERS
+            % Simulation Settings
             calc_specular_term = SimSettings.getInstance.calc_specular_term;
             calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
+            write_attenuation = SimSettings.getInstance.write_attenuation;
                         
             % First check the user preferences
             if ~( calc_specular_term || calc_diffuse_term )
@@ -397,7 +436,7 @@ classdef ParamsManager
             end
             
             % If passes user preferences, check the existence of files
-            all_files = dir(SimulationFolders.getInstance.afsa);
+            all_files = dir(dir_afsa);
             num_files = numel(all_files) - 2;
             
             if num_files >= Constants.num_afsa
@@ -412,8 +451,11 @@ classdef ParamsManager
         
         function [result, dispMsg] = isToAntennaPatternMatrix()
                        
+            % GET GLOBAL DIRECTORIES
+            dir_ant_lookup = SimulationFolders.getInstance.ant_lookup;
+            
             % If passes user preferences, check the existence of files
-            all_files = dir(SimulationFolders.getInstance.ant_lookup);
+            all_files = dir(dir_ant_lookup);
             num_files = numel(all_files) - 2;
             
             if num_files >= Constants.num_ant_lookup
@@ -428,10 +470,15 @@ classdef ParamsManager
         
         function [result, Nr_current, dispMsg] = isToRealizeAntennaPattern()
             
+            % GET GLOBAL DIRECTORIES
+            dir_ant_real = SimulationFolders.getInstance.ant_real;
+            
+            %% GET GLOBAL PARAMETERS
+            % Simulation Settings
             calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
-            
+            % Simulation Parameters
             Nr = SimParams.getInstance.Nr;
-            
+            % Vegetation Parameters
             scat_cal_veg = VegParams.getInstance.scat_cal_veg;
             num_scat_cal = sum(sum(sum(scat_cal_veg))) ;
                         
@@ -444,7 +491,7 @@ classdef ParamsManager
             end
             
             % If passes user preferences, check the existence of files
-            all_files = dir(SimulationFolders.getInstance.ant_real);
+            all_files = dir(dir_ant_real);
             num_files = numel(all_files) - 2;
             Nr_current = num_files / num_scat_cal / Constants.factor_ant_real ;
 
@@ -466,9 +513,12 @@ classdef ParamsManager
         end
         
         function [result, dispMsg] = isToCalcRotationMatrices()
-                       
+            
+            % GET GLOBAL DIRECTORIES
+            dir_rot_lookup = SimulationFolders.getInstance.rot_lookup;
+            
             % If passes user preferences, check the existence of files
-            all_files = dir(SimulationFolders.getInstance.rot_lookup);
+            all_files = dir(dir_rot_lookup);
             num_files = numel(all_files) - 2;
             
             if num_files >= Constants.num_rot_lookup
@@ -483,10 +533,15 @@ classdef ParamsManager
         
         function [result, Nr_current, dispMsg] = isToRealizeRotations()
             
+            % GET GLOBAL DIRECTORIES
+            dir_rot_real = SimulationFolders.getInstance.rot_real;
+            
+            %% GET GLOBAL PARAMETERS
+            % Simulation Settings
             calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
-            
+            % Simulation Parameters
             Nr = SimParams.getInstance.Nr;
-            
+            % Vegetation Parameters
             scat_cal_veg = VegParams.getInstance.scat_cal_veg;
             num_scat_cal = sum(sum(sum(scat_cal_veg))) ;
                         
@@ -499,7 +554,7 @@ classdef ParamsManager
             end
             
             % If passes user preferences, check the existence of files
-            all_files = dir(SimulationFolders.getInstance.rot_real);
+            all_files = dir(dir_rot_real);
             num_files = numel(all_files) - 2;
             Nr_current = num_files / num_scat_cal / Constants.factor_rot_real ;
 
@@ -522,7 +577,15 @@ classdef ParamsManager
         
         function [result, dispMsg] = isToCalculateSpecularTerm()
             
+            % GET GLOBAL DIRECTORIES
+            dir_out_specular = SimulationFolders.getInstance.out_specular;
+            
+            %% GET GLOBAL PARAMETERS
+            % Simulation Settings
             calc_specular_term = SimSettings.getInstance.calc_specular_term;
+            % Ground Parameters
+            VSM_cm3cm3 = GndParams.getInstance.VSM_cm3cm3;
+            RMSH_cm = GndParams.getInstance.RMSH_cm;
                         
             % First check the user preferences
             if ~calc_specular_term
@@ -532,7 +595,7 @@ classdef ParamsManager
             end            
             
             % If passes user preferences, check the existence of files
-            outName = strcat(SimulationFolders.getInstance.out_specular, '\VSM_', num2str( GndParams.getInstance.VSM( ParamsManager.index_VSM ) ), '-RMSH_', num2str(GndParams.getInstance.RMSH( ParamsManager.index_RMSH )) );
+            outName = strcat(dir_out_specular, '\VSM_', num2str( VSM_cm3cm3( ParamsManager.index_VSM ) ), '-RMSH_', num2str(RMSH_cm( ParamsManager.index_RMSH )) );
             
             num_files = 0;
             
@@ -553,9 +616,17 @@ classdef ParamsManager
         
         function [result, dispMsg] = isToCalculateDiffuseTerm()
             
-            calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
+            % GET GLOBAL DIRECTORIES
+            dir_freqdiff_b1 = SimulationFolders.getInstance.freqdiff_b1;
             
+            %% GET GLOBAL PARAMETERS
+            % Simulation Settings
+            calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
+            % Simulation Parameters
             Nr = SimParams.getInstance.Nr;
+            % Ground Parameters
+            VSM_cm3cm3 = GndParams.getInstance.VSM_cm3cm3;
+            RMSH_cm = GndParams.getInstance.RMSH_cm;
                         
             % First check the user preferences
             if ~calc_diffuse_term
@@ -565,7 +636,7 @@ classdef ParamsManager
             end            
             
             % If passes user preferences, check the existence of files
-            outName = strcat(SimulationFolders.getInstance.freqdiff_b1, '\', 'VSM_', num2str( GndParams.getInstance.VSM( ParamsManager.index_VSM ) ), '-RMSH_', num2str(GndParams.getInstance.RMSH( ParamsManager.index_RMSH )));
+            outName = strcat(dir_freqdiff_b1, '\', 'VSM_', num2str( VSM_cm3cm3( ParamsManager.index_VSM ) ), '-RMSH_', num2str( RMSH_cm( ParamsManager.index_RMSH )));
             
             Nr_current = 0;
             
@@ -587,22 +658,25 @@ classdef ParamsManager
         
         function saveSimParams()
             
+            %% GET GLOBAL DIRECTORIES
+            dir_hr = SimulationFolders.getInstance.hr;
+            
             keySet = {ConstantNames.version, ...
                       ConstantNames.sim_Nfz, ...
-                      ConstantNames.gnd_sand, ...
-                      ConstantNames.gnd_clay, ...
-                      ConstantNames.gnd_rhoB, ...
-                      ConstantNames.sat_fMHz, ...
-                      ConstantNames.sat_rsatKm, ...
-                      ConstantNames.sat_EIRPdB};
+                      ConstantNames.gnd_sand_ratio, ...
+                      ConstantNames.gnd_clay_ratio, ...
+                      ConstantNames.gnd_rhob_gcm3, ...
+                      ConstantNames.sat_f_MHz, ...
+                      ConstantNames.sat_rsat_m, ...
+                      ConstantNames.sat_EIRP_dB};
                   
             valueSet = {SimParams.getInstance.version, ...
                         SimParams.getInstance.Nfz, ...
-                        GndParams.getInstance.sand, ...
-                        GndParams.getInstance.clay, ...
-                        GndParams.getInstance.rho_b, ...
-                        SatParams.getInstance.fMHz, ...
-                        SatParams.getInstance.rsat, ...
+                        GndParams.getInstance.sand_ratio, ...
+                        GndParams.getInstance.clay_ratio, ...
+                        GndParams.getInstance.rhob_gcm3, ...
+                        SatParams.getInstance.f_MHz, ...
+                        SatParams.getInstance.rsat_m, ...
                         SatParams.getInstance.EIRP_dB};
                     
             % Add vegetation parameters        
@@ -610,52 +684,52 @@ classdef ParamsManager
             
                 keySet{end+1} = ConstantNames.veg_hom_vegetationStage;
                 keySet{end+1} = ConstantNames.veg_hom_TYPES;
-                keySet{end+1} = ConstantNames.veg_hom_dimLayers;
+                keySet{end+1} = ConstantNames.veg_hom_dimLayers_m;
                 keySet{end+1} = ConstantNames.veg_hom_TYPKND;
                 keySet{end+1} = ConstantNames.veg_hom_scatCalVeg;
                 keySet{end+1} = ConstantNames.veg_hom_LTK;
                 keySet{end+1} = ConstantNames.veg_hom_dsty;
-                keySet{end+1} = ConstantNames.veg_hom_dim1;
-                keySet{end+1} = ConstantNames.veg_hom_dim2;
-                keySet{end+1} = ConstantNames.veg_hom_dim3;
+                keySet{end+1} = ConstantNames.veg_hom_dim1_m;
+                keySet{end+1} = ConstantNames.veg_hom_dim2_m;
+                keySet{end+1} = ConstantNames.veg_hom_dim3_m;
                 keySet{end+1} = ConstantNames.veg_hom_epsr;
-                keySet{end+1} = ConstantNames.veg_hom_parm1;
-                keySet{end+1} = ConstantNames.veg_hom_parm2;
+                keySet{end+1} = ConstantNames.veg_hom_parm1_deg;
+                keySet{end+1} = ConstantNames.veg_hom_parm2_deg;
                            
                 valueSet{end+1} = VegParams.getInstance.vegetation_stage;
                 valueSet{end+1} = VegParams.getInstance.TYPES;
-                valueSet{end+1} = VegParams.getInstance.dim_layers;
+                valueSet{end+1} = VegParams.getInstance.dim_layers_m;
                 valueSet{end+1} = VegParams.getInstance.TYPKND;
                 valueSet{end+1} = VegParams.getInstance.scat_cal_veg;
                 valueSet{end+1} = VegParams.getInstance.LTK;
                 valueSet{end+1} = VegParams.getInstance.dsty;
-                valueSet{end+1} = VegParams.getInstance.dim1;
-                valueSet{end+1} = VegParams.getInstance.dim2;
-                valueSet{end+1} = VegParams.getInstance.dim3;
+                valueSet{end+1} = VegParams.getInstance.dim1_m;
+                valueSet{end+1} = VegParams.getInstance.dim2_m;
+                valueSet{end+1} = VegParams.getInstance.dim3_m;
                 valueSet{end+1} = VegParams.getInstance.epsr;
-                valueSet{end+1} = VegParams.getInstance.parm1;
-                valueSet{end+1} = VegParams.getInstance.parm2;
+                valueSet{end+1} = VegParams.getInstance.parm1_deg;
+                valueSet{end+1} = VegParams.getInstance.parm2_deg;
             
             % For virtual vegetetation 
             else
                 keySet{end+1} = ConstantNames.veg_vir_row_plugin;
-                keySet{end+1} = ConstantNames.veg_vir_row_rowSpace;
-                keySet{end+1} = ConstantNames.veg_vir_row_colSpace;
-                keySet{end+1} = ConstantNames.veg_vir_row_phiRow;
-                keySet{end+1} = ConstantNames.veg_vir_row_plantRowSpread;
-                keySet{end+1} = ConstantNames.veg_vir_row_plantColSpread;
+                keySet{end+1} = ConstantNames.veg_vir_row_rowSpace_m;
+                keySet{end+1} = ConstantNames.veg_vir_row_colSpace_m;
+                keySet{end+1} = ConstantNames.veg_vir_row_phiRow_deg;
+                keySet{end+1} = ConstantNames.veg_vir_row_plantRowSpread_m;
+                keySet{end+1} = ConstantNames.veg_vir_row_plantColSpread_m;
                                
                 valueSet{end+1} = VegVirRowParams.getInstance.plugin;
-                valueSet{end+1} = VegVirRowParams.getInstance.row_space;
-                valueSet{end+1} = VegVirRowParams.getInstance.col_space;
-                valueSet{end+1} = VegVirRowParams.getInstance.phi_row;
-                valueSet{end+1} = VegVirRowParams.getInstance.plant_row_spread;
-                valueSet{end+1} = VegVirRowParams.getInstance.plant_col_spread;
+                valueSet{end+1} = VegVirRowParams.getInstance.row_space_m;
+                valueSet{end+1} = VegVirRowParams.getInstance.col_space_m;
+                valueSet{end+1} = VegVirRowParams.getInstance.phi_row_deg;
+                valueSet{end+1} = VegVirRowParams.getInstance.plant_row_spread_m;
+                valueSet{end+1} = VegVirRowParams.getInstance.plant_col_spread_m;
             end
                     
             input_params = containers.Map(keySet,valueSet);
 
-            save( strcat( SimulationFolders.getInstance.hr, '\', ConstantNames.input_params_filename), ConstantNames.input_params_var);
+            save( strcat( dir_hr, '\', ConstantNames.input_params_filename), ConstantNames.input_params_var);
             
         end
     end

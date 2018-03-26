@@ -6,7 +6,7 @@
 function directTerm
 
 % Get global parameters
-fMHz = SatParams.getInstance.fMHz
+f_MHz = SatParams.getInstance.f_MHz
 EIRP_dB = SatParams.getInstance.EIRP_dB;
 g_t = SatParams.getInstance.g_t;
 e_t1 = SatParams.getInstance.e_t1;
@@ -20,30 +20,30 @@ EIRP = convertDecibelToNatural( EIRP_dB );
 
 
 %%
-% pT: Transmitter, pS2: specular point, pR2: receiver, pG2: ground (reference), pBr2:boresight,
-% pCr2: center of footprint, pSc2: center of fresnel zone
-% AllPoints = [pT, pTI, pS2, pR, pRI, pG2, pBr2, pCr2, pSc2] ;
-filenamex = 'AllPoints' ;
-AllPoints = readVar(SimulationFolders.getInstance.config, filenamex) ;
+% pT_m: Transmitter, pS2_m: specular point, pR2: receiver, pG2_m: ground (reference), pBr2_m:boresight,
+% pCr2_m: center of footprint, pSc2_m: center of fresnel zone
+% AllPoints_m = [pT_m, pTI_m, pS2_m, pR_m, pRI_m, pG2_m, pBr2_m, pCr2_m, pSc2_m] ;
+filenamex = 'AllPoints_m' ;
+AllPoints_m = readVar(SimulationFolders.getInstance.config, filenamex) ;
 
-pT = AllPoints(:, 1) ;        % Transmitter
-pR = AllPoints(:, 4) ;         % Receiver
+pT_m = AllPoints_m(:, 1) ;        % Transmitter
+pR_m = AllPoints_m(:, 4) ;         % Receiver
 
 %% Slant range
 
-RT = pR - pT ;          % Satellite to Receiver
-rd = vectorMagnitude(RT) ;    % slant range
+RT_m = pR_m - pT_m ;          % Satellite to Receiver
+rd_m = vectorMagnitude(RT_m) ;    % slant range
 
-f0hz = fMHz * Constants.MHz2Hz ;
-lambda = Constants.c / f0hz ;     % Wavelength
-k0 = 2 * pi * f0hz / Constants.c ;    % Wave number
+f_Hz = f_MHz * Constants.MHz2Hz ;
+lambda_m = Constants.c / f_Hz ;     % Wavelength
+k0 = 2 * pi * f_Hz / Constants.c ;    % Wave number
 
 
 %% Factor Kd
 
-K = 1i * sqrt(EIRP) * sqrt(G0r) * lambda / (4 * pi) ;
+K_m = 1i * sqrt(EIRP) * sqrt(G0r) * lambda_m / (4 * pi) ;
 
-Kd = K * exp(1i * k0 * rd) / rd ;
+Kd = K_m * exp(1i * k0 * rd_m) / rd_m ;
 
 %% Receiver Antenna Pattern
 pathname = SimulationFolders.getInstance.ant_lookup ;

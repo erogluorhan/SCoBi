@@ -92,13 +92,16 @@ classdef SimulationFolders < handle
     methods
         
         function initializeStaticDirs(obj)
+            
+            
+            
             % Initialize static simulation directories
 
             obj.simulations = strcat( Directories.getInstance.main_dir, '\sims');
             
             obj.vegetation_method = strcat( obj.simulations, '\', SimParams.getInstance.vegetation_method );
             
-            hr_folder = strcat( '\hr_', num2str(RecParams.getInstance.hr) );
+            hr_folder = strcat( '\hr_', num2str(RecParams.getInstance.hr_m) );
             
             if strcmp( SimParams.getInstance.vegetation_method, Constants.veg_methods.HOMOGENOUS )
                 
@@ -131,6 +134,9 @@ classdef SimulationFolders < handle
             
             %% Receiver Height
             obj.hr = strcat( obj.sim_name, hr_folder) ;  
+            
+            %% Average Forward Scattering Amplitude
+            obj.afsa = strcat(obj.hr, '\', 'AFSA') ;
            
             %% Ground
             obj.gnd = strcat(obj.hr, '\', 'GND') ;
@@ -139,9 +145,9 @@ classdef SimulationFolders < handle
             obj.veg = strcat(obj.hr, '\', 'VEG') ;
             
             %% Simulation Mode
-            if SimSettings.getInstance.sim_mode == Constants.sim_mode.CROSS
+            if SimSettings.getInstance.sim_mode == Constants.sim_mode.SNAPSHOT
                 
-                obj.sim_mode = strcat( obj.hr, '\', ConstantNames.set_simMode_cross );
+                obj.sim_mode = strcat( obj.hr, '\', ConstantNames.set_simMode_snapshot );
             
             elseif SimSettings.getInstance.sim_mode == Constants.sim_mode.TIME_SERIES
                 
@@ -162,9 +168,6 @@ classdef SimulationFolders < handle
             th0d_folder = strcat('th0d_', num2str( th0_deg( ParamsManager.index_Th ) ), ...
                                  '-ph0d_', num2str( PH0_deg( ParamsManager.index_Ph ) ) ) ;
             obj.th0_deg = strcat(obj.sim_mode, '\', th0d_folder) ;
-            
-            %% Average Forward Scattering Amplitude
-            obj.afsa = strcat(obj.th0_deg, '\', 'AFSA') ;
             
             %% Bistatic Scattering Amplitudes
             obj.fscat = strcat(obj.th0_deg, '\', 'FSCAT') ;
@@ -241,6 +244,11 @@ classdef SimulationFolders < handle
                 mkdir(obj.hr);
             end
 
+            %% Average Forward Scattering Amplitude
+            if ~exist(obj.afsa, 'dir')
+                mkdir(obj.afsa)
+            end
+
             %% Ground
             if ~exist(obj.gnd, 'dir')
                 mkdir(obj.gnd)
@@ -268,11 +276,6 @@ classdef SimulationFolders < handle
             %% Angle of incidence
             if ~exist(obj.th0_deg, 'dir')
                 mkdir(obj.th0_deg)
-            end
-
-            %% Average Forward Scattering Amplitude
-            if ~exist(obj.afsa, 'dir')
-                mkdir(obj.afsa)
             end
 
             %% Bistatic Scattering Amplitudes

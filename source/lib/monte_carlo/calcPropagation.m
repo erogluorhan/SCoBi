@@ -2,38 +2,34 @@
 
 function calcPropagation
 
-f0hz = SatParams.getInstance.fMHz * 1e6 ;
+%% GET GLOBAL DIRECTORIES
+dir_afsa = SimulationFolders.getInstance.afsa;
 
-%% Reading Vegetation Input...
-dim_layers = VegParams.getInstance.dim_layers;
 
+%% GET GLOBAL PARAMETERS 
+% Satellite Parameters
+f_Hz = SatParams.getInstance.f_MHz * Constants.MHz2Hz ;
+% Vegetation Parameters
+dim_layers_m = VegParams.getInstance.dim_layers_m;
 TYPKND = VegParams.getInstance.TYPKND;
-
 dsty = VegParams.getInstance.dsty;
-
-dim1 = VegParams.getInstance.dim1;
-
-dim2 = VegParams.getInstance.dim2; 
-
-dim3 = VegParams.getInstance.dim3;
-
+dim1_m = VegParams.getInstance.dim1_m;
+dim2_m = VegParams.getInstance.dim2_m; 
+dim3_m = VegParams.getInstance.dim3_m;
 epsr = VegParams.getInstance.epsr;
+parm1_deg = VegParams.getInstance.parm1_deg;
+parm2_deg = VegParams.getInstance.parm2_deg;
 
-parm1 = VegParams.getInstance.parm1;
 
-parm2 = VegParams.getInstance.parm2;
-
-%% layer
+%% CALCULATIONS
+% Layer
 [Nlayer, Ntype] = size(TYPKND) ;
 NkindMax = max(max(TYPKND)) ;
 
-%% Angle
+% Angle
 ANGDEG = 0 : 89 ;
 % ANGDEG = 36 : 40 ;
 Na = length(ANGDEG) ;
-
-
-%% ++++++++++++++++++++++++++++++++++++++++++
 
 fXAmp = zeros(2, Na, NkindMax, Ntype, Nlayer) ;
 
@@ -47,26 +43,26 @@ for ii = 1 : Nlayer
             
             if jj == VegParams.getInstance.TYPES.L % Elliptic Disk (Leaf)
                 
-                A = dim1(kk, jj, ii) ;
-                B = dim2(kk, jj, ii) ;
-                T = dim3(kk, jj, ii) ;
+                A = dim1_m(kk, jj, ii) ;
+                B = dim2_m(kk, jj, ii) ;
+                T = dim3_m(kk, jj, ii) ;
                 EPS = epsr(kk, jj, ii);
-                TH1 = parm1(kk, jj, ii) ;
-                TH2 = parm2(kk, jj, ii) ;
-                PROB = [TH1, TH2] ;
+                TH1 = parm1_deg(kk, jj, ii) ;
+                TH2 = parm2_deg(kk, jj, ii) ;
+                PROB_deg = [TH1, TH2] ;
                 
-                Object = Object_mode1(PROB, A, B, T, EPS, 'L') ;
+                Object = Object_mode1(PROB_deg, A, B, T, EPS, 'L') ;
                 
             else  % Circular Cylinder, i.e., dim1=dim2
                 
-                RAD = dim1(kk, jj, ii) ;
-                LEN = dim3(kk, jj, ii) ;
+                RAD = dim1_m(kk, jj, ii) ;
+                LEN = dim3_m(kk, jj, ii) ;
                 EPS = epsr(kk, jj, ii);
-                TH1 = parm1(kk, jj, ii) ;
-                TH2 = parm2(kk, jj, ii) ;
-                PROB = [TH1, TH2] ;
+                TH1 = parm1_deg(kk, jj, ii) ;
+                TH2 = parm2_deg(kk, jj, ii) ;
+                PROB_deg = [TH1, TH2] ;
                 
-                Object = Object_mode1(PROB, RAD, RAD, LEN, EPS, 'B') ;
+                Object = Object_mode1(PROB_deg, RAD, RAD, LEN, EPS, 'B') ;
                 
             end % Cylinder or disk ?
                 
@@ -81,7 +77,7 @@ for ii = 1 : Nlayer
                 pho = 0 ;
                 % Average Forward Scattering Amplitude
                 fXAmp(:, aa, kk, jj, ii) ...
-                    = compute_avfscatamp(tho, pho, f0hz, Object) ;
+                    = compute_avfscatamp(tho, pho, f_Hz, Object) ;
             end
 
             toc ;
@@ -92,27 +88,22 @@ for ii = 1 : Nlayer
     
 end % Nlayer
 
-%%
-% save output
+
+%% SAVE
 filename = 'ANGDEG' ;
-writeVar(SimulationFolders.getInstance.afsa, filename, ANGDEG)
+writeVar(dir_afsa, filename, ANGDEG)
 
 filename = 'fXAmp' ;
-writeComplexVar(SimulationFolders.getInstance.afsa, filename, fXAmp)
+writeComplexVar(dir_afsa, filename, fXAmp)
 
 
-%% propagation
-
-% Average Forward Scattering Amplitudes
-filename = 'fXAmp' ;
-fXAmp = readComplexVar(SimulationFolders.getInstance.afsa, filename) ;
-
+%% PROPAGATION AND ATTENUATION
 % Incremental Propagation Constant
 dddKz = zeros(2, Na, NkindMax, Ntype, Nlayer) ;
 ddKz = zeros(2, Na, Ntype, Nlayer) ;
 dKz = zeros(2, Na, Nlayer) ;
 
-% Atnneuation
+% Attenuation
 ATPIQS = zeros(2, Na, NkindMax, Ntype, Nlayer) ;
 ATTPIQS = zeros(2, Na, Ntype, Nlayer) ;
 ATTENPIQS = zeros(2, Na, Nlayer) ;
@@ -120,14 +111,13 @@ ATTENH = zeros(Na, 1) ;
 ATTENV = zeros(Na, 1) ;
 
 % Propagation Constants
-
 for aa = 1 : Na
     
     tho = ANGDEG(aa) * Constants.deg2rad ;
     
     for ii = 1 : Nlayer
         
-        Di = dim_layers(ii, 1) ;
+        Di = dim_layers_m(ii, 1) ;
         
         for jj = 1 : Ntype
             
@@ -138,7 +128,7 @@ for aa = 1 : Na
                 RHO = dsty(kk, jj, ii) ;
                 fXAmp0 = fXAmp(:, aa, kk, jj, ii) ;
                
-                [~, dddKz0] = compute_dKzn(tho, f0hz, RHO, fXAmp0) ;
+                [~, dddKz0] = compute_dKzn(tho, f_Hz, RHO, fXAmp0) ;
                 
                 dddKz(:, aa, kk, jj, ii) = dddKz0 ;
                 % +++++++++++++++++++++
@@ -180,22 +170,21 @@ for aa = 1 : Na
 end
 
 
-%% Saving
-pathname = SimulationFolders.getInstance.afsa;
+%% SAVE ALL
+% Attenuation
 filename = 'ATPIQS' ;
-writeVar(pathname, filename, ATPIQS) ;
+writeVar(dir_afsa, filename, ATPIQS) ;
 filename = 'ATTPIQS' ;
-writeVar(pathname, filename, ATTPIQS) ;
+writeVar(dir_afsa, filename, ATTPIQS) ;
 filename = 'ATTENPIQS' ;
-writeVar(pathname, filename, ATTENPIQS) ;
+writeVar(dir_afsa, filename, ATTENPIQS) ;
 filename = 'ATTENH' ;
-writeVar(pathname, filename, ATTENH) ;
+writeVar(dir_afsa, filename, ATTENH) ;
 filename = 'ATTENV' ;
-writeVar(pathname, filename, ATTENV) ;
-
+writeVar(dir_afsa, filename, ATTENV) ;
+% Propagation Constant
 filename = 'dKz' ;
-writeComplexVar(pathname, filename, dKz) ;
-
+writeComplexVar(dir_afsa, filename, dKz) ;
 
 
 end
@@ -204,10 +193,10 @@ end
 %
 % ----------------- compute_dKzn ------------------
 %
-function [kz, dKz] = compute_dKzn(tin, fhz, rho, fXAmp)
+function [kz, dKz] = compute_dKzn(tin, f_Hz, rho, fXAmp)
 % COMPUTE_DKZN Calculates the contribution of each scatterer type to the attenuation
 
-ko = 2 * pi * fhz / 3e+08;
+ko = 2 * pi * f_Hz / 3e+08;
 kz = ko * cos(tin);
 cfac = 2 * pi / kz;
 
@@ -222,7 +211,7 @@ end
 %% compute_avfscatamp
 % compute average forward scattering amplitudes
 
-function avFScatAmp = compute_avfscatamp(tin, pin, fhz, Object)
+function avFScatAmp = compute_avfscatamp(tin, pin, f_Hz, Object)
 
 switch lower(Object.category)
     case 'cylinder'
@@ -253,7 +242,7 @@ for m = 1 : nth % loop over ts
     for n = 1 : nph % loop over ps
         
         avFScatAmp(m, n, :) = compute_PhTh_average(pdffun, @compute_fscatamp, Object.theta1, ...
-            Object.theta2, scatFunc, tin(m), pin(n), fhz, Object) ;
+            Object.theta2, scatFunc, tin(m), pin(n), f_Hz, Object) ;
     end
     %         waitbar(m / nth, hwaitbar)
 end
@@ -268,13 +257,13 @@ end
 %% compute_fscatamp
 %
 
-function fScatAmp = compute_fscatamp(th, ph, scatFun, tin, pin, fhz, Object)
+function fScatAmp = compute_fscatamp(th, ph, scatFun, tin, pin, f_Hz, Object)
 
 ts = pi - tin ;
 ps = pi + pin ;
 
 cobject = struct2cell(Object) ;
-fScatAmp = feval(scatFun, tin, pin, ts, ps, th, ph, fhz, cobject{5 : end}) ;
+fScatAmp = feval(scatFun, tin, pin, ts, ps, th, ph, f_Hz, cobject{5 : end}) ;
 fScatAmp = fScatAmp(:) ; % transform to vector from 2X2 matrix
 
 end
@@ -486,13 +475,13 @@ end
 %% initialize_mode1
 % initialize parameters for mode 1
 
-function Object = Object_mode1(prob, dim1, dim2, dim3, eps_r, filename)
+function Object = Object_mode1(prob_deg, dim1_m, dim2_m, dim3_m, eps_r, filename)
 
-THETA1D = prob(1, 1) ;
-THETA2D = prob(1, 2) ;
+theta1_deg = prob_deg(1, 1) ;
+theta2_deg = prob_deg(1, 2) ;
 
-theta1 = THETA1D * Constants.deg2rad ;
-theta2 = THETA2D * Constants.deg2rad ;
+theta1_rad = theta1_deg * Constants.deg2rad ;
+theta2_rad = theta2_deg * Constants.deg2rad ;
 
 EPSILON = eps_r ;
 var1 = EPSILON ;
@@ -512,8 +501,8 @@ switch lower(OBJECT_CATEGORY)
     
     case 'cylinder'
         
-        RADIUS = dim1 ;
-        LENGTH = dim3 ;
+        RADIUS = dim1_m ;
+        LENGTH = dim3_m ;
         
         var2 = RADIUS ; % meters
         var3 = LENGTH ; % meters
@@ -524,9 +513,9 @@ switch lower(OBJECT_CATEGORY)
         
     case 'edisc'
         
-        SEMI_MAJORX = dim1 ;
-        SEMI_MINORX = dim2 ;
-        THICKNESS = dim3 ;
+        SEMI_MAJORX = dim1_m ;
+        SEMI_MINORX = dim2_m ;
+        THICKNESS = dim3_m ;
         
         var2 = THICKNESS ; % meters
         var3 = SEMI_MAJORX ; % meters
@@ -548,6 +537,6 @@ clear var*
 
 % generate the object
 Object = struct('category', OBJECT_CATEGORY, field2{:}, ...
-    'theta1', theta1, 'theta2', theta2, extrafields{:}) ;
+    'theta1', theta1_rad, 'theta2', theta2_rad, extrafields{:}) ;
 
 end

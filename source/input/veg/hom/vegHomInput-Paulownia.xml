@@ -1,6 +1,6 @@
 <VEGETATION_HOMOGENOUS_INPUT>
 
-<!--  dim_layers - Dimension of the vegetation layers -->  
+<!--  dim_layers_m - Dimension of the vegetation layers (m) -->  
 <!--  TYPKND - Matrix for the occurence of Types and Kinds per layers -->  
 <!--   -->  
 <!--   --> 
@@ -9,14 +9,14 @@
 
 <vegetation_stage>youth</vegetation_stage> 
 
-<dim_layers>
+<dim_layers_m>
     <rows>4</rows>
     <cols>1</cols>
     <val>2</val>
     <val>4</val>
     <val>3</val>
     <val>4</val>
-</dim_layers> 
+</dim_layers_m> 
 
 <types>
     <leaf>
@@ -24,13 +24,13 @@
             <kind>
                 <id>L1</id> 
                 <is_scatterer>0</is_scatterer>
-                <density>11.12e-2</density>  <!--  Originally there is no e-2 coeff -->  
-                <dim1>10.2e-2</dim1>
-                <dim2>10.2e-2</dim2>
-                <dim3>0.012e-2</dim3>
+                <density>11.12e-2</density>  <!--  Originally there was no e-2 coeff -->  
+                <dim1_m>10.2e-2</dim1_m>
+                <dim2_m>10.2e-2</dim2_m>
+                <dim3_m>0.012e-2</dim3_m>
                 <epsr>35.2+5.3i</epsr>
-                <prob1>5</prob1>
-                <prob2>85</prob2>
+                <prob1_deg>5</prob1_deg>
+                <prob2_deg>85</prob2_deg>
             </kind>
         </kinds>
     </leaf>
@@ -40,45 +40,45 @@
                 <id>B1</id>
                 <is_scatterer>1</is_scatterer>
                 <density>0.016</density>
-                <dim1>4.3e-2</dim1>
-                <dim2>4.3e-2</dim2>
-                <dim3>187e-2</dim3>
+                <dim1_m>4.3e-2</dim1_m>
+                <dim2_m>4.3e-2</dim2_m>
+                <dim3_m>187e-2</dim3_m>
                 <epsr>12.0+2.93i</epsr>
-                <prob1>20</prob1>
-                <prob2>50</prob2>
+                <prob1_deg>20</prob1_deg>
+                <prob2_deg>50</prob2_deg>
             </kind>
             <kind>
                 <id>B2</id>
                 <is_scatterer>1</is_scatterer>
                 <density>0.188</density>
-                <dim1>1.58e-2</dim1>
-                <dim2>1.58e-2</dim2>
-                <dim3>153.79e-2</dim3>
+                <dim1_m>1.58e-2</dim1_m>
+                <dim2_m>1.58e-2</dim2_m>
+                <dim3_m>153.79e-2</dim3_m>
                 <epsr>12.0+2.93i</epsr>
-                <prob1>10</prob1>
-                <prob2>60</prob2>
+                <prob1_deg>10</prob1_deg>
+                <prob2_deg>60</prob2_deg>
             </kind>
             <kind>
                 <id>B3</id>
                 <is_scatterer>0</is_scatterer>
                 <density>0.734e-1</density>   <!--  Originally there is no e-1 coeff --> 
-                <dim1>0.98e-2</dim1>
-                <dim2>0.98e-2</dim2>
-                <dim3>63.6e-2</dim3>
+                <dim1_m>0.98e-2</dim1_m>
+                <dim2_m>0.98e-2</dim2_m>
+                <dim3_m>63.6e-2</dim3_m>
                 <epsr>12.0+2.93i</epsr>
-                <prob1>5</prob1>
-                <prob2>85</prob2>
+                <prob1_deg>5</prob1_deg>
+                <prob2_deg>85</prob2_deg>
             </kind>
             <kind>
                 <id>B4</id>
                 <is_scatterer>0</is_scatterer>
                 <density>1.933e-2</density>     <!--  Originally there is no e-2 coeff --> 
-                <dim1>0.45e-2</dim1>
-                <dim2>0.45e-2</dim2>
-                <dim3>48.1e-2</dim3>
+                <dim1_m>0.45e-2</dim1_m>
+                <dim2_m>0.45e-2</dim2_m>
+                <dim3_m>48.1e-2</dim3_m>
                 <epsr>12.0+2.93i</epsr>
-                <prob1>5</prob1>
-                <prob2>85</prob2>
+                <prob1_deg>5</prob1_deg>
+                <prob2_deg>85</prob2_deg>
             </kind>
         </kinds>
     </branch>
@@ -88,12 +88,12 @@
                 <id>T1</id>
                 <is_scatterer>1</is_scatterer>
                 <density>0.005</density>
-                <dim1>8.73e-2</dim1>
-                <dim2>8.73e-2</dim2>
-                <dim3>617e-2</dim3>
+                <dim1_m>8.73e-2</dim1_m>
+                <dim2_m>8.73e-2</dim2_m>
+                <dim3_m>617e-2</dim3_m>
                 <epsr>15.6+3.8i</epsr>
-                <prob1>0</prob1>
-                <prob2>0.1</prob2>
+                <prob1_deg>0</prob1_deg>
+                <prob2_deg>0.1</prob2_deg>
             </kind>
         </kinds>
     </trunk>

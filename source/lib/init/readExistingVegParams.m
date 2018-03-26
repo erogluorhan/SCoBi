@@ -2,36 +2,37 @@ function readExistingVegParams
 
 % TO-DO: Test the running cases of this function
 
-pathname = SimulationFolders.getInstance.veg;
+%% GET GLOBAL DIRECTORIES
+dir_veg = SimulationFolders.getInstance.veg;
 
 
-dim_layers = readVar(pathname, 'dim_layers') ;
+dim_layers_m = readVar(dir_veg, ConstantNames.veg_hom_dimLayers_m) ;
 
-scat_cal_veg = readVar(pathname, 'scat_cal_veg') ;
+scat_cal_veg = readVar(dir_veg, ConstantNames.veg_hom_scatCalVeg) ;
 
-TYPKND = readVar(pathname, 'TYPKND') ;
+TYPKND = readVar(dir_veg, ConstantNames.veg_hom_TYPKND) ;
 
-dsty = readVar(pathname, 'dsty') ;
+dsty = readVar(dir_veg, ConstantNames.veg_hom_dsty) ;
 
-dim1 = readVar(pathname, 'dim1') ;
+dim1_m = readVar(dir_veg, ConstantNames.veg_hom_dim1_m) ;
 
-dim2 = readVar(pathname, 'dim2') ;
+dim2_m = readVar(dir_veg, ConstantNames.veg_hom_dim2_m) ;
 
-dim3 = readVar(pathname, 'dim3') ;
+dim3_m = readVar(dir_veg, ConstantNames.veg_hom_dim3_m) ;
 
-epsr = readComplexVar(pathname, 'epsr') ;
+epsr = readComplexVar(dir_veg, ConstantNames.veg_hom_epsr) ;
 
-parm1 = readVar(pathname, 'parm1') ;
+parm1_deg = readVar(dir_veg, ConstantNames.veg_hom_parm1_deg) ;
 
-parm2 = readVar(pathname, 'parm2') ;
+parm2_deg = readVar(dir_veg, ConstantNames.veg_hom_parm2_deg) ;
 
-if ( ~isnan( sum(dim_layers) ) && ~isnan( sum(sum(sum(scat_cal_veg))) ) && ...
+if ( ~isnan( sum(dim_layers_m) ) && ~isnan( sum(sum(sum(scat_cal_veg))) ) && ...
      ~isnan( sum(sum(TYPKND)) ) && ~isnan( sum(sum(sum(dsty))) ) && ...
-     ~isnan( sum(sum(sum(dim1))) ) && ~isnan( sum(sum(sum(dim2))) ) && ~isnan( sum(sum(sum(dim3))) ) && ...
-     ~isnan( sum(sum(sum(epsr))) ) && ~isnan( sum(sum(sum(parm1))) ) && ~isnan( sum(sum(sum(parm2))) ) )
+     ~isnan( sum(sum(sum(dim1_m))) ) && ~isnan( sum(sum(sum(dim2_m))) ) && ~isnan( sum(sum(sum(dim3_m))) ) && ...
+     ~isnan( sum(sum(sum(epsr))) ) && ~isnan( sum(sum(sum(parm1_deg))) ) && ~isnan( sum(sum(sum(parm2_deg))) ) )
 
-    VegParams.getInstance.initialize2( dim_layers, scat_cal_veg, TYPKND, ...
-        dsty, dim1, dim2, dim3, epsr, parm1, parm2)
+    VegParams.getInstance.initialize2( dim_layers_m, scat_cal_veg, TYPKND, ...
+        dsty, dim1_m, dim2_m, dim3_m, epsr, parm1_deg, parm2_deg)
 
 
 else

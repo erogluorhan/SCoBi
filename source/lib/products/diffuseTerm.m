@@ -3,52 +3,48 @@
 % modified - 11/09/2017
 
 % Diffuse (Incoherent) Term
-function diffuseTerm(Nr)
+function diffuseTerm(ind_realization)
 
 % Get global parameters
 Nfz = SimParams.getInstance.Nfz;
-fMHz = SatParams.getInstance.fMHz;
+f_MHz = SatParams.getInstance.f_MHz;
 EIRP = convertDecibelToNatural( SatParams.getInstance.EIRP_dB );
 G0r = convertDecibelToNatural( RecParams.getInstance.G0r_dB );
-VSM = GndParams.getInstance.VSM( ParamsManager.index_VSM );
-RMSH = GndParams.getInstance.RMSH( ParamsManager.index_RMSH );
+VSM_cm3cm3 = GndParams.getInstance.VSM_cm3cm3( ParamsManager.index_VSM );
+RMSH_cm = GndParams.getInstance.RMSH_cm( ParamsManager.index_RMSH );
 scat_cal_veg = VegParams.getInstance.scat_cal_veg ;
 TYPKND = VegParams.getInstance.TYPKND;
-d = sum( VegParams.getInstance.dim_layers ) ;           % thickness of layer in meter
-
- 
-%% Local
-% Nr : Nth Realization (different than global Nr)
+dim_layers_m = sum( VegParams.getInstance.dim_layers_m ) ;           % thickness of layer in meter
 
 
 %% Shifting coordinate system to the top of the vegetation
-d_layer = [0; 0; d] ;
+d_layer_m = [0; 0; dim_layers_m] ;
 
 %% Positions relative to ground
-% pT: Transmitter, pS2: specular point, pR2: receiver, pG2: ground (reference), pBr2:boresight,
-% pCr2: center of footprint, pSc2: center of fresnel zone
-% AllPoints = [pT, pTI, pS2, pR, pRI, pG2, pBr2, pCr2, pSc2] ;
-filenamex = 'AllPoints' ;
-AllPoints = readVar(SimulationFolders.getInstance.config, filenamex) ;
+% pT_m: Transmitter, pS2_m: specular point, pR2: receiver, pG2_m: ground (reference), pBr2_m:boresight,
+% pCr2_m: center of footprint, pSc2_m: center of fresnel zone
+% AllPoints_m = [pT_m, pTI_m, pS2_m, pR_m, pRI_m, pG2_m, pBr2_m, pCr2_m, pSc2_m] ;
+filenamex = 'AllPoints_m' ;
+AllPoints_m = readVar(SimulationFolders.getInstance.config, filenamex) ;
 
-pT = AllPoints(:, 1) ; % - d_layer ;        % Transmitter with respect to veg top
-pS2 = AllPoints(:, 3) ;       % Specular point  (at top of vegetation)
-pR = AllPoints(:, 4) ; % - d_layer ;        % Receiver with respect to veg top
+pT_m = AllPoints_m(:, 1) ; % - d_layer_m ;        % Transmitter with respect to veg top
+pS2_m = AllPoints_m(:, 3) ;       % Specular point  (at top of vegetation)
+pR_m = AllPoints_m(:, 4) ; % - d_layer_m ;        % Receiver with respect to veg top
 
 %% Slant Range - relative to ground
-ST = pS2 - pT ;         % Transmitter to Specular
+ST = pS2_m - pT_m ;         % Transmitter to Specular
 r_st = vectorMagnitude(ST) ;  % slant range
 
-RS = pR - pS2 ;         % Specular to Receiver
+RS = pR_m - pS2_m ;         % Specular to Receiver
 r_sr = vectorMagnitude(RS) ;  % slant range
 
-f0hz = fMHz * Constants.MHz2Hz ;
-lambda = Constants.c / f0hz ;     % Wavelength
-k0 = 2 * pi * f0hz / Constants.c ;    % Wave number
+f_Hz = f_MHz * Constants.MHz2Hz ;
+lambda_m = Constants.c / f_Hz ;     % Wavelength
+k0 = 2 * pi * f_Hz / Constants.c ;    % Wave number
 
 
 %% Factor Ki
-K = 1i * sqrt(EIRP) * sqrt(G0r) * lambda / (4 * pi) ;
+K = 1i * sqrt(EIRP) * sqrt(G0r) * lambda_m / (4 * pi) ;
 
 Ki = K * exp(1i * k0 * (r_st + r_sr)) / (r_st * r_sr) ; 
 
@@ -156,7 +152,7 @@ for ii = 1 : Nlayer
                 
                 % +++++++++++++++++++++++++
                 disp('reading...')
-                filename = strcat('R', num2str(Nr), '_L', num2str(ii), '_T',...
+                filename = strcat('R', num2str(ind_realization), '_L', num2str(ii), '_T',...
                     num2str(jj), '_K', num2str(kk)) ;
                 disp(filename)                
                 
@@ -275,164 +271,164 @@ writeComplexVar(SimulationFolders.getInstance.freqdiff, filename3, Ki)
 
 % ====================================================
 % b1
-pathname = strcat(SimulationFolders.getInstance.freqdiff_b1, '\VSM_', num2str( VSM ), '-RMSH_', num2str(RMSH)) ;
-filename1 = strcat('b1_inc1_t1', '_R', num2str(Nr)) ;
+pathname = strcat(SimulationFolders.getInstance.freqdiff_b1, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
+filename1 = strcat('b1_inc1_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b1_inc1_t1))
-filename1 = strcat('b1_inc2_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('b1_inc2_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b1_inc2_t1))
-filename1 = strcat('b1_inc3_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('b1_inc3_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b1_inc3_t1))
-filename1 = strcat('b1_inc4_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('b1_inc4_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b1_inc4_t1))
 
-filename1 = strcat('b1_inc1_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('b1_inc1_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b1_inc1_t2))
-filename1 = strcat('b1_inc2_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('b1_inc2_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b1_inc2_t2))
-filename1 = strcat('b1_inc3_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('b1_inc3_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b1_inc3_t2))
-filename1 = strcat('b1_inc4_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('b1_inc4_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b1_inc4_t2))
 
 % b2
-pathname = strcat(SimulationFolders.getInstance.freqdiff_b2, '\VSM_', num2str( VSM ), '-RMSH_', num2str(RMSH)) ;
-filename1 = strcat('b2_inc1_t1', '_R', num2str(Nr)) ;
+pathname = strcat(SimulationFolders.getInstance.freqdiff_b2, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
+filename1 = strcat('b2_inc1_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b2_inc1_t1))
-filename1 = strcat('b2_inc2_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('b2_inc2_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b2_inc2_t1))
-filename1 = strcat('b2_inc3_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('b2_inc3_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b2_inc3_t1))
-filename1 = strcat('b2_inc4_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('b2_inc4_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b2_inc4_t1))
 
-filename1 = strcat('b2_inc1_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('b2_inc1_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b2_inc1_t2))
-filename1 = strcat('b2_inc2_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('b2_inc2_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b2_inc2_t2))
-filename1 = strcat('b2_inc3_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('b2_inc3_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b2_inc3_t2))
-filename1 = strcat('b2_inc4_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('b2_inc4_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b2_inc4_t2))
 
 % b3
-pathname = strcat(SimulationFolders.getInstance.freqdiff_b3, '\VSM_', num2str( VSM ), '-RMSH_', num2str(RMSH)) ;
-filename1 = strcat('b3_inc1_t1', '_R', num2str(Nr)) ;
+pathname = strcat(SimulationFolders.getInstance.freqdiff_b3, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
+filename1 = strcat('b3_inc1_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b3_inc1_t1))
-filename1 = strcat('b3_inc2_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('b3_inc2_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b3_inc2_t1))
-filename1 = strcat('b3_inc3_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('b3_inc3_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b3_inc3_t1))
-filename1 = strcat('b3_inc4_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('b3_inc4_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b3_inc4_t1))
 
-filename1 = strcat('b3_inc1_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('b3_inc1_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b3_inc1_t2))
-filename1 = strcat('b3_inc2_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('b3_inc2_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b3_inc2_t2))
-filename1 = strcat('b3_inc3_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('b3_inc3_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b3_inc3_t2))
-filename1 = strcat('b3_inc4_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('b3_inc4_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b3_inc4_t2))
 
 % b4
-pathname = strcat(SimulationFolders.getInstance.freqdiff_b4, '\VSM_', num2str( VSM ), '-RMSH_', num2str(RMSH)) ;
-filename1 = strcat('b4_inc1_t1', '_R', num2str(Nr)) ;
+pathname = strcat(SimulationFolders.getInstance.freqdiff_b4, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
+filename1 = strcat('b4_inc1_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b4_inc1_t1))
-filename1 = strcat('b4_inc2_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('b4_inc2_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b4_inc2_t1))
-filename1 = strcat('b4_inc3_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('b4_inc3_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b4_inc3_t1))
-filename1 = strcat('b4_inc4_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('b4_inc4_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b4_inc4_t1))
 
-filename1 = strcat('b4_inc1_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('b4_inc1_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b4_inc1_t2))
-filename1 = strcat('b4_inc2_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('b4_inc2_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b4_inc2_t2))
-filename1 = strcat('b4_inc3_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('b4_inc3_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b4_inc3_t2))
-filename1 = strcat('b4_inc4_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('b4_inc4_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b4_inc4_t2))
 % =====================================================
 
 % P1
-pathname = strcat(SimulationFolders.getInstance.freqdiff_P1, '\VSM_', num2str( VSM ), '-RMSH_', num2str(RMSH)) ;
-filename1 = strcat('P1_inc1_t1', '_R', num2str(Nr)) ;
+pathname = strcat(SimulationFolders.getInstance.freqdiff_P1, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
+filename1 = strcat('P1_inc1_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P1_inc1_t1))
-filename1 = strcat('P1_inc2_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('P1_inc2_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P1_inc2_t1))
-filename1 = strcat('P1_inc3_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('P1_inc3_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P1_inc3_t1))
-filename1 = strcat('P1_inc4_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('P1_inc4_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P1_inc4_t1))
 
-filename1 = strcat('P1_inc1_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('P1_inc1_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P1_inc1_t2))
-filename1 = strcat('P1_inc2_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('P1_inc2_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P1_inc2_t2))
-filename1 = strcat('P1_inc3_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('P1_inc3_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P1_inc3_t2))
-filename1 = strcat('P1_inc4_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('P1_inc4_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P1_inc4_t2))
 
 % P2
-pathname = strcat(SimulationFolders.getInstance.freqdiff_P2, '\VSM_', num2str( VSM ), '-RMSH_', num2str(RMSH)) ;
-filename1 = strcat('P2_inc1_t1', '_R', num2str(Nr)) ;
+pathname = strcat(SimulationFolders.getInstance.freqdiff_P2, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
+filename1 = strcat('P2_inc1_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P2_inc1_t1))
-filename1 = strcat('P2_inc2_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('P2_inc2_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P2_inc2_t1))
-filename1 = strcat('P2_inc3_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('P2_inc3_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P2_inc3_t1))
-filename1 = strcat('P2_inc4_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('P2_inc4_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P2_inc4_t1))
 
-filename1 = strcat('P2_inc1_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('P2_inc1_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P2_inc1_t2))
-filename1 = strcat('P2_inc2_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('P2_inc2_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P2_inc2_t2))
-filename1 = strcat('P2_inc3_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('P2_inc3_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P2_inc3_t2))
-filename1 = strcat('P2_inc4_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('P2_inc4_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P2_inc4_t2))
 
 % P3
-pathname = strcat(SimulationFolders.getInstance.freqdiff_P3, '\VSM_', num2str( VSM ), '-RMSH_', num2str(RMSH)) ;
-filename1 = strcat('P3_inc1_t1', '_R', num2str(Nr)) ;
+pathname = strcat(SimulationFolders.getInstance.freqdiff_P3, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
+filename1 = strcat('P3_inc1_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P3_inc1_t1))
-filename1 = strcat('P3_inc2_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('P3_inc2_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P3_inc2_t1))
-filename1 = strcat('P3_inc3_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('P3_inc3_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P3_inc3_t1))
-filename1 = strcat('P3_inc4_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('P3_inc4_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P3_inc4_t1))
 
-filename1 = strcat('P3_inc1_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('P3_inc1_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P3_inc1_t2))
-filename1 = strcat('P3_inc2_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('P3_inc2_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P3_inc2_t2))
-filename1 = strcat('P3_inc3_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('P3_inc3_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P3_inc3_t2))
-filename1 = strcat('P3_inc4_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('P3_inc4_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P3_inc4_t2))
 
 % P4
-pathname = strcat(SimulationFolders.getInstance.freqdiff_P4, '\VSM_', num2str( VSM ), '-RMSH_', num2str(RMSH)) ;
-filename1 = strcat('P4_inc1_t1', '_R', num2str(Nr)) ;
+pathname = strcat(SimulationFolders.getInstance.freqdiff_P4, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
+filename1 = strcat('P4_inc1_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P4_inc1_t1))
-filename1 = strcat('P4_inc2_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('P4_inc2_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P4_inc2_t1))
-filename1 = strcat('P4_inc3_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('P4_inc3_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P4_inc3_t1))
-filename1 = strcat('P4_inc4_t1', '_R', num2str(Nr)) ;
+filename1 = strcat('P4_inc4_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P4_inc4_t1))
 
-filename1 = strcat('P4_inc1_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('P4_inc1_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P4_inc1_t2))
-filename1 = strcat('P4_inc2_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('P4_inc2_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P4_inc2_t2))
-filename1 = strcat('P4_inc3_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('P4_inc3_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P4_inc3_t2))
-filename1 = strcat('P4_inc4_t2', '_R', num2str(Nr)) ;
+filename1 = strcat('P4_inc4_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P4_inc4_t2))
 
 
@@ -445,10 +441,10 @@ function [b_dd_t1, b_rd_t1, b_dr_t1, b_rr_t1,...
     P_dd_t2, P_rd_t2, P_dr_t2, P_rr_t2] = ScatMech(layerIndex, filename, r_st, r_sr)
 
 
-fMHz = SatParams.getInstance.fMHz
+f_MHz = SatParams.getInstance.f_MHz
 Nfz = SimParams.getInstance.Nfz;
 
-dim_layers = VegParams.getInstance.dim_layers;
+dim_layers_m = VegParams.getInstance.dim_layers_m;
 
 %% Ground Parameters
 disp('Reading ground parameters...')
@@ -565,8 +561,8 @@ riI = readVar(pathname, filenamex) ;
 % title('rr : r_o_I + r_i_I')
 
 %% Wave Number
-f = fMHz * Constants.MHz2Hz;  % Frequency points (Hz)
-k0 = 2 * pi * f / Constants.c ;    % Wave number
+f_Hz = f_MHz * Constants.MHz2Hz;  % Frequency points (Hz)
+k0 = 2 * pi * f_Hz / Constants.c ;    % Wave number
 
 %% Scattering Matrix Calculations
 disp(strcat('Number of Scatters:', num2str(Npart)))
@@ -642,7 +638,7 @@ for fz = 1 : Nfz    % Fresnel Zones
         
         zp = pP(pp, 3) ;
         
-        [tp_i, tp_iI, tp_o, tp_oI] = CalcTransMat(layerIndex, zp, dim_layers, dKz_i, dKz_iI, dKz_o, dKz_oI) ;
+        [tp_i, tp_iI, tp_o, tp_oI] = CalcTransMat(layerIndex, zp, dim_layers_m, dKz_i, dKz_iI, dKz_o, dKz_oI) ;
 
 %         tp_i = [1 0; 0 1] ;
 %         tp_iI = [1 0; 0 1] ;

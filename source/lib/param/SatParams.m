@@ -9,10 +9,10 @@ classdef SatParams < handle
     properties (SetAccess = private, GetAccess = public)
         
         % Operating frequency (MHz)
-        fMHz 
+        f_MHz 
         
         % Satellite radius from Earth's center (m)
-        rsat 
+        rsat_m 
         
         % Incidence angle - measured between ground zenith and the 
         % ground-satellite direction (degrees) 
@@ -27,7 +27,7 @@ classdef SatParams < handle
         % Staellite comm. and different from standard spherical azimuth 
         % direction that is measured from local East in the 
         % counter-clockwise direction.
-        PH0_deg 
+        PH0_deg
         
         % Pt * G0t - Equivalent Isotropic Radiated Power
         EIRP_dB 
@@ -73,11 +73,11 @@ classdef SatParams < handle
     
     methods
         
-        function initialize(obj, fMHz, rsat, th0_deg, PH0_deg, EIRP_dB, polT )
+        function initialize(obj, f_MHz, rsat_m, th0_deg, PH0_deg, EIRP_dB, polT )
             % INITIALIZE - Initializes all the properties
             
-            obj.fMHz = fMHz;
-            obj.rsat = rsat;
+            obj.f_MHz = f_MHz;
+            obj.rsat_m = rsat_m;
             obj.th0_deg = th0_deg;
             obj.EL0_deg = 90 - th0_deg;
             obj.PH0_deg = PH0_deg;
@@ -85,12 +85,12 @@ classdef SatParams < handle
             obj.polT = polT;
         end
         
-        function out = get.fMHz(obj)
-            out = obj.fMHz;        
+        function out = get.f_MHz(obj)
+            out = obj.f_MHz;        
         end
         
-        function out = get.rsat(obj)
-            out = obj.rsat;
+        function out = get.rsat_m(obj)
+            out = obj.rsat_m;
         end
         
         function out = get.th0_deg(obj)
