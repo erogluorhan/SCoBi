@@ -1,9 +1,9 @@
 <SYS_INPUT>
     <SIM_SETTINGS>
 
-        <!--  sim_mode - 0: Cross Simulation between Incidence Angle, VSM, and RMSH values,  1: Time-series -->  
+        <!--  sim_mode - 0: Snapshot between Incidence Angle, VSM, and RMSH values,  1: Time-series -->  
         <!--  ground_cover - 0: Bare Soil, 1: Vegetation, 2: Bare + Vegetation -->  
-        <!--  calc_meta_data - 0/1 for whether to calculate Metadata or directly calculate outputs --> 
+        <!--  write_attenuation - 0/1 for whether to write Attenuation to Excel file --> 
         <!--  calc_direct_term - 0/1 for whether to calculate Direct Term -->  
         <!--  calc_specular_term - 0/1 for whether to calculate Specular Term  --> 
         <!--  calc_diffuse_term - 0/1 for whether to calculate Diffuse Term --> 
@@ -12,7 +12,7 @@
         <sim_mode>1</sim_mode>
         <ground_cover>1</ground_cover>
 
-        <calc_meta_data>1</calc_meta_data>
+        <write_attenuation>1</write_attenuation>
         <calc_direct_term>1</calc_direct_term>
         <calc_specular_term>1</calc_specular_term>
         <calc_diffuse_term>1</calc_diffuse_term>
@@ -46,7 +46,7 @@
     
     
     <SAT_INPUT>    
-        <!--  fMHz - Operating frequency (MHz) -->  
+        <!--  f_MHz - Operating frequency (MHz) -->  
         <!--  rsat_km - Satellite radius from Earth's center (km) -->
         <!--  th0_deg - Incidence angle - measured between ground zenith and the ground-satellite direction (degrees) -->
         <!--  PH0_deg - Azimuth angle - the horizontal angle measured at 
@@ -59,7 +59,7 @@
         <!--  EIRP_dB - Pt * G0t - Equivalent Isotropic Radiated Power -->
         <!--  polT - Satellite polarization -->
 
-        <fMHz>1575.42</fMHz>
+        <f_MHz>1575.42</f_MHz>
 
         <rsat_km>26578</rsat_km>  <!-- GNSS, 20200 + re (6378) -->
 
@@ -83,14 +83,14 @@
     
     
     <RECEIVER_INPUT>     
-        <!--  hr - Antenna Height (m) -->  
+        <!--  hr_m - Antenna Height (m) -->  
         <!--  G0r_dB - Receive Antenna Gain (dB)  -->
         <!--  hpbw_deg - Beamwidth (degrees) -->
         <!--  SLL_dB - Sidelobe Level (dB) -->
         <!--  XPL_dB - X-pol level (dB) -->
         <!--  polR - Antenna polarization -->
 
-        <hr>20</hr>
+        <hr_m>20</hr_m>
 
         <G0r_dB>0</G0r_dB>
 
@@ -103,31 +103,31 @@
     
     
     <GROUND_INPUT>
-        <!--  VSM - Theta probe - soil moisture (cm3/cm3) [0,1] -->  
-        <!--  sand - Sand content ratio of the soil texture [0,1] -->  
+        <!--  VSM_cm3cm3 - Theta probe - soil moisture (cm3/cm3) [0,1] -->  
+        <!--  sand_ratio - Sand content ratio of the soil texture [0,1] -->  
         <!--  polG - Clay content ratio of the soil texture [0,1] -->  
-        <!--  rho_b - Soil bulk density --> 
-        <!--  RMSH - Surface rms height (cm) -->  
+        <!--  rhob_gcm3 - Soil bulk density (g/cm3) --> 
+        <!--  RMSH_cm - Surface rms height (cm) -->  
 
-        <VSM>
+        <VSM_cm3cm3>
             <rows>1</rows>
             <cols>3</cols>
             <val>0.05</val>
             <val>0.10</val>
             <val>0.15</val>
-        </VSM>
+        </VSM_cm3cm3>
 
-        <sand>0.80</sand>
-        <clay>0.07</clay>
-        <rho_b>1.25</rho_b>
+        <sand_ratio>0.80</sand_ratio>
+        <clay_ratio>0.07</clay_ratio>
+        <rhob_gcm3>1.25</rhob_gcm3>
 
-        <RMSH>
+        <RMSH_cm>
             <rows>1</rows>
             <cols>3</cols>
             <val>0.5</val>
             <val>1.0</val>
             <val>1.5</val>
-        </RMSH>
+        </RMSH_cm>
      </GROUND_INPUT>
     
 </SYS_INPUT>

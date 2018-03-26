@@ -3,28 +3,31 @@ function getInput
 % input_files_xml = xmlread( strcat( Directories.getInstance.input, '\', 'inputFiles-Corn.xml' ) );
 input_files_xml = xmlread( strcat( Directories.getInstance.input, '\', 'inputFiles-Paulownia.xml' ) );
 
+inputFile_sys = getStringFromXML(input_files_xml, ConstantNames.sys_input);
+inputFile_veg = getStringFromXML(input_files_xml, ConstantNames.veg_input);
+
 %% SIMULATION SETTINGS 
-setSimSettings( getStringFromXML(input_files_xml, ConstantNames.sys_input) );
+setSimSettings( inputFile_sys );
 
 
 %% SIMULATION INPUTS 
-setSimParams( getStringFromXML(input_files_xml, ConstantNames.sys_input) );
+setSimParams( inputFile_sys );
 
 
 %% RECEIVER ANTENNA INPUTS
-setRecParams( getStringFromXML(input_files_xml, ConstantNames.sys_input) );
+setRecParams( inputFile_sys );
 
 
 %% TRANSMITTER SATELLITE INPUTS
-setSatParams( getStringFromXML(input_files_xml, ConstantNames.sys_input) );
+setSatParams( inputFile_sys );
 
 
 %% OE: GROUND INPUTS
-setGndParams( getStringFromXML(input_files_xml, ConstantNames.sys_input) );
+setGndParams( inputFile_sys );
 
 
 %% VEGETATION INPUTS
-setVegParams( getStringFromXML(input_files_xml, ConstantNames.veg_input) );
+setVegParams( inputFile_veg );
 
 end
 
@@ -33,17 +36,18 @@ function setGndParams( inputFile )
 
 xDoc = xmlread( strcat( Directories.getInstance.input_sys, '\', inputFile ) );
 
-VSM = getDoubleArrayFromXML(xDoc, ConstantNames.gnd_VSM);        % Theta probe 
+VSM_cm3cm3 = getDoubleArrayFromXML(xDoc, ConstantNames.gnd_VSM_cm3cm3);        % Theta probe 
 
-sand = getDoubleFromXML(xDoc, ConstantNames.gnd_sand);  % Sand ratio of the soil texture
+sand_ratio = getDoubleFromXML(xDoc, ConstantNames.gnd_sand_ratio);  % Sand ratio of the soil texture
 
-clay = getDoubleFromXML(xDoc, ConstantNames.gnd_clay);  % Clay ratio of the soil texture 
+clay_ratio = getDoubleFromXML(xDoc, ConstantNames.gnd_clay_ratio);  % Clay ratio of the soil texture 
 
-rho_b = getDoubleFromXML(xDoc, ConstantNames.gnd_rhoB);  % Soil bulk density    
+rhob_gcm3 = getDoubleFromXML(xDoc, ConstantNames.gnd_rhob_gcm3);  % Soil bulk density    
 
-RMSH = getDoubleArrayFromXML(xDoc, ConstantNames.gnd_RMSH);  % Surface rms height (cm)
+RMSH_cm = getDoubleArrayFromXML(xDoc, ConstantNames.gnd_RMSH_cm);  % Surface rms height (cm)
 
-GndParams.getInstance.initialize(VSM, sand, clay, rho_b, RMSH );
+% Initialize Ground Parameters
+GndParams.getInstance.initialize(VSM_cm3cm3, sand_ratio, clay_ratio, rhob_gcm3, RMSH_cm );
 
 end
 
@@ -52,19 +56,20 @@ function setRecParams( inputFile )
 
 xDoc = xmlread( strcat( Directories.getInstance.input_sys, '\', inputFile ) );
 
-hr = getDoubleFromXML(xDoc, ConstantNames.rec_hr);      % Antenna Height (m)
+hr_m = getDoubleFromXML(xDoc, ConstantNames.rec_hr_m);      % Antenna Height (m)
 
-G0r_dB = getDoubleFromXML(xDoc, ConstantNames.rec_G0rdB);    % Receive Antenna Gain (dB) 
+G0r_dB = getDoubleFromXML(xDoc, ConstantNames.rec_G0r_dB);    % Receive Antenna Gain (dB) 
 
-hpbw_deg = getDoubleFromXML(xDoc, ConstantNames.rec_hpbwDeg);   % Beamwidth      
+hpbw_deg = getDoubleFromXML(xDoc, ConstantNames.rec_hpbw_deg);   % Beamwidth      
 
-SLL_dB = getDoubleFromXML(xDoc, ConstantNames.rec_SLLdB);    % Sidelobe Level
+SLL_dB = getDoubleFromXML(xDoc, ConstantNames.rec_SLL_dB);    % Sidelobe Level
 
-XPL_dB = getDoubleFromXML(xDoc, ConstantNames.rec_XPLdB);    % X-pol level 
+XPL_dB = getDoubleFromXML(xDoc, ConstantNames.rec_XPL_dB);    % X-pol level 
 
 polR = getStringFromXML(xDoc, ConstantNames.rec_polR);  % Antenna polarization
 
-RecParams.getInstance.initialize(hr, G0r_dB, hpbw_deg, SLL_dB, XPL_dB, polR);
+% Initialize Receiver Parameters
+RecParams.getInstance.initialize(hr_m, G0r_dB, hpbw_deg, SLL_dB, XPL_dB, polR);
 
 end
 
@@ -73,21 +78,22 @@ function setSatParams( inputFile )
 
 xDoc = xmlread( strcat( Directories.getInstance.input_sys, '\', inputFile ) );
 
-fMHz = getDoubleFromXML(xDoc, ConstantNames.sat_fMHz);      % Operating frequncy (MHz)
+f_MHz = getDoubleFromXML(xDoc, ConstantNames.sat_f_MHz);      % Operating frequncy (MHz)
 
-rsat = getDoubleFromXML(xDoc, ConstantNames.sat_rsatKm) * Constants.km2m;    % Satellite radius (km - > m) 
+rsat_m = getDoubleFromXML(xDoc, ConstantNames.sat_rsat_km) * Constants.km2m;    % Satellite radius (km - > m) 
 
 % TO-DO: This is for satGeometryManual. There should be an option for
 % satGeometry
-th0_deg = getDoubleArrayFromXML(xDoc, ConstantNames.sat_th0Deg);   % Incidence angle      
+th0_deg = getDoubleArrayFromXML(xDoc, ConstantNames.sat_th0_deg);   % Incidence angle      
 
-PH0_deg = getDoubleArrayFromXML(xDoc, ConstantNames.sat_PH0Deg);    % Azimuth angle
+PH0_deg = getDoubleArrayFromXML(xDoc, ConstantNames.sat_PH0_deg);    % Azimuth angle
 
-EIRP_dB = getDoubleFromXML(xDoc, ConstantNames.sat_EIRPdB);    % Equivalent Isotropic Radiated Power
+EIRP_dB = getDoubleFromXML(xDoc, ConstantNames.sat_EIRP_dB);    % Equivalent Isotropic Radiated Power
 
 polT = getStringFromXML(xDoc, ConstantNames.sat_polT);  % Satellite polarization                        
 
-SatParams.getInstance.initialize( fMHz, rsat, th0_deg, PH0_deg, ...
+% Initialize Satellite Parameters
+SatParams.getInstance.initialize( f_MHz, rsat_m, th0_deg, PH0_deg, ...
                                           EIRP_dB, polT)
 
 end
@@ -115,6 +121,7 @@ Nr = getDoubleFromXML(xDoc, ConstantNames.sim_Nr);       % Number of Realization
 
 Nfz = getDoubleFromXML(xDoc, ConstantNames.sim_Nfz);    % Number of Fresnel Zones
 
+% Initialize Simulation Parameters
 SimParams.getInstance.initialize(sim_name, campaign, campaign_date, ...
                 plot, vegetation_method, vegetation_isRow, vegetation_plant, Nr, Nfz );
 
@@ -129,7 +136,7 @@ sim_mode = getDoubleFromXML(xDoc, ConstantNames.set_simMode);        %
 
 ground_cover = getDoubleFromXML(xDoc, ConstantNames.set_groundCover);        % Vegetation mode, e.g. Bare/Veg/Both 
 
-calc_meta_data = getDoubleFromXML(xDoc, ConstantNames.set_calcMetaData);      % Flag to calculate meta-data 
+write_attenuation = getDoubleFromXML(xDoc, ConstantNames.set_writeAttenuation);      % Flag to write Attenuation to Excel file 
 
 calc_direct_term = getDoubleFromXML(xDoc, ConstantNames.set_calcDirectTerm);  % Flag to calculate direct term  
 
@@ -137,7 +144,8 @@ calc_specular_term = getDoubleFromXML(xDoc, ConstantNames.set_calcSpecularTerm);
 
 calc_diffuse_term = getDoubleFromXML(xDoc, ConstantNames.set_calcDiffuseTerm);       % Flag to calculate diffuse term 
 
-SimSettings.getInstance.initialize(sim_mode, ground_cover, calc_meta_data, ...
+% Initialize Simulation Settings
+SimSettings.getInstance.initialize(sim_mode, ground_cover, write_attenuation, ...
                 calc_direct_term, calc_specular_term, ...
                 calc_diffuse_term );
 
@@ -177,7 +185,7 @@ xDoc = xmlread( strcat( Directories.getInstance.input_veg_hom, '\', inputFile ) 
 
 vegetation_stage = getStringFromXML(xDoc, ConstantNames.veg_hom_vegetationStage);
 
-dim_layers = getDoubleArrayFromXML(xDoc, ConstantNames.veg_hom_dimLayers);    %  Layer dimensions vector
+dim_layers_m = getDoubleArrayFromXML(xDoc, ConstantNames.veg_hom_dimLayers_m);    %  Layer dimensions vector
 
 types = xDoc.getElementsByTagName('types').item(0);
 
@@ -229,19 +237,19 @@ for kk = 1 : length( all_kinds )
 
             density = str2double( all_kinds(kk).item(ii-1).getElementsByTagName('density').item(0).getFirstChild.getData );
 
-            dim1 = str2double( char(all_kinds(kk).item(ii-1).getElementsByTagName('dim1').item(0).getFirstChild.getData) );
+            dim1_m = str2double( char(all_kinds(kk).item(ii-1).getElementsByTagName('dim1_m').item(0).getFirstChild.getData) );
 
-            dim2 = str2double( all_kinds(kk).item(ii-1).getElementsByTagName('dim2').item(0).getFirstChild.getData );
+            dim2_m = str2double( all_kinds(kk).item(ii-1).getElementsByTagName('dim2_m').item(0).getFirstChild.getData );
 
-            dim3 = str2double( all_kinds(kk).item(ii-1).getElementsByTagName('dim3').item(0).getFirstChild.getData );
+            dim3_m = str2double( all_kinds(kk).item(ii-1).getElementsByTagName('dim3_m').item(0).getFirstChild.getData );
 
             epsr = str2double( all_kinds(kk).item(ii-1).getElementsByTagName('epsr').item(0).getFirstChild.getData );
 
-            prob1 = str2double( all_kinds(kk).item(ii-1).getElementsByTagName('prob1').item(0).getFirstChild.getData );
+            prob1_deg = str2double( all_kinds(kk).item(ii-1).getElementsByTagName('prob1_deg').item(0).getFirstChild.getData );
 
-            prob2 = str2double( all_kinds(kk).item(ii-1).getElementsByTagName('prob2').item(0).getFirstChild.getData );
+            prob2_deg = str2double( all_kinds(kk).item(ii-1).getElementsByTagName('prob2_deg').item(0).getFirstChild.getData );
 
-            particle = generateParticle( particleID, is_scatterer, density, dim1, dim2, dim3, epsr, prob1, prob2);
+            particle = generateParticle( particleID, is_scatterer, density, dim1_m, dim2_m, dim3_m, epsr, prob1_deg, prob2_deg);
 
             particlesCell{1, particle_ind} = particle;
             particleIDs{1, particle_ind} = particleID;
@@ -287,7 +295,8 @@ if layerList.getLength >= 0
     end
 end
 
-VegParams.getInstance.initialize( vegetation_stage, dim_layers, particleIDs, particlesCell, layersCell );
+% Initialize Vegetation Parameters
+VegParams.getInstance.initialize( vegetation_stage, dim_layers_m, particleIDs, particlesCell, layersCell );
 
 end
 
@@ -296,6 +305,8 @@ function setVegVirRndParams( inputFile )
     
 xDoc = xmlread( strcat( Directories.getInstance.input_veg_vir_rnd, '\', inputFile ) );
 
+% TO-DO: Should be implemented for Virtual Random Vegetation
+
 end
 
 
@@ -303,20 +314,32 @@ function setVegVirRowParams( inputFile )
     
 xDoc = xmlread( strcat( Directories.getInstance.input_veg_vir_row, '\', inputFile ) );
 
-row_space = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_rowSpace);    %  Distance without vegetation between two rows (m)
+row_space_m = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_rowSpace_m);    %  Distance without vegetation between two rows (m)
 
-col_space = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_colSpace);    %  Distance without vegetation within a row (m)
+col_space_m = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_colSpace_m);    %  Distance without vegetation within a row (m)
 
-phi_row = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_phiRow);   % Azimuth angle of field rows from local North (degrees)
+phi_row_deg = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_phiRow_deg);   % Azimuth angle of field rows from local North (degrees)
 
-plant_row_spread = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_plantRowSpread);  % Max scattering dist. of a plant pos between rows (m)                       
+plant_row_spread_m = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_plantRowSpread_m);  % Max scattering dist. of a plant pos between rows (m)                       
 
-plant_col_spread = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_plantColSpread);  % Max scattering dist. of a plant pos within a row (m)
+plant_col_spread_m = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_plantColSpreadM);  % Max scattering dist. of a plant pos within a row (m)
 
 plugin = getStringFromXML(xDoc, ConstantNames.veg_vir_row_plugin);  % Plugin name to be run for virtual vegetation generation    
 
-VegVirRowParams.getInstance.initialize( row_space, col_space, ...
-    phi_row, plant_row_spread, plant_col_spread, plugin);
+% Initialize Virtual Row-Structured Vegetation Parameters
+VegVirRowParams.getInstance.initialize( row_space_m, col_space_m, ...
+    phi_row_deg, plant_row_spread_m, plant_col_spread_m, plugin);
+
+end
+
+
+%% Generate particle structs for types (disk or cylinder)
+function particle = generateParticle( particleID, is_scatterer, dnsty, dim1_m, dim2_m, dim3_m, epsr, prob1_deg, prob2_deg  )
+
+particle = struct( 'PARTICLE_ID', particleID, ...
+        'IS_SCATTERER', is_scatterer, 'DENSITY', dnsty, ...
+        'DIM1', dim1_m, 'DIM2', dim2_m, 'DIM3', dim3_m, ...
+        'EPSILON', epsr, 'PARM1', prob1_deg, 'PARM2', prob2_deg ) ;
 
 end
 
@@ -354,16 +377,5 @@ end
 function output = getStringFromXML( xmlFile, varName )
 
 output = char( xmlFile.getElementsByTagName(varName).item(0).getFirstChild.getData );
-
-end
-
-
-%% Generate particle structs for types (disk or cylinder)
-function particle = generateParticle( particleID, is_scatterer, dnsty, dim1, dim2, dim3, epsr, prob1, prob2  )
-
-particle = struct( 'PARTICLE_ID', particleID, ...
-        'IS_SCATTERER', is_scatterer, 'DENSITY', dnsty, ...
-        'DIM1', dim1, 'DIM2', dim2, 'DIM3', dim3, ...
-        'EPSILON', epsr, 'PARM1', prob1, 'PARM2', prob2 ) ;
 
 end

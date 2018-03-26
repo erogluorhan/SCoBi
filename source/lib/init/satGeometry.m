@@ -5,16 +5,30 @@
 function [rd, PH0_deg, EL0_deg] ...
     = satGeometry(FolderPath, LatSd, LonSd, LatBd, LonBd, LatGd, LonGd)
 
+%% GET GLOBAL DIRECTORIES
+dir_config = SimulationFolders.getInstance.config;
 
-%% Input
 
-k = SatParams.getInstance.rsat / Constants.re ;  % ~6.61072 : distance of satellite from the earth center in terms of re
+%% GET GLOBAL PARAMETERS
+% Satellite Parameters
+rsat_m = SatParams.getInstance.rsat_m;
 
-%% Position Vectors in eart centern frame
 
+%% INITIALIZE REQUIRED PARAMETERS
 % Earth Center
 pE = [0, 0, 0] ;
 
+% Earth Center Coordinate System
+uxe = [1 0 0] ;
+uye = [0 1 0] ;
+uze = [0 0 1] ;
+
+
+
+%% CALCULATIONS
+k = rsat_m / Constants.re ;  % ~6.61072 : distance of satellite from the earth center in terms of re
+
+% Position Vectors in eart centern frame
 % Receiver ground position
 LatG = degtorad(LatGd) ;
 LonG = degtorad(LonGd) ;
@@ -30,14 +44,9 @@ LatB = degtorad(LatBd) ;
 LonB = degtorad(LonBd) ;
 pB = [cos(LatB) * cos(LonB), cos(LatB) * sin(LonB), sin(LatB)] ;
 
-%% Coordinate Systems in earth frame
 
-% Earth Center Coordinate System
-uxe = [1 0 0] ;
-uye = [0 1 0] ;
-uze = [0 0 1] ;
-
-%% Satellite Transmit Antenna Coordinate System
+%% COORDINATE SYSTEMS
+% Satellite Transmit Antenna Coordinate System
 TB = pB - pT ; % satellite to boresight
 
 % zt
@@ -57,7 +66,7 @@ uyt = uyt / Magya ; % unit vector
 % xt
 uxt = crossProduct(uyt, uzt) ;
 
-%% Local (Ground) Coordinate System in earth frame
+% Local (Ground) Coordinate System in earth frame
 % zz
 MagpG = vectorMagnitude(pG) ;
 uz = pG / MagpG ; % unit vector / normal to local surface
@@ -70,15 +79,15 @@ ux = ux / Magxp ; % unit vector
 % yy
 uy = crossProduct(uz, ux) ;  % north
 
-%% Satellite to Ground (specular point) in  earh frame (center)
+% Satellite to Ground (specular point) in  earh frame (center)
 GT = pG - pT ;
 rdk = vectorMagnitude(GT) ;
 isn_ef = GT / rdk ;  % propagation vector (i_s^-)
 
 rd = rdk * Constants.re ; % slant distance in m
 
-%% Transformation
 
+%% TRANSFORMATIONS
 % Transformation matrix for transforming a vector from the Earth center
 % system to local ground system
 Teg = [ux ; uy ; uz] ; % E -> G
@@ -95,7 +104,7 @@ TgtI = Tgt ;
 TgtI(:, 3) = - TgtI(:, 3) ;  %  G -> TI
 
 
-%% Propgapation Vectors
+%% PROPAGATION VECTORS
 % propagation vector from satellite to ground in ground system (reference)
 isn = Teg * isn_ef' ;  % propagation vector (i_s^-)
 isp = isn ;  
@@ -107,8 +116,8 @@ isn_tf = Tet * isn_ef' ;   % propagation vector (i_s^-)
 % propagation vector from image satellite to ground in image satellite transmit frame
 isp_tIf = TgtI * isp ;% propagation vector (i_s^+)
 
-%% Elevation and Azimuth Angles
 
+%% ELEVATION AND AZIMUTH ANGLES
 % Transmit Antenna Elevation
 th0t = acos(-isn(3)) ;
 th0t_deg = radtodeg(th0t) ;
@@ -123,39 +132,36 @@ PH0_deg = 90 - ph0td ;
 % thd2 = acos(dot(-isn_ef, uz)) * 180 / pi ;
 % phd2 = atan2(dot(-isn_ef, uy), dot(-isn_ef, ux)) * 180 / pi ;
 
-%% The angular position of the ground in transmit satellite system
 
+%% ANGULAR POSITION OF THE GROUND IN TRANSMIT SATELLITE SYSTEM
 % off-axis angle of zt towards ground receiver
 tht0d = acos(isn_tf(3)) * 180 / pi ;
 % ground reciever orientation - azimuth
 pht0d = atan2(isn_tf(2), isn_tf(1)) * 180 / pi ;
 
-AngT2R_tf = [tht0d; pht0d]  ;
+AngT2R_tf = [tht0d; pht0d] ;
 
-%% Saving. . .
+
+%% SAVE ALL
+% Tgt - Transformation G -> T
+filename = 'Tgt' ;
+writeVar(dir_config, filename, Tgt) ;
+
+% TgrI - Transformation G -> TI
+filename = 'TgtI' ;
+writeVar(dir_config, filename, TgtI) ;
 
 % rd : slant range - distance between ground and satellite
-% PH0 : Azimuth angle from local north axis - clockwise
-% EL0 : elevation angle from the local horizon
-% Tgt - Transformation G -> T
-% TgrI - Transformation G -> TI
-
-pathname = strcat(FolderPath, '\CONFIG') ;
-
-filename = 'Tgt' ;
-writeVar(pathname, filename, Tgt) ;
-
-filename = 'TgtI' ;
-writeVar(pathname, filename, TgtI) ;
-
 filename = 'rd' ;
-writeVar(pathname, filename, rd) ;
+writeVar(dir_config, filename, rd) ;
 
+% PH0 : Azimuth angle from local north axis - clockwise
 filename = 'PH0_deg' ;
-writeVar(pathname, filename, PH0_deg) ;
+writeVar(dir_config, filename, PH0_deg) ;
 
+% EL0 : elevation angle from the local horizon
 filename = 'EL0_deg' ;
-writeVar(pathname, filename, EL0_deg) ;
+writeVar(dir_config, filename, EL0_deg) ;
 
 
 end

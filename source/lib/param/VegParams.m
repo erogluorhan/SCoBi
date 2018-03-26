@@ -21,7 +21,7 @@ classdef VegParams < handle
         TYPES = struct('L', 1, 'B', 2, 'T', 3, 'N', 4);
         
         % Layer dimensions
-        dim_layers = 0;
+        dim_layers_m = 0;
         
         % Number of layers
         num_layers = 1
@@ -48,22 +48,22 @@ classdef VegParams < handle
         dsty
         
         
-        dim1
+        dim1_m
         
         
-        dim2
+        dim2_m
         
         
-        dim3
+        dim3_m
         
         
         epsr
         
         
-        parm1
+        parm1_deg
         
         
-        parm2
+        parm2_deg
         
         
     end
@@ -96,14 +96,14 @@ classdef VegParams < handle
     
     methods
         
-        function initialize(obj, vegetation_stage, dim_layers, particleIDs, particlesCell, layersCell )
+        function initialize(obj, vegetation_stage, dim_layers_m, particleIDs, particlesCell, layersCell )
             % INITIALIZE - Initializes all the properties from input file           
         
                         
             obj.vegetation_stage = vegetation_stage;
             
-            obj.dim_layers = dim_layers;
-            obj.num_layers = length( obj.dim_layers );         
+            obj.dim_layers_m = dim_layers_m;
+            obj.num_layers = length( obj.dim_layers_m );         
             
             %Initialize TYPKND
             obj.TYPKND = zeros(obj.num_layers, length(fieldnames( obj.TYPES )) );            
@@ -133,12 +133,12 @@ classdef VegParams < handle
             obj.num_kinds = max(max(obj.TYPKND)) ;
                         
             obj.dsty = zeros(obj.num_kinds, obj.num_types, obj.num_layers) ;
-            obj.dim1 = zeros(obj.num_kinds, obj.num_types, obj.num_layers) ;
-            obj.dim2 = zeros(obj.num_kinds, obj.num_types, obj.num_layers) ;
-            obj.dim3 = zeros(obj.num_kinds, obj.num_types, obj.num_layers) ;
+            obj.dim1_m = zeros(obj.num_kinds, obj.num_types, obj.num_layers) ;
+            obj.dim2_m = zeros(obj.num_kinds, obj.num_types, obj.num_layers) ;
+            obj.dim3_m = zeros(obj.num_kinds, obj.num_types, obj.num_layers) ;
             obj.epsr = zeros(obj.num_kinds, obj.num_types, obj.num_layers) ;
-            obj.parm1 = zeros(obj.num_kinds, obj.num_types, obj.num_layers) ;
-            obj.parm2 = zeros(obj.num_kinds, obj.num_types, obj.num_layers) ;
+            obj.parm1_deg = zeros(obj.num_kinds, obj.num_types, obj.num_layers) ;
+            obj.parm2_deg = zeros(obj.num_kinds, obj.num_types, obj.num_layers) ;
           
             obj.LTK = cell(obj.num_kinds, obj.num_types, obj.num_layers) ;   
             
@@ -192,13 +192,13 @@ classdef VegParams < handle
                     
                     obj.LTK{part_kind, part_type, ii} = part;
                     
-                    obj.dsty(part_kind, part_type, ii) = partStruct.DENSITY * sum(obj.dim_layers) / sum(dim_layers(part_layers));
-                    obj.dim1(part_kind, part_type, ii) = partStruct.DIM1;
-                    obj.dim2(part_kind, part_type, ii) = partStruct.DIM2;
-                    obj.dim3(part_kind, part_type, ii) = partStruct.DIM3;
+                    obj.dsty(part_kind, part_type, ii) = partStruct.DENSITY * sum(obj.dim_layers_m) / sum(dim_layers_m(part_layers));
+                    obj.dim1_m(part_kind, part_type, ii) = partStruct.DIM1;
+                    obj.dim2_m(part_kind, part_type, ii) = partStruct.DIM2;
+                    obj.dim3_m(part_kind, part_type, ii) = partStruct.DIM3;
                     obj.epsr(part_kind, part_type, ii) = partStruct.EPSILON;
-                    obj.parm1(part_kind, part_type, ii) = partStruct.PARM1;
-                    obj.parm2(part_kind, part_type, ii) = partStruct.PARM2;
+                    obj.parm1_deg(part_kind, part_type, ii) = partStruct.PARM1;
+                    obj.parm2_deg(part_kind, part_type, ii) = partStruct.PARM2;
                     
                     obj.scat_cal_veg(part_kind, part_type, ii) = partStruct.IS_SCATTERER;
                 end
@@ -206,38 +206,38 @@ classdef VegParams < handle
             
         end 
         
-        function initialize2(obj, dim_layers, scat_cal_veg,...
-            TYPKND, dsty, dim1, dim2, dim3, epsr, parm1, parm2)
+        function initialize2(obj, dim_layers_m, scat_cal_veg,...
+            TYPKND, dsty, dim1_m, dim2_m, dim3_m, epsr, parm1_deg, parm2_deg)
             % INITIALIZE - Initializes all the properties excluding LTK
 
             obj.scat_cal_veg = scat_cal_veg;
-            obj.dim_layers = dim_layers;
+            obj.dim_layers_m = dim_layers_m;
             obj.TYPKND = TYPKND;
             obj.dsty = dsty;
-            obj.dim1 = dim1;
-            obj.dim2 = dim2;
-            obj.dim3 = dim3;
+            obj.dim1_m = dim1_m;
+            obj.dim2_m = dim2_m;
+            obj.dim3_m = dim3_m;
             obj.epsr = epsr;
-            obj.parm1 = parm1;
-            obj.parm2 = parm2;
+            obj.parm1_deg = parm1_deg;
+            obj.parm2_deg = parm2_deg;
             
         end
         
-        function initialize3(obj, dim_layers, scat_cal_veg,...
-            TYPKND, LTK, dsty, dim1, dim2, dim3, epsr, parm1, parm2)
+        function initialize3(obj, dim_layers_m, scat_cal_veg,...
+            TYPKND, LTK, dsty, dim1_m, dim2_m, dim3_m, epsr, parm1_deg, parm2_deg)
             % INITIALIZE - Initializes all the properties
 
             obj.scat_cal_veg = scat_cal_veg;
-            obj.dim_layers = dim_layers;
+            obj.dim_layers_m = dim_layers_m;
             obj.TYPKND = TYPKND;
             obj.LTK = LTK;
             obj.dsty = dsty;
-            obj.dim1 = dim1;
-            obj.dim2 = dim2;
-            obj.dim3 = dim3;
+            obj.dim1_m = dim1_m;
+            obj.dim2_m = dim2_m;
+            obj.dim3_m = dim3_m;
             obj.epsr = epsr;
-            obj.parm1 = parm1;
-            obj.parm2 = parm2;
+            obj.parm1_deg = parm1_deg;
+            obj.parm2_deg = parm2_deg;
             
         end
         
@@ -248,8 +248,8 @@ classdef VegParams < handle
         end
          
         
-        function out = get.dim_layers(obj)
-            out = obj.dim_layers;        
+        function out = get.dim_layers_m(obj)
+            out = obj.dim_layers_m;        
         end
         
         function out = get.num_layers(obj)
@@ -280,53 +280,53 @@ classdef VegParams < handle
             out = obj.dsty;        
         end
         
-        function out = get.dim1(obj)
-            out = obj.dim1;        
+        function out = get.dim1_m(obj)
+            out = obj.dim1_m;        
         end
         
-        function out = get.dim2(obj)
-            out = obj.dim2;        
+        function out = get.dim2_m(obj)
+            out = obj.dim2_m;        
         end
         
-        function out = get.dim3(obj)
-            out = obj.dim3;        
+        function out = get.dim3_m(obj)
+            out = obj.dim3_m;        
         end
         
         function out = get.epsr(obj)
             out = obj.epsr;        
         end
         
-        function out = get.parm1(obj)
-            out = obj.parm1;        
+        function out = get.parm1_deg(obj)
+            out = obj.parm1_deg;        
         end     
         
-        function out = get.parm2(obj)
-            out = obj.parm2;        
+        function out = get.parm2_deg(obj)
+            out = obj.parm2_deg;        
         end      
         
         function write(obj)
             
             pathName = SimulationFolders.getInstance.veg;
             
-            writeVar(pathName, 'dim_layers', obj.dim_layers) ;
+            writeVar(pathName, ConstantNames.veg_hom_dimLayers_m, obj.dim_layers_m) ;
             
-            writeVar(pathName, 'TYPKND', obj.TYPKND) ;
+            writeVar(pathName, ConstantNames.veg_hom_TYPKND, obj.TYPKND) ;
             
-            writeVar(pathName, 'scat_cal_veg', obj.scat_cal_veg) ;
+            writeVar(pathName, ConstantNames.veg_hom_scatCalVeg, obj.scat_cal_veg) ;
             
-            writeVar(pathName, 'dsty', obj.dsty) ;
+            writeVar(pathName, ConstantNames.veg_hom_dsty, obj.dsty) ;
             
-            writeVar(pathName, 'dim1', obj.dim1) ;
+            writeVar(pathName, ConstantNames.veg_hom_dim1_m, obj.dim1_m) ;
             
-            writeVar(pathName, 'dim2', obj.dim2) ;
+            writeVar(pathName, ConstantNames.veg_hom_dim2_m, obj.dim2_m) ;
             
-            writeVar(pathName, 'dim3', obj.dim3) ;
+            writeVar(pathName, ConstantNames.veg_hom_dim3_m, obj.dim3_m) ;
             
-            writeComplexVar(pathName, 'epsr', obj.epsr) ;
+            writeComplexVar(pathName, ConstantNames.veg_hom_epsr, obj.epsr) ;
             
-            writeVar(pathName, 'parm1', obj.parm1) ;
+            writeVar(pathName, ConstantNames.veg_hom_parm1_deg, obj.parm1_deg) ;
             
-            writeVar(pathName, 'parm2', obj.parm2) ;
+            writeVar(pathName, ConstantNames.veg_hom_parm2_deg, obj.parm2_deg) ;
             
             currentDir = pwd;
             cd( SimulationFolders.getInstance.veg )

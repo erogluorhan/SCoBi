@@ -2,9 +2,14 @@
 % April 6, 2017
 
 
-function satGeometryManuel(rd)
+function satGeometryManuel(rd_m)
 
-% Get global parameters
+%%GET GLOBAL DIRECTORIES
+dir_config = SimulationFolders.getInstance.config;
+
+
+%% GET GLOBAL PARAMETERS
+% Satellite Parameters
 EL0_deg = SatParams.getInstance.EL0_deg( ParamsManager.index_Th );
 PH0_deg = SatParams.getInstance.PH0_deg( ParamsManager.index_Ph );
 
@@ -70,29 +75,27 @@ Tgt = [uxt ; uyt ; uzt] ; % G -> T
 % to Image transmitter system
 TgtI = [uxtI ; uytI ; uztI] ; % G -> TI
 
-%% Saving. . . 
 
+%% SAVE ALL
 % Tgt - Transformation G -> T
-% TgrI - Transformation G -> TI
-% rd : slant range - distance between ground and satellite
-% PH0 : Azimuth angle from local north axis - clockwise
-% EL0 : elevation angle from the local horizon
-pathname = SimulationFolders.getInstance.config;
-
 filename = 'Tgt' ;
-writeVar(pathname, filename, Tgt) ;
+writeVar(dir_config, filename, Tgt) ;
 
+% TgtI - Transformation G -> TI
 filename = 'TgtI' ;
-writeVar(pathname, filename, TgtI) ;
+writeVar(dir_config, filename, TgtI) ;
 
-filename = 'rd' ;
-writeVar(pathname, filename, rd) ;
+% rd_m : slant range - distance between ground and satellite
+filename = 'rd_m' ;
+writeVar(dir_config, filename, rd_m) ;
 
+% PH0 : Azimuth angle from local north axis - clockwise
 filename = 'PH0_deg' ;
-writeVar(pathname, filename, PH0_deg ) ;
+writeVar(dir_config, filename, PH0_deg ) ;
 
+% EL0 : elevation angle from the local horizon
 filename = 'EL0_deg' ;
-writeVar(pathname, filename, EL0_deg ) ;
+writeVar(dir_config, filename, EL0_deg ) ;
 
 
 end

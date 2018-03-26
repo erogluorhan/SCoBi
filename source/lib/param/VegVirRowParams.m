@@ -11,19 +11,19 @@ classdef VegVirRowParams < handle
     properties (SetAccess = private, GetAccess = public)
         
         % The distance without vegetation between two rows (m)
-        row_space
+        row_space_m
         
         % The distance between two adjacent plants within a row (m)
-        col_space
+        col_space_m
         
         % Azimuth angle of field rows from local North (degrees)
-        phi_row
+        phi_row_deg
         
         % Max scattering dist. of a plant pos between rows (m)
-        plant_row_spread
+        plant_row_spread_m
         
         % Max scattering dist. of a plant pos within a row (m)
-        plant_col_spread
+        plant_col_spread_m
         
         % Plugin class instance that will be handling the virtual 
         % vegetation plant generation
@@ -57,15 +57,15 @@ classdef VegVirRowParams < handle
     
     methods        
         
-        function initialize(obj, row_space, col_space, phi_row, ...
-                plant_row_spread, plant_col_spread, plugin )
+        function initialize(obj, row_space_m, col_space_m, phi_row_deg, ...
+                plant_row_spread_m, plant_col_spread_m, plugin )
             % INITIALIZE - Initializes all the properties
             
-            obj.row_space = row_space;
-            obj.col_space = col_space;
-            obj.phi_row = phi_row;
-            obj.plant_row_spread = plant_row_spread;
-            obj.plant_col_spread = plant_col_spread;
+            obj.row_space_m = row_space_m;
+            obj.col_space_m = col_space_m;
+            obj.phi_row_deg = phi_row_deg;
+            obj.plant_row_spread_m = plant_row_spread_m;
+            obj.plant_col_spread_m = plant_col_spread_m;
             
             % Call the virtual vegetation plugin's initialize function
             obj.plugin = feval(plugin);
@@ -76,24 +76,24 @@ classdef VegVirRowParams < handle
         end 
          
         
-        function out = get.row_space(obj)
-            out = obj.row_space;        
+        function out = get.row_space_m(obj)
+            out = obj.row_space_m;        
         end
         
-        function out = get.col_space(obj)
-            out = obj.col_space;
+        function out = get.col_space_m(obj)
+            out = obj.col_space_m;
         end
         
-        function out = get.phi_row(obj)
-            out = obj.phi_row;
+        function out = get.phi_row_deg(obj)
+            out = obj.phi_row_deg;
         end
         
-        function out = get.plant_row_spread(obj)
-            out = obj.plant_row_spread;
+        function out = get.plant_row_spread_m(obj)
+            out = obj.plant_row_spread_m;
         end
         
-        function out = get.plant_col_spread(obj)
-            out = obj.plant_col_spread;
+        function out = get.plant_col_spread_m(obj)
+            out = obj.plant_col_spread_m;
         end
         
         function out = get.plugin(obj)

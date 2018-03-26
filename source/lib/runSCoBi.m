@@ -36,38 +36,51 @@ resetCurrentState;
 
 %startGUI;
 
+% Get input and check validity
 getInput;
 
 isInputValid = initWithInputs();
 
+% If input is valid
 if isInputValid
     
     num_Th = length( SatParams.getInstance.th0_deg );
     num_Ph = length( SatParams.getInstance.PH0_deg );
-    num_VSM = length( GndParams.getInstance.VSM );
-    num_RMSH = length( GndParams.getInstance.RMSH );
+    num_VSM = length( GndParams.getInstance.VSM_cm3cm3 );
+    num_RMSH = length( GndParams.getInstance.RMSH_cm );
     
-    % Cross-simulation
-    if SimSettings.getInstance.sim_mode == Constants.sim_mode.CROSS
+    % Snapshot simulation
+    if SimSettings.getInstance.sim_mode == Constants.sim_mode.SNAPSHOT
         
+        % For each theta (looking angle)
         for tt = 1 : num_Th
             
+            % Set theta index
             ParamsManager.index_Th( tt );
             
+            % For each phi (azimuth angle)
             for pp = 1 : num_Ph
             
+                % Set phi index
                 ParamsManager.index_Ph( pp );
                 
+                % For each VSM (volumetric soil moisture)
                 for vv = 1 : num_VSM
             
+                    % Set VSM index
                     ParamsManager.index_VSM( vv );
                     
+                    % For each RMSH (root mean square height - roughness)
                     for rr = 1 : num_RMSH
                         
+                        % Set RMSH index
                         ParamsManager.index_RMSH( rr );
                         
+                        % Initialize the directories depending on theta,
+                        % phi, VSM, and RMSH
                         SimulationFolders.getInstance.initializeDynamicDirs();
                         
+                        % Call SCoBi main flow
                         mainSCoBi;
                         
                     end
@@ -82,26 +95,35 @@ if isInputValid
     % Time-series simulation
     else
         
+        % For each corresponding tuple of theta (looking angle), 
+        % phi (azimuth angle), VSM (volumetric soil moisture), and 
+        % RMSH (root mean square height - roughness)
         for ii = 1 : num_Th  % The length of each is equal
             
+            % Set theta, phi, VSM, ad RMSH index the same
             ParamsManager.index_Th( ii );
             ParamsManager.index_Ph( ii );
             ParamsManager.index_VSM( ii );
             ParamsManager.index_RMSH( ii );
             
+            % Initialize the directories depending on theta, phi, VSM, and 
+            % RMSH
             SimulationFolders.getInstance.initializeDynamicDirs();
             
+            % Call SCoBi main flow
             mainSCoBi;
         
         end
         
     end
     
+% Else if input is NOT valid
 else
     
     return
     
 end
+
 
 end 
 
@@ -123,7 +145,7 @@ dbstop(myBreakpoints);
 clear myBreakpoints;
 if (exist('myBreakpoints.mat','file')) delete('myBreakpoints.mat'); end
 
-% Include all subdirectories
+% Add all subdirectories to the path
 addpath( genpath( strcat(pwd, '/dir') ) ); % This is required to first addpath
 addpath( genpath( Directories.getInstance.input ) );
 addpath( genpath( Directories.getInstance.gui ) );

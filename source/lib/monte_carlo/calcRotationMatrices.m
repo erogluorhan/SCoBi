@@ -5,49 +5,60 @@
 function calcRotationMatrices
 
 
-%% recall necessary parameters/vectors
+%% GET GLOBAL DIRECTORIES
+dir_config = SimulationFolders.getInstance.config;
+dir_rot_lookup = SimulationFolders.getInstance.rot_lookup ;
 
+
+%% GET GLOBAL PARAMETERS
+% Satellite Parameters
+polT = SatParams.getInstance.polT;
+% Receiver Parameters
+polR = RecParams.getInstance.polR;
+
+
+%% READ AND LOAD META-DATA
+% Propagation Vectors
 % idn -  propagation vector (i_d^-)
 % isn - propagation vector (i_s^-)
 % isp - propagation vector (i_s^+)
 % osp - propagation vector (o_s^+)
 % osn - propagation vector (o_s^-)
-
-pathname = SimulationFolders.getInstance.config;
-
 filenamex = 'idn' ;
-idn = readVar(pathname, filenamex) ;
+idn = readVar(dir_config, filenamex) ;
 filenamex = 'isn' ;
-isn = readVar(pathname, filenamex) ;
+isn = readVar(dir_config, filenamex) ;
 filenamex = 'osp' ;
-osp = readVar(pathname, filenamex) ;
+osp = readVar(dir_config, filenamex) ;
 isp = osp ;
 
-% transformations
+% Transformations
 filenamex = 'Tgs' ;
-Tgs = readVar(pathname, filenamex) ;
+Tgs = readVar(dir_config, filenamex) ;
 filenamex = 'Tgr' ;
-Tgr = readVar(pathname, filenamex) ;
+Tgr = readVar(dir_config, filenamex) ;
 filenamex = 'TgrI' ;
-TgrI = readVar(pathname, filenamex) ;
+TgrI = readVar(dir_config, filenamex) ;
 filenamex = 'Tgt' ;
-Tgt = readVar(pathname, filenamex) ;
+Tgt = readVar(dir_config, filenamex) ;
 filenamex = 'TgtI' ;
-TgtI = readVar(pathname, filenamex) ;
+TgtI = readVar(dir_config, filenamex) ;
 
-%% Gennting th and ph
+% Antenna Pattern and Look-up Angles (th and ph)
 load([SimulationFolders.getInstance.ant_lookup '\AntPat.mat'], 'th', 'ph')
 
-%% polarization definitions
+% Polarization Definitions
 % antenna polarizations = Y, X, R, L
 % ground polarizations = H (phi), V (theta)
 
-%% Rotation Matrix (Transmitter to Receiver)
+
+%% CALCULATIONS
+% Rotation Matrix (Transmitter to Receiver)
 % u_t_r(i_d^-)
 
 disp('Rotation Matrix (Transmitter to Receiver) . . .')
 tic; 
-[ut1, ut2, ur1, ur2] = tanUnitVectors(Tgt, Tgr, idn, SatParams.getInstance.polT, RecParams.getInstance.polR) ;
+[ut1, ut2, ur1, ur2] = tanUnitVectors(Tgt, Tgr, idn, polT, polR ) ;
 
 % Polarization Basis Dot Products
 u11 = dot(ut1, conj(ur1)) ; u12 = dot(ut2, conj(ur1)) ;
@@ -64,7 +75,7 @@ toc
 
 disp('Rotation Matrix (Transmitter to Specular) . . .')
 tic ;
-[ut1, ut2, uvsi, uhsi] = tanUnitVectors(Tgt, Tgs, isn, SatParams.getInstance.polT, GndParams.getInstance.polG) ;
+[ut1, ut2, uvsi, uhsi] = tanUnitVectors(Tgt, Tgs, isn, polT, GndParams.getInstance.polG) ;
 
 % Polarization Basis Dot Products
 u11 = dot(ut1, conj(uvsi)) ; u12 = dot(ut2, conj(uvsi)) ;
@@ -95,7 +106,7 @@ u_tIs = u_ts ; %% added april 29, 2017
 
 disp('Rotation Matrix (Specular to Receiver) . . .')
 tic ;
-[uvso, uhso, ur1, ur2] = tanUnitVectors(Tgs, Tgr, osp, GndParams.getInstance.polG, RecParams.getInstance.polR) ;
+[uvso, uhso, ur1, ur2] = tanUnitVectors(Tgs, Tgr, osp, GndParams.getInstance.polG, polR) ;
 
 % Polarization Basis Dot Products
 u11 = dot(uvso, conj(ur1)) ; u12 = dot(uhso, conj(ur1)) ;
@@ -131,7 +142,7 @@ for t = 1 : Nth
         thpt = th(p, t) ; phpt = ph(p, t) ;
         oap_rf = -[sin(thpt) .* cos(phpt); sin(thpt) .* sin(phpt); cos(thpt)] ;
         oap = Tgr' * oap_rf ;   % in reference (ground) plane
-        [uvo, uho, ur1, ur2] = tanUnitVectors(Tgs, Tgr, oap, GndParams.getInstance.polG, RecParams.getInstance.polR) ;
+        [uvo, uho, ur1, ur2] = tanUnitVectors(Tgs, Tgr, oap, GndParams.getInstance.polG, polR) ;
         
         % Polarization Basis Dot Products        
         u11 = dot(uvo, conj(ur1)) ; u12 = dot(uho, conj(ur1)) ;
@@ -177,22 +188,21 @@ u_garI = u_gar ; %% added april 29, 2017
 
 disp('Saving Rotation Matrices . . .')
 tic ;
-pathname = SimulationFolders.getInstance.rot_lookup ;
 
 % 2 X 2
-save([pathname '\u_gar.mat'], 'u_gar', 'th', 'ph')
-save([pathname '\u_garI.mat'], 'u_garI', 'th', 'ph')
-save([pathname '\u_sr.mat'], 'u_sr')
-save([pathname '\u_ts.mat'], 'u_ts')
-save([pathname '\u_tIs.mat'], 'u_tIs')
-save([pathname '\u_tr.mat'], 'u_tr')
+save([dir_rot_lookup '\u_gar.mat'], 'u_gar', 'th', 'ph')
+save([dir_rot_lookup '\u_garI.mat'], 'u_garI', 'th', 'ph')
+save([dir_rot_lookup '\u_sr.mat'], 'u_sr')
+save([dir_rot_lookup '\u_ts.mat'], 'u_ts')
+save([dir_rot_lookup '\u_tIs.mat'], 'u_tIs')
+save([dir_rot_lookup '\u_tr.mat'], 'u_tr')
 % % % 4 X 4
-% % save([pathname '\U_gar.mat'], 'U_gar', 'th', 'ph')
-% % save([pathname '\U_garI.mat'], 'U_garI', 'th', 'ph')
-% % save([pathname '\U_sr.mat'], 'U_sr')
-% % save([pathname '\U_ts.mat'], 'U_ts')
-% % save([pathname '\U_tIs.mat'], 'U_tIs')
-% % save([pathname '\U_tr.mat'], 'U_tr')
+% % save([dir_rot_lookup '\U_gar.mat'], 'U_gar', 'th', 'ph')
+% % save([dir_rot_lookup '\U_garI.mat'], 'U_garI', 'th', 'ph')
+% % save([dir_rot_lookup '\U_sr.mat'], 'U_sr')
+% % save([dir_rot_lookup '\U_ts.mat'], 'U_ts')
+% % save([dir_rot_lookup '\U_tIs.mat'], 'U_tIs')
+% % save([dir_rot_lookup '\U_tr.mat'], 'U_tr')
 
 toc
 
@@ -295,6 +305,7 @@ elseif pol1 == 'R'
 elseif pol1 == 'L'
     u1p1 = u1L ;
     u1p2 = u1R ;
+    
 end
 
 if pol2 == 'H'
@@ -309,13 +320,21 @@ elseif pol2 == 'X'
 elseif pol2 == 'Y'
     u2p1 = u2Y ;
     u2p2 = u2X ;
-elseif pol2 == 'R' % Circular pol rotation has swaped to match trasnmit and receive directions
-    u2p1 = u2L ;
-    u2p2 = u2R ;
-elseif pol2 == 'L'
+elseif pol2 == 'R' 
     u2p1 = u2R ;
     u2p2 = u2L ;
+elseif pol2 == 'L'
+    u2p1 = u2L ;
+    u2p2 = u2R ;
 end
+
+% % elseif pol2 == 'R' % Circular pol rotation has swaped to match trasnmit and receive directions
+% %     u2p1 = u2L ;
+% %     u2p2 = u2R ;
+% % elseif pol2 == 'L'
+% %     u2p1 = u2R ;
+% %     u2p2 = u2L ;
+% % end
 
 end
 

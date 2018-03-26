@@ -4,22 +4,22 @@
 function setGround
 
 % Get Global Parameters
-fMHz = SatParams.getInstance.fMHz;
-VSM = GndParams.getInstance.VSM( ParamsManager.index_VSM );
-RMSH = GndParams.getInstance.RMSH( ParamsManager.index_RMSH );
-sand = GndParams.getInstance.sand;
-clay = GndParams.getInstance.clay;
-rho_b = GndParams.getInstance.rho_b;
+f_MHz = SatParams.getInstance.f_MHz;
+VSM_cm3cm3 = GndParams.getInstance.VSM_cm3cm3( ParamsManager.index_VSM );
+RMSH_cm = GndParams.getInstance.RMSH_cm( ParamsManager.index_RMSH );
+sand_ratio = GndParams.getInstance.sand_ratio;
+clay_ratio = GndParams.getInstance.clay_ratio;
+rhob_gcm3 = GndParams.getInstance.rhob_gcm3;
 
 
 %% Surface Roughness
-fhz = fMHz * 1e6 ;
-lambda = Constants.c / fhz * 1e2 ;        % in cm
-ko = 2 * pi / lambda ;
-h = (2 * RMSH * ko) ^ 2 ;        % effective roughness parameter
+f_Hz = f_MHz * Constants.MHz2Hz ;
+lambda_cm = Constants.c / f_Hz * Constants.m2cm ;        % in cm
+ko = 2 * pi / lambda_cm ;
+h = (2 * RMSH_cm * ko) ^ 2 ;        % effective roughness parameter
 
 %% Soil Dielectric Constant
-eps_g = dielg( VSM, fhz, sand, clay, rho_b) ; % eps_g = eps_gp - j * eps_gpp
+eps_g = dielg( VSM_cm3cm3, f_Hz, sand_ratio, clay_ratio, rhob_gcm3) ; % eps_g = eps_gp - j * eps_gpp
 eps_g = conj(eps_g) ; % eps_g = eps_gp + i * eps_gpp
 eps_g = round(eps_g * 10) / 10 ;
 
@@ -34,7 +34,7 @@ writeVar(SimulationFolders.getInstance.gnd, filename, grnd_par) ;
 end
 
 
-function epsoil = dielg(vsm, fhz, sand, clay, bulkrho)
+function epsoil = dielg(vsm, f_Hz, sand_ratio, clay_ratio, bulkrho)
 
 
 % c
@@ -49,13 +49,15 @@ function epsoil = dielg(vsm, fhz, sand, clay, bulkrho)
 % c
 
 %       complex *8 epss,epfw,epsoil,tmp,ei,term1,term2,epalfa
-%       real fghz,fhz,pi,vsm,alfa,beta,rhoss,sigma,fac1,fac2,fac3
+%       real fghz,f_Hz,pi,vsm,alfa,beta,rhoss,sigma,fac1,fac2,fac3
 
 % c      real bulkrho	!changed bulkrho defined already
 % c
-fghz = fhz / 1.0e+9 ;
+
+% TO-Do: Dr. Kurum: Check if sand and clay ratio OR percentage?
+fghz = f_Hz / 1.0e+9 ;
 alfa = 0.65 ;
-beta = 1.09 - 0.11 * sand + 0.18 * clay ;     %! from Ulaby's book
+beta = 1.09 - 0.11 * sand_ratio + 0.18 * clay_ratio ;     %! from Ulaby's book
 % c     beta=1.1
 % c
 % c     beta varies from 1.0 for sandy soil to 1.17 to silty clay

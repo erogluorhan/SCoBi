@@ -8,7 +8,7 @@ classdef RecParams < handle
     
     properties (SetAccess = private, GetAccess = public)
         % Antenna Height (m)
-        hr 
+        hr_m 
         
         % Receive Antenna Gain (dB)
         G0r_dB
@@ -52,10 +52,10 @@ classdef RecParams < handle
     
     methods
         
-        function initialize(obj, hr, G0r_dB, hpbw_deg, SLL_dB, XPL_dB, polR)
+        function initialize(obj, hr_m, G0r_dB, hpbw_deg, SLL_dB, XPL_dB, polR)
             % INITIALIZE - Initializes all the properties
             
-            obj.hr = hr;
+            obj.hr_m = hr_m;
             obj.G0r_dB = G0r_dB;
             obj.hpbw_deg = hpbw_deg;
             obj.SLL_dB = SLL_dB;
@@ -63,8 +63,8 @@ classdef RecParams < handle
             obj.polR = polR;        
         end
         
-        function out = get.hr(obj)
-            out = obj.hr;        
+        function out = get.hr_m(obj)
+            out = obj.hr_m;        
         end
         
         function out = get.G0r_dB(obj)

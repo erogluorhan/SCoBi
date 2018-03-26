@@ -9,19 +9,19 @@ classdef GndParams < handle
     properties (SetAccess = private, GetAccess = public)
         % Volumetric soil moisture (cm3/cm3) [0,1] 
         % The amount of moisture content (cm3) in 1 cm3 of soil
-        VSM
+        VSM_cm3cm3
         
         % Sand content ratio of the soil texture [0,1]
-        sand
+        sand_ratio
         
         % Clay content ratio of the soil texture [0,1]
-        clay
+        clay_ratio
         
-        % Soil bulk density
-        rho_b
+        % Soil bulk density (g/cm3)
+        rhob_gcm3
         
         % Surface rms height (cm)
-        RMSH
+        RMSH_cm
         
         % Ground polarization
         polG = 'V';
@@ -56,34 +56,34 @@ classdef GndParams < handle
     
     methods
         
-        function initialize(obj, VSM, sand, clay, rho_b, RMSH )
+        function initialize(obj, VSM_cm3cm3, sand_ratio, clay_ratio, rhob_gcm3, RMSH_cm )
             % INITIALIZE - Initializes all the properties
             
-            obj.VSM = VSM;
-            obj.sand = sand;
-            obj.clay = clay;
-            obj.rho_b = rho_b;
-            obj.RMSH = RMSH;    
+            obj.VSM_cm3cm3 = VSM_cm3cm3;
+            obj.sand_ratio = sand_ratio;
+            obj.clay_ratio = clay_ratio;
+            obj.rhob_gcm3 = rhob_gcm3;
+            obj.RMSH_cm = RMSH_cm;    
         end
         
-        function out = get.VSM(obj)
-            out = obj.VSM;        
+        function out = get.VSM_cm3cm3(obj)
+            out = obj.VSM_cm3cm3;        
         end
         
-        function out = get.sand(obj)
-            out = obj.sand;
+        function out = get.sand_ratio(obj)
+            out = obj.sand_ratio;
         end
         
-        function out = get.clay(obj)
-            out = obj.clay;
+        function out = get.clay_ratio(obj)
+            out = obj.clay_ratio;
         end
         
-        function out = get.rho_b(obj)
-            out = obj.rho_b;
+        function out = get.rhob_gcm3(obj)
+            out = obj.rhob_gcm3;
         end
         
-        function out = get.RMSH(obj)
-            out = obj.RMSH;
+        function out = get.RMSH_cm(obj)
+            out = obj.RMSH_cm;
         end
         
         function out = get.polG(obj)
@@ -91,11 +91,11 @@ classdef GndParams < handle
         end
         
         function rep_VSM( obj, factor )
-            obj.VSM = repmat(obj.VSM, 1, factor);
+            obj.VSM_cm3cm3 = repmat(obj.VSM_cm3cm3, 1, factor);
         end
         
         function rep_RMSH( obj, factor )
-            obj.RMSH = repmat(obj.RMSH, 1, factor);
+            obj.RMSH_cm = repmat(obj.RMSH_cm, 1, factor);
         end
     end
     
