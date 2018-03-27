@@ -3,6 +3,8 @@
 % Modified November 10, 2017
 
 function avgDiffuseTerm
+%% AVGDIFFUSETERM: Averages all the diffuse terms from realizations
+
 
 %% GET GLOBAL DIRECTORIES
 dir_freqdiff = SimulationFolders.getInstance.freqdiff;
