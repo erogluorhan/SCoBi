@@ -9,6 +9,8 @@ classdef ConstantNames
         
         input_params_var = 'input_params';
         input_params_filename = 'input_params.mat';
+        
+        attenuation_out_filename = '\Attenuation.xls';
              
         sys_input = 'sys_input'; % String constant for system inputs
         

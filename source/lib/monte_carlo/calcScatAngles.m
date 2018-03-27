@@ -24,7 +24,7 @@ pTI_m = AllPoints_m(:, 2);        % Transmitter Image
 pR_m = AllPoints_m(:, 4);        % Receiver
 pRI_m = AllPoints_m(:, 5);       % Receiver Image
 
-% incident unit vectors (only in one direction - transmitter is far away)
+% Incident unit vectors (only in one direction - transmitter is far away)
 filenamex = 'isn' ;
 isn = readVar(dir_config, filenamex) ;   % propagation vector (i_s^-)
 filenamex = 'osp' ;

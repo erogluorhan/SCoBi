@@ -1,49 +1,31 @@
 function writeAttenuation
 
+%% GET GLOBAL DIRECTORIES
+dir_afsa = SimulationFolders.getInstance.afsa;
 
-%% Get Global Parameters
+
+%% GET GLOBAL PARAMETERS
+% Vegetation Parameters
 LTK = VegParams.getInstance.LTK;
+TYPKND = VegParams.getInstance.TYPKND;
 
-%%
+
+%% READ META-DATA
+disp('reading...')
+tic ;
+
 Desired_Medium = 1 ;
 Desired_Layer = 1 ; 
 Desired_Type = 1 ;
 Desired_Kind = 1 ;
 
-% Save Sig0
-outFileName = '\Attenuation.xls' ;
-
-%% polarization
-pols = {'HH'; 'VV'} ;
-
-%% Header
-Mech = {'One-Way'} ;
-TypeNames = {'Leaf', 'Branch', 'Trunk', 'Needle'} ;
-
-%% Save Sig0
-pathname = SimulationFolders.getInstance.afsa;
-outFileName = strcat(pathname, outFileName) ;
-
-%% Reading vegetation parameters...
-TYPKND = VegParams.getInstance.TYPKND;
-
-%% Layer parameters
-[Nlayer, Ntype] = size(TYPKND) ;
-% sTYPKND = sum(TYPKND) ;
-% Ntype = length(sTYPKND(sTYPKND ~= 0)) ; % L, B, T
-
-%% Reading
-
-disp('reading...')
-tic ;
-
 % Layer Combined
 if Desired_Medium == 1
 
     filename = 'ATTENH' ;
-    ATTENH = readVar(pathname, filename) ;
+    ATTENH = readVar(dir_afsa, filename) ;
     filename = 'ATTENV' ;
-    ATTENV = readVar(pathname, filename) ;
+    ATTENV = readVar(dir_afsa, filename) ;
     
 end
 
@@ -51,7 +33,7 @@ end
 if Desired_Layer == 1
     
     filename = 'ATTENPIQS' ;
-    ATTENPIQS = readVar(pathname, filename) ;
+    ATTENPIQS = readVar(dir_afsa, filename) ;
     
 end
 
@@ -59,7 +41,7 @@ end
 if Desired_Type == 1
     
     filename = 'ATTPIQS' ;
-    ATTPIQS = readVar(pathname, filename) ;
+    ATTPIQS = readVar(dir_afsa, filename) ;
     
 end
 
@@ -67,12 +49,24 @@ end
 if  Desired_Kind == 1
     
     filename = 'ATPIQS' ;
-    ATPIQS = readVar(pathname, filename) ;
+    ATPIQS = readVar(dir_afsa, filename) ;
     
 end
 
 
-%%
+% Save Sig0
+outFileName = ConstantNames.attenuation_out_filename ;
+outFileName = strcat(dir_afsa, outFileName) ;
+
+% polarization
+pols = {'HH'; 'VV'} ;
+
+% Header
+Mech = {'One-Way'} ;
+TypeNames = {'Leaf', 'Branch', 'Trunk', 'Needle'} ;
+
+% Layer parameters
+[Nlayer, Ntype] = size(TYPKND);
 
 for ii = 1 : Nlayer
     

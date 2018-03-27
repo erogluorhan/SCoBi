@@ -8,6 +8,7 @@ function mainSCoBi
 disp('++++++++++++++++   START: SCoBi MAIN PROGRAM   ++++++++++++++++++++')
 tstart = datetime('now') %#ok<NOPRT,*NASGU>
 
+
 %% GET GLOBAL PARAMETERS
 % Simulation Settings
 calc_direct_term = SimSettings.getInstance.calc_direct_term;

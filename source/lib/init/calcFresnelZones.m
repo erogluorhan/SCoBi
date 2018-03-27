@@ -41,9 +41,9 @@ sinth = hd_m / rd2_m ;
 costh = Dist_m / rd2_m ;
 secth = 1 / costh ;
 
-x1_m = zeros(SimParams.getInstance.Nfz, 1) ;
-ax1_m = zeros(SimParams.getInstance.Nfz, 1) ;
-by1_m = zeros(SimParams.getInstance.Nfz, 1) ;
+x1_m = zeros(Nfz, 1) ;
+ax1_m = zeros(Nfz, 1) ;
+by1_m = zeros(Nfz, 1) ;
 
 for nn = 1 : Nfz
     

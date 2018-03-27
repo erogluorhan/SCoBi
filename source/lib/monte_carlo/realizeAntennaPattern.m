@@ -4,17 +4,13 @@
 function realizeAntennaPattern(indRealization)
 
 
-% indRealization : Nth Realization
-% indRealization = 1 ;
-
-
-%% Reading vegetation parameters...
+%% GET GLOBAL PARAMETERS
+% Vegetation Parameters
 scat_cal_veg = VegParams.getInstance.scat_cal_veg;
-
 TYPKND = VegParams.getInstance.TYPKND;
 
 
-%% Layer parameters
+% Layer parameters
 [Nlayer, Ntype] = size(TYPKND) ;
 
 %% Calculations...
@@ -65,30 +61,28 @@ end
 
 function calc(filename)
 
-% Npart
-% thrd
-% phrd
-% thrdI
-% phrdI
+%% GET GLOBAL DIRECTORIES
+dir_observation = SimulationFolders.getInstance.observation;
+dir_ant_real = SimulationFolders.getInstance.ant_real;
 
-%% Reading Receiver Observation Angles
 
+%% READ OR LOAD META-DATA
+% Receiver Observation Angles
 disp('Reading observation angles...')
 tic;
-pathname = SimulationFolders.getInstance.observation ;
 filenamex = strcat('thrd_', filename) ;
-thrd = readVar(pathname, filenamex) ;
+thrd = readVar(dir_observation, filenamex) ;
 filenamex = strcat('thrdI_', filename) ;
-thrdI = readVar(pathname, filenamex) ;
+thrdI = readVar(dir_observation, filenamex) ;
 filenamex = strcat('phrd_', filename) ;
-phrd = readVar(pathname, filenamex) ;
+phrd = readVar(dir_observation, filenamex) ;
 filenamex = strcat('phrdI_', filename) ;
-phrdI = readVar(pathname, filenamex) ;
+phrdI = readVar(dir_observation, filenamex) ;
 toc
 
 Npart = length(thrd) ;
-%% Realization of Gain functions
-% thrd, phrd, thrdI, phrdI
+
+% Antenna Pattern
 disp('loading Antenna Pattern Matrix . . .')
 tic ;
 load([SimulationFolders.getInstance.ant_lookup '\AntPat.mat'], 'g', 'th', 'ph')
@@ -99,10 +93,9 @@ phd = round(2 * ph * Constants.rad2deg) / 2 ;
 gr = zeros(Npart, 2, 2) ;
 grI = zeros(Npart, 2, 2) ;
 
-% Gr = zeros(Npart, 4, 4) ;
-% GrI = zeros(Npart, 4, 4) ;
 
-%%
+%% ANTENNA PATTERN REALIZATIONS
+% Receiver
 disp('Receiver Antenna values in the scattering directions. . .')
 tic ;
 for ii = 1 : Npart
@@ -134,7 +127,7 @@ for ii = 1 : Npart
 end
 toc
 
-%%
+%Receiver Image
 disp('Image Receiver Antenna values in the scattering directions. . .')
 tic ;
 for ii = 1 : Npart
@@ -166,20 +159,19 @@ for ii = 1 : Npart
 end
 toc
 
-%% Saving Antenna gain values
+
+%% SAVE
 disp('Saving antenna values...')
 tic;
 filenamex = strcat('gr_', filename) ;
-writeComplexVar(SimulationFolders.getInstance.ant_real, filenamex, gr)
+writeComplexVar(dir_ant_real, filenamex, gr)
 filenamex = strcat('grI_', filename) ;
-writeComplexVar(SimulationFolders.getInstance.ant_real, filenamex, grI)
+writeComplexVar(dir_ant_real, filenamex, grI)
 % % filenamex = strcat('Gr_', filename) ;
-% % write_cplxvar(pathname, filenamex, Gr)
+% % write_cplxvar(dir_observation, filenamex, Gr)
 % % filenamex = strcat('GrI_', filename) ;
-% % write_cplxvar(pathname, filenamex, GrI)
+% % write_cplxvar(dir_observation, filenamex, GrI)
 toc
-
-
 
 
 end

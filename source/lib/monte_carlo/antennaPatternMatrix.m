@@ -3,32 +3,45 @@
 
 function antennaPatternMatrix
 
-if RecParams.getInstance.SLL_dB == 15 ;
+%% GET GLOBAL DIRECTORIES
+dir_ant_lookup = SimulationFolders.getInstance.ant_lookup;
+
+
+%% GET GLOBAL PARAMETERS
+% Receiver Parameters
+SLL_dB = RecParams.getInstance.SLL_dB;
+XPL_dB = RecParams.getInstance.XPL_dB;
+hpbw_deg = RecParams.getInstance.hpbw_deg;
+
+
+%% CALCULATIONS
+
+if SLL_dB == 15 ;
     a = 0.18 ; % 0.35 ;  % 15 dB    
-elseif RecParams.getInstance.SLL_dB == 20 ;
+elseif SLL_dB == 20 ;
     a = 0.11 ; % 0.25 ;  % 20 dB    
-elseif RecParams.getInstance.SLL_dB == 30 ;
+elseif SLL_dB == 30 ;
     a = 0.04 ; % 0.12 ;  % 30 dB    
-elseif RecParams.getInstance.SLL_dB == 40 ;
+elseif SLL_dB == 40 ;
     a = 0.01 ; % 0.055 ; % 40 dB    
 end
 
 
 % X-pol level
-if RecParams.getInstance.XPL_dB == 15
+if XPL_dB == 15
     V = sqrt(0.0316) ; % -15 dB
-elseif RecParams.getInstance.XPL_dB == 25
+elseif XPL_dB == 25
     V = sqrt(0.0100);  % -20 dB
-elseif RecParams.getInstance.XPL_dB == 30
+elseif XPL_dB == 30
     V = sqrt(0.0010) ;  % -30 dB
-elseif RecParams.getInstance.XPL_dB == 40
+elseif XPL_dB == 40
     V = sqrt(0.0001) ; % -40 dB
 end
 
-[th, ph, gg] = GGpattern(RecParams.getInstance.hpbw_deg, a) ;
+[th, ph, gg] = GGpattern( hpbw_deg, a) ;
 gXX = gg ; gYY = gg ;
 
-[~, ~, gg] = GGpattern(RecParams.getInstance.hpbw_deg * 2, a) ;
+[~, ~, gg] = GGpattern( 2 * hpbw_deg, a ) ;
 gXY = V * gg ; gYX = V * gg ;
     
 
@@ -125,8 +138,9 @@ hpbw2 = hpbwX + hpbwY ;  % Main beam
 
 hpbw2 = hpbw2 * 180 / pi ;
 
-%% Saving
-save([SimulationFolders.getInstance.ant_lookup '\AntPat.mat'], 'G', 'g', 'th', 'ph')
+
+%% SAVE
+save([dir_ant_lookup '\AntPat.mat'], 'G', 'g', 'th', 'ph')
 
        
 end

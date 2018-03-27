@@ -5,33 +5,51 @@
 % Diffuse (Incoherent) Term
 function diffuseTerm(ind_realization)
 
-% Get global parameters
+%% GET GLOBAL DIRECTORIES
+dir_config = SimulationFolders.getInstance.config;
+dir_freqdiff = SimulationFolders.getInstance.freqdiff;
+dir_freqdiff_b1 = SimulationFolders.getInstance.freqdiff_b1;
+dir_freqdiff_b2 = SimulationFolders.getInstance.freqdiff_b2;
+dir_freqdiff_b3 = SimulationFolders.getInstance.freqdiff_b3;
+dir_freqdiff_b4 = SimulationFolders.getInstance.freqdiff_b4;
+dir_freqdiff_P1 = SimulationFolders.getInstance.freqdiff_P1;
+dir_freqdiff_P2 = SimulationFolders.getInstance.freqdiff_P2;
+dir_freqdiff_P3 = SimulationFolders.getInstance.freqdiff_P3;
+dir_freqdiff_P4 = SimulationFolders.getInstance.freqdiff_P4;
+
+
+%% GET GLOBAL PARAMETERS
+% Simulation Parameters
 Nfz = SimParams.getInstance.Nfz;
+% Satellite Parameters
 f_MHz = SatParams.getInstance.f_MHz;
-EIRP = convertDecibelToNatural( SatParams.getInstance.EIRP_dB );
-G0r = convertDecibelToNatural( RecParams.getInstance.G0r_dB );
+EIRP_dB = SatParams.getInstance.EIRP_dB;
+EIRP = convertDecibelToNatural( EIRP_dB );
+% Receiver Parameters
+G0r_dB = RecParams.getInstance.G0r_dB;
+G0r = convertDecibelToNatural( G0r_dB );
+% Ground Parameters
 VSM_cm3cm3 = GndParams.getInstance.VSM_cm3cm3( ParamsManager.index_VSM );
 RMSH_cm = GndParams.getInstance.RMSH_cm( ParamsManager.index_RMSH );
+% Vegetation Parameters
 scat_cal_veg = VegParams.getInstance.scat_cal_veg ;
 TYPKND = VegParams.getInstance.TYPKND;
-dim_layers_m = sum( VegParams.getInstance.dim_layers_m ) ;           % thickness of layer in meter
 
 
-%% Shifting coordinate system to the top of the vegetation
-d_layer_m = [0; 0; dim_layers_m] ;
-
-%% Positions relative to ground
+%% READ OR LOAD META-DATA
+% Positions relative to ground
 % pT_m: Transmitter, pS2_m: specular point, pR2: receiver, pG2_m: ground (reference), pBr2_m:boresight,
 % pCr2_m: center of footprint, pSc2_m: center of fresnel zone
 % AllPoints_m = [pT_m, pTI_m, pS2_m, pR_m, pRI_m, pG2_m, pBr2_m, pCr2_m, pSc2_m] ;
 filenamex = 'AllPoints_m' ;
-AllPoints_m = readVar(SimulationFolders.getInstance.config, filenamex) ;
-
+AllPoints_m = readVar(dir_config, filenamex) ;
 pT_m = AllPoints_m(:, 1) ; % - d_layer_m ;        % Transmitter with respect to veg top
 pS2_m = AllPoints_m(:, 3) ;       % Specular point  (at top of vegetation)
 pR_m = AllPoints_m(:, 4) ; % - d_layer_m ;        % Receiver with respect to veg top
 
-%% Slant Range - relative to ground
+
+%% CALCULATIONS
+% Slant Range - relative to ground
 ST = pS2_m - pT_m ;         % Transmitter to Specular
 r_st = vectorMagnitude(ST) ;  % slant range
 
@@ -43,20 +61,18 @@ lambda_m = Constants.c / f_Hz ;     % Wavelength
 k0 = 2 * pi * f_Hz / Constants.c ;    % Wave number
 
 
-%% Factor Ki
+% Factor Ki
 K = 1i * sqrt(EIRP) * sqrt(G0r) * lambda_m / (4 * pi) ;
 
 Ki = K * exp(1i * k0 * (r_st + r_sr)) / (r_st * r_sr) ; 
 
 
 %% Layer Parameters
-TYPKND %#ok<NOPRT>
 [Nlayer, Ntype] = size(TYPKND) ;
 NkindMax = max(max(TYPKND)) ;
-% sTYPKND = sum(TYPKND) ;
-% Ntype = length(sTYPKND(sTYPKND ~= 0)) ; % L, B, T
 
-%% Initializing...
+
+%% INITIALIZE REQUIRED VARIABLES
 % per kind
 b4_inc1_t1 = zeros(2, Nfz, NkindMax, Ntype, Nlayer) ;  % dd
 b4_inc2_t1 = b4_inc1_t1 ;                                   % rd
@@ -263,15 +279,14 @@ for ii = 1 : Nlayer
     
 end % Nlayer -- ii
 
-%% Saving...
-
+%% SAVE ALL
 % Ki
 filename3 = strcat('Ki') ;
-writeComplexVar(SimulationFolders.getInstance.freqdiff, filename3, Ki)
+writeComplexVar(dir_freqdiff, filename3, Ki)
 
 % ====================================================
 % b1
-pathname = strcat(SimulationFolders.getInstance.freqdiff_b1, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
+pathname = strcat( dir_freqdiff_b1, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('b1_inc1_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b1_inc1_t1))
 filename1 = strcat('b1_inc2_t1', '_R', num2str(ind_realization)) ;
@@ -291,7 +306,7 @@ filename1 = strcat('b1_inc4_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b1_inc4_t2))
 
 % b2
-pathname = strcat(SimulationFolders.getInstance.freqdiff_b2, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
+pathname = strcat(dir_freqdiff_b2, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('b2_inc1_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b2_inc1_t1))
 filename1 = strcat('b2_inc2_t1', '_R', num2str(ind_realization)) ;
@@ -311,7 +326,7 @@ filename1 = strcat('b2_inc4_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b2_inc4_t2))
 
 % b3
-pathname = strcat(SimulationFolders.getInstance.freqdiff_b3, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
+pathname = strcat(dir_freqdiff_b3, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('b3_inc1_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b3_inc1_t1))
 filename1 = strcat('b3_inc2_t1', '_R', num2str(ind_realization)) ;
@@ -331,7 +346,7 @@ filename1 = strcat('b3_inc4_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b3_inc4_t2))
 
 % b4
-pathname = strcat(SimulationFolders.getInstance.freqdiff_b4, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
+pathname = strcat(dir_freqdiff_b4, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('b4_inc1_t1', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b4_inc1_t1))
 filename1 = strcat('b4_inc2_t1', '_R', num2str(ind_realization)) ;
@@ -349,10 +364,10 @@ filename1 = strcat('b4_inc3_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b4_inc3_t2))
 filename1 = strcat('b4_inc4_t2', '_R', num2str(ind_realization)) ;
 writeComplexVar(pathname, filename1, (b4_inc4_t2))
-% =====================================================
 
+% =====================================================
 % P1
-pathname = strcat(SimulationFolders.getInstance.freqdiff_P1, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
+pathname = strcat( dir_freqdiff_P1, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('P1_inc1_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P1_inc1_t1))
 filename1 = strcat('P1_inc2_t1', '_R', num2str(ind_realization)) ;
@@ -372,7 +387,7 @@ filename1 = strcat('P1_inc4_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P1_inc4_t2))
 
 % P2
-pathname = strcat(SimulationFolders.getInstance.freqdiff_P2, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
+pathname = strcat( dir_freqdiff_P2, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('P2_inc1_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P2_inc1_t1))
 filename1 = strcat('P2_inc2_t1', '_R', num2str(ind_realization)) ;
@@ -392,7 +407,7 @@ filename1 = strcat('P2_inc4_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P2_inc4_t2))
 
 % P3
-pathname = strcat(SimulationFolders.getInstance.freqdiff_P3, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
+pathname = strcat( dir_freqdiff_P3, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('P3_inc1_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P3_inc1_t1))
 filename1 = strcat('P3_inc2_t1', '_R', num2str(ind_realization)) ;
@@ -412,7 +427,7 @@ filename1 = strcat('P3_inc4_t2', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P3_inc4_t2))
 
 % P4
-pathname = strcat(SimulationFolders.getInstance.freqdiff_P4, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
+pathname = strcat( dir_freqdiff_P4, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('P4_inc1_t1', '_R', num2str(ind_realization)) ;
 writeVar(pathname, filename1, (P4_inc1_t1))
 filename1 = strcat('P4_inc2_t1', '_R', num2str(ind_realization)) ;
@@ -441,96 +456,110 @@ function [b_dd_t1, b_rd_t1, b_dr_t1, b_rr_t1,...
     P_dd_t2, P_rd_t2, P_dr_t2, P_rr_t2] = ScatMech(layerIndex, filename, r_st, r_sr)
 
 
-f_MHz = SatParams.getInstance.f_MHz
-Nfz = SimParams.getInstance.Nfz;
+%% GET GLOBAL DIRECTORIES
+dir_afsa = SimulationFolders.getInstance.afsa;
+dir_gnd = SimulationFolders.getInstance.gnd;
+dir_position = SimulationFolders.getInstance.position;
+dir_fzones = SimulationFolders.getInstance.fzones;
+dir_incidence = SimulationFolders.getInstance.incidence;
+dir_scattering = SimulationFolders.getInstance.scattering;
+dir_ant_real = SimulationFolders.getInstance.ant_real;
+dir_rot_real = SimulationFolders.getInstance.rot_real;
+dir_rot_lookup = SimulationFolders.getInstance.rot_lookup;
+dir_fscat = SimulationFolders.getInstance.fscat;
+dir_distance = SimulationFolders.getInstance.distance ;
 
+
+%% GET GLOBAL PARAMETERS
+%Simulation Parameters
+Nfz = SimParams.getInstance.Nfz;
+% Satellite Parameters
+f_MHz = SatParams.getInstance.f_MHz;
+f_Hz = f_MHz * Constants.MHz2Hz;  % Frequency points (Hz)
+g_t = SatParams.getInstance.g_t ; % ideal
+e_t1 = SatParams.getInstance.e_t1 ;
+e_t2 = SatParams.getInstance.e_t2 ;
+% Vegetation Parameters
 dim_layers_m = VegParams.getInstance.dim_layers_m;
 
-%% Ground Parameters
+
+%% READ META-DATA
+% Ground Parameters
 disp('Reading ground parameters...')
 filenamex = 'G' ;
-grnd_par = readVar(SimulationFolders.getInstance.gnd, filenamex) ;
+grnd_par = readVar( dir_gnd, filenamex );
 h = grnd_par(1, 1) ;
-
 epsg = grnd_par(1, 2) + ( 1i * grnd_par(1, 3) ) ;
 
-%% Incremental Propagation Constant
+% Incremental Propagation Constant
 disp('Reading Incremental propagation constants...')
 filenamex = 'dKz' ;
-dKz = readComplexVar(SimulationFolders.getInstance.afsa, filenamex) ;
+dKz = readComplexVar( dir_afsa, filenamex) ;
 filenamex = 'ANGDEG' ;
-ANGDEG = readVar(SimulationFolders.getInstance.afsa, filenamex) ;
+ANGDEG = readVar( dir_afsa, filenamex) ;
 
-%% Particle Positions
+% Particle Positions
 disp('Reading the particle positions...')
 
-pP = readVar(SimulationFolders.getInstance.position, filename) ;
+pP = readVar( dir_position, filename );
 
-Npart = readVar(SimulationFolders.getInstance.fzones, filename) ;
+Npart = readVar( dir_fzones, filename ) ;
 
-%% Incidence Angles
+% Incidence Angles
 disp('Reading incidence angles...')
-pathname = SimulationFolders.getInstance.incidence ;
 filenamex = strcat('thid_', filename) ;
-thid = readVar(pathname, filenamex) ;
+thid = readVar(dir_incidence, filenamex) ;
 filenamex = strcat('thidI_', filename) ;
-thidI = readVar(pathname, filenamex) ;
+thidI = readVar(dir_incidence, filenamex) ;
 
-%% Reading Scattering Angles
+% Scattering Angles
 disp('Reading scattering angles...')
-pathname = SimulationFolders.getInstance.scattering ;
 filenamex = strcat('thsd_', filename) ;
-thsd = readVar(pathname, filenamex) ;
+thsd = readVar(dir_scattering, filenamex) ;
 filenamex = strcat('thsdI_', filename) ;
-thsdI = readVar(pathname, filenamex) ;
+thsdI = readVar(dir_scattering, filenamex) ;
 % no need for phsd and phsdI
 
-%% Reading Antenna gain values
+% Antenna gain values
 disp('Reading antenna values...')
-pathname = SimulationFolders.getInstance.ant_real ;
 filenamex = strcat('gr_', filename) ;
-gr = readComplexVar(pathname, filenamex) ;
+gr = readComplexVar(dir_ant_real, filenamex) ;
 filenamex = strcat('grI_', filename) ;
-grI = readComplexVar(pathname, filenamex) ;
+grI = readComplexVar(dir_ant_real, filenamex) ;
 
-%% Reading Rotation Matrix values
+% Rotation Matrix values
 disp('Reading rotation matrices...')
-pathname = SimulationFolders.getInstance.rot_real ;
 filenamex = strcat('u_gar_', filename) ;
-u_gar2 = readComplexVar(pathname, filenamex) ;
+u_gar2 = readComplexVar(dir_rot_real, filenamex) ;
 filenamex = strcat('u_garI_', filename) ;
-u_garI2 = readComplexVar(pathname, filenamex) ;
-pathname = SimulationFolders.getInstance.rot_lookup ;
-load([pathname '\u_ts.mat'], 'u_ts') 
-load([pathname '\u_tIs.mat'], 'u_tIs')
+u_garI2 = readComplexVar(dir_rot_real, filenamex);
+load([dir_rot_lookup '\u_ts.mat'], 'u_ts') 
+load([dir_rot_lookup '\u_tIs.mat'], 'u_tIs')
 
 U_ts = calc_Muller(u_ts) ;
 U_tIs = calc_Muller(u_tIs) ;
 
-
-%% Reading scattering amplitudes..
+% Scattering amplitudes..
 disp('Reading scattering amplitudes...')
-pathname = SimulationFolders.getInstance.fscat;
 filenamex = strcat('BISTATIC1_', filename) ;
-BISTATIC1 = readComplexVar(pathname, filenamex) ;
+BISTATIC1 = readComplexVar(dir_fscat, filenamex) ;
 filenamex = strcat('BISTATIC2_', filename) ;
-BISTATIC2 = readComplexVar(pathname, filenamex) ;
+BISTATIC2 = readComplexVar(dir_fscat, filenamex) ;
 filenamex = strcat('BISTATIC3_', filename) ;
-BISTATIC3 = readComplexVar(pathname, filenamex) ;
+BISTATIC3 = readComplexVar(dir_fscat, filenamex) ;
 filenamex = strcat('BISTATIC4_', filename) ;
-BISTATIC4 = readComplexVar(pathname, filenamex) ;
+BISTATIC4 = readComplexVar(dir_fscat, filenamex) ;
 
-%%  Reading particle distances to receiver and image receiver
+%  Particle distances to receiver and image receiver
 disp('Reading distances...')
-pathname = SimulationFolders.getInstance.distance ;
 filenamex = strcat('ro_', filename) ;
-ro = readVar(pathname, filenamex) ;
+ro = readVar(dir_distance, filenamex) ;
 filenamex = strcat('roI_', filename) ;
-roI = readVar(pathname, filenamex) ;
+roI = readVar(dir_distance, filenamex) ;
 filenamex = strcat('ri_', filename) ;
-ri = readVar(pathname, filenamex) ;
+ri = readVar(dir_distance, filenamex) ;
 filenamex = strcat('riI_', filename) ;
-riI = readVar(pathname, filenamex) ;
+riI = readVar(dir_distance, filenamex) ;
 
 % figure
 % subplot(2,2,1)
@@ -560,27 +589,26 @@ riI = readVar(pathname, filenamex) ;
 % plot(riI+roI, ':o')
 % title('rr : r_o_I + r_i_I')
 
-%% Wave Number
-f_Hz = f_MHz * Constants.MHz2Hz;  % Frequency points (Hz)
+
+%% CALCULATIONS
+% Wave Number
 k0 = 2 * pi * f_Hz / Constants.c ;    % Wave number
 
-%% Scattering Matrix Calculations
+% Scattering Matrix Calculations
 disp(strcat('Number of Scatters:', num2str(Npart)))
 
 %% Transmitter Antenna pattern
-g_t = SatParams.getInstance.g_t ; % ideal
 G_t = calc_Muller(g_t) ;
 
-%% Transmitter Pol State
-e_t1 = SatParams.getInstance.e_t1 ;
-e_t2 = SatParams.getInstance.e_t2 ;
-%TO-DO: Calculate E_t1 from e_t1?
+
+%% INITIALIZE REQUIRED VARIABLES
+% Transmitter Pol State
 E_t1 = [1; 0; 0; 0] ;
 E_t2 = [0; 0; 0; 1] ;
 Q = [1 0 0 0; 0 0 0 1; 0 1 1 0; 0 -1i -1i 0] ;
 E_t1 = Q * E_t1 ;
 E_t2 = Q * E_t2 ;
-%% Intilizing. . . 
+ 
 b_dd_t1 = zeros(2, Nfz) ;
 b_dr_t1 = b_dd_t1 ;
 b_rd_t1 = b_dd_t1 ;
@@ -599,7 +627,6 @@ bfz_dr_t2 = bfz_dd_t2 ;
 bfz_rd_t2 = bfz_dd_t2 ;
 bfz_rr_t2 = bfz_dd_t2 ;
 
-%
 P_dd_t1 = zeros(4, Nfz) ;
 P_dr_t1 = P_dd_t1 ;
 P_rd_t1 = P_dd_t1 ;
@@ -618,7 +645,6 @@ Pfz_dr_t2 = Pfz_dd_t2 ;
 Pfz_rd_t2 = Pfz_dd_t2 ;
 Pfz_rr_t2 = Pfz_dd_t2 ;
 
-% +++++++++++++++++++++++++
 disp('calculating...')
 tic ;
 
@@ -644,12 +670,12 @@ for fz = 1 : Nfz    % Fresnel Zones
 %         tp_iI = [1 0; 0 1] ;
 %         tp_o = [1 0; 0 1] ;
 %         tp_oI = [1 0; 0 1] ;
-        %% Calculate Reflection Coefficient
+        % Calculate Reflection Coefficient
         thiI = degtorad(180 - thidI) ;        % incident angle
         thsI = degtorad(180 - thsdI(pp)) ;    % scattered angle
         [RGH_iI, RGV_iI, RGH_oI, RGV_oI] = reflectionCoeff(thiI, thsI, epsg, h) ;
 
-        %% Antenna Pattern Matrix
+        % Antenna Pattern Matrix
         % 2 X 2
         g_ro = squeeze(gr(pp, :, :)) ;
         g_roI = squeeze(grI(pp, :, :)) ;
@@ -659,14 +685,15 @@ for fz = 1 : Nfz    % Fresnel Zones
         G_ro = calc_Muller(g_ro) ;
         G_roI = calc_Muller(g_roI) ;                  
 
-        %% Rotation Matrix
+        % Rotation Matrix
         % 2 X 2
         u_gar = squeeze(u_gar2(pp, :, :)) ;
         u_garI = squeeze(u_garI2(pp, :, :)) ;
         % 4 X 4
         U_gar = calc_Muller(u_gar) ;
         U_garI = calc_Muller(u_garI) ;
-        %% Bistatic Scattering Amplitude
+        
+        % Bistatic Scattering Amplitude
         f_oi = squeeze(BISTATIC1(pp, :, :)) ;
         f_oIi = squeeze(BISTATIC2(pp, :, :)) ;
         f_oiI = squeeze(BISTATIC3(pp, :, :)) ;
@@ -690,13 +717,13 @@ for fz = 1 : Nfz    % Fresnel Zones
 %         B_dr = 1 ; % 
 %         B_rr = 1 ; %
             
-        %% Ground Reflection Matrices ===============
+        % Ground Reflection Matrices
         rg_iI = [RGV_iI 0; 0 RGH_iI] ;
         rg_oI = [RGV_oI 0; 0 RGH_oI] ;            
 % %             rg_iI = [1 0; 0 1] ;
 % %             rg_oI = [1 0; 0 1] ;
 
-        %% Calculate Scattering Matrices =========================
+        % Calculate Scattering Matrices
         % 2 X 2
         s_dd = tp_o * f_oi * tp_i ;
         s_rd = tp_oI * rg_oI * f_oIi * tp_i ;
@@ -708,7 +735,8 @@ for fz = 1 : Nfz    % Fresnel Zones
         sig_dr = 4 * pi * calc_Muller(s_dr) ;
         sig_rr = 4 * pi * calc_Muller(s_rr) ;
 
-        %% ======== summing over indivdual contributions=================
+        
+        %% SUM OVER INDIVIDUAL CONTRIBUTIONS
         % 2 X 1
         bfz_dd_t1(:, fz) = bfz_dd_t1(:, fz) + B_dd * g_ro * u_gar * s_dd * u_ts * g_t * e_t1 ;
         bfz_rd_t1(:, fz) = bfz_rd_t1(:, fz) + B_rd * g_roI * u_garI * s_rd * u_ts * g_t * e_t1 ;
@@ -733,7 +761,8 @@ for fz = 1 : Nfz    % Fresnel Zones
         
     end % Npart -- pp
     
-    %% === summing over fresnel zones =================    
+    
+    %% SUM OVER FRESNEL ZONES   
     for ii = 1 : fz
         % 2 X 1
         b_dd_t1(:, fz) = b_dd_t1(:, fz) + bfz_dd_t1(:, ii) ;
@@ -758,21 +787,20 @@ for fz = 1 : Nfz    % Fresnel Zones
         P_rr_t2(:, fz) = P_rr_t2(:, fz) + Pfz_rr_t2(:, ii) ;
         
     end
-    %%=================================================
     
 end % Nfz -- fz
 toc
        
 end
 
-%% Calculate Transmissivity Matrices
 
+%% Calculate Transmissivity Matrices
 function [tp_i, tp_iI, tp_o, tp_oI] = CalcTransMat(layerIndex, zp, D, dKz_i, dKz_iI, dKz_o, dKz_oI)
 % zp: particle center of gravity position with absolute z-values starting 
 % from zero-ground  
 
 
-% Convert absoulte z-alues to relative ones within the vegetation layer
+% Convert absoulte z-values to relative ones within the vegetation layer
 % where vegetation top is zero.
 zp = zp - sum(D);
 

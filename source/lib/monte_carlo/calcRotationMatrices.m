@@ -7,6 +7,7 @@ function calcRotationMatrices
 
 %% GET GLOBAL DIRECTORIES
 dir_config = SimulationFolders.getInstance.config;
+dir_ant_lookup = SimulationFolders.getInstance.ant_lookup;
 dir_rot_lookup = SimulationFolders.getInstance.rot_lookup ;
 
 
@@ -15,6 +16,8 @@ dir_rot_lookup = SimulationFolders.getInstance.rot_lookup ;
 polT = SatParams.getInstance.polT;
 % Receiver Parameters
 polR = RecParams.getInstance.polR;
+% Ground Parameters
+polG = GndParams.getInstance.polG;
 
 
 %% READ AND LOAD META-DATA
@@ -45,7 +48,7 @@ filenamex = 'TgtI' ;
 TgtI = readVar(dir_config, filenamex) ;
 
 % Antenna Pattern and Look-up Angles (th and ph)
-load([SimulationFolders.getInstance.ant_lookup '\AntPat.mat'], 'th', 'ph')
+load([dir_ant_lookup '\AntPat.mat'], 'th', 'ph')
 
 % Polarization Definitions
 % antenna polarizations = Y, X, R, L
@@ -53,6 +56,7 @@ load([SimulationFolders.getInstance.ant_lookup '\AntPat.mat'], 'th', 'ph')
 
 
 %% CALCULATIONS
+
 % Rotation Matrix (Transmitter to Receiver)
 % u_t_r(i_d^-)
 
@@ -75,7 +79,7 @@ toc
 
 disp('Rotation Matrix (Transmitter to Specular) . . .')
 tic ;
-[ut1, ut2, uvsi, uhsi] = tanUnitVectors(Tgt, Tgs, isn, polT, GndParams.getInstance.polG) ;
+[ut1, ut2, uvsi, uhsi] = tanUnitVectors(Tgt, Tgs, isn, polT, polG) ;
 
 % Polarization Basis Dot Products
 u11 = dot(ut1, conj(uvsi)) ; u12 = dot(ut2, conj(uvsi)) ;
@@ -106,7 +110,7 @@ u_tIs = u_ts ; %% added april 29, 2017
 
 disp('Rotation Matrix (Specular to Receiver) . . .')
 tic ;
-[uvso, uhso, ur1, ur2] = tanUnitVectors(Tgs, Tgr, osp, GndParams.getInstance.polG, polR) ;
+[uvso, uhso, ur1, ur2] = tanUnitVectors(Tgs, Tgr, osp, polG, polR) ;
 
 % Polarization Basis Dot Products
 u11 = dot(uvso, conj(ur1)) ; u12 = dot(uhso, conj(ur1)) ;
@@ -142,7 +146,7 @@ for t = 1 : Nth
         thpt = th(p, t) ; phpt = ph(p, t) ;
         oap_rf = -[sin(thpt) .* cos(phpt); sin(thpt) .* sin(phpt); cos(thpt)] ;
         oap = Tgr' * oap_rf ;   % in reference (ground) plane
-        [uvo, uho, ur1, ur2] = tanUnitVectors(Tgs, Tgr, oap, GndParams.getInstance.polG, polR) ;
+        [uvo, uho, ur1, ur2] = tanUnitVectors(Tgs, Tgr, oap, polG, polR) ;
         
         % Polarization Basis Dot Products        
         u11 = dot(uvo, conj(ur1)) ; u12 = dot(uho, conj(ur1)) ;
