@@ -10,6 +10,7 @@ dir_afsa = SimulationFolders.getInstance.afsa;
 % Satellite Parameters
 f_Hz = SatParams.getInstance.f_MHz * Constants.MHz2Hz ;
 % Vegetation Parameters
+TYPES = VegParams.getInstance.TYPES;
 dim_layers_m = VegParams.getInstance.dim_layers_m;
 TYPKND = VegParams.getInstance.TYPKND;
 dsty = VegParams.getInstance.dsty;
@@ -41,7 +42,7 @@ for ii = 1 : Nlayer
         
         for kk = 1 : Nkind
             
-            if jj == VegParams.getInstance.TYPES.L % Elliptic Disk (Leaf)
+            if jj == TYPES.L % Elliptic Disk (Leaf)
                 
                 A = dim1_m(kk, jj, ii) ;
                 B = dim2_m(kk, jj, ii) ;

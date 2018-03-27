@@ -3,21 +3,15 @@
 
 function realizeRotation(indRealization)
 
-
-% indRealization : Nth Realization
-% indRealization = 1 ;
-
-
-%% Reading vegetation parameters...
+%% GET GLOBAL PARAMETERS
+% Vegetation Parameters
 scat_cal_veg = VegParams.getInstance.scat_cal_veg;
-
 TYPKND = VegParams.getInstance.TYPKND;
 
 
-%% Layer parameters
+%% CALCULATIONS
+% Layer parameters
 [Nlayer, Ntype] = size(TYPKND) ;
-
-%% Calculations...
 
 for ii = 1 : Nlayer
     
@@ -38,9 +32,7 @@ for ii = 1 : Nlayer
                 
                 disp('calculating...')
 
-                % +++++++++++++
                 calc(filename)
-                % +++++++++++++
 
                 disp('done...')
                 
@@ -60,54 +52,51 @@ for ii = 1 : Nlayer
 end % Nlayer
 
 
-
-
 end
+
 
 function calc(filename)
 
-% Npart
-% thrd
-% phrd
-% thrdI
-% phrdI
+%% GET GLOBAL DIRECTORY
+dir_observation = SimulationFolders.getInstance.observation;
+dir_rot_lookup = SimulationFolders.getInstance.rot_lookup ;
+dir_rot_real = SimulationFolders.getInstance.rot_real ;
 
-%% Reading Receiver Observation Angles
 
+%% READ OR LOAD META-DATA
+% Receiver Observation Angles
 disp('Reading observation angles...')
 tic;
-pathname = SimulationFolders.getInstance.observation ;
 filenamex = strcat('thrd_', filename) ;
-thrd = readVar(pathname, filenamex) ;
+thrd = readVar(dir_observation, filenamex) ;
 filenamex = strcat('thrdI_', filename) ;
-thrdI = readVar(pathname, filenamex) ;
+thrdI = readVar(dir_observation, filenamex) ;
 filenamex = strcat('phrd_', filename) ;
-phrd = readVar(pathname, filenamex) ;
+phrd = readVar(dir_observation, filenamex) ;
 filenamex = strcat('phrdI_', filename) ;
-phrdI = readVar(pathname, filenamex) ;
+phrdI = readVar(dir_observation, filenamex) ;
 toc
 
 Npart = length(thrd) ;
-%% Gennting th and ph
+
+% Antenna Pattern and Lookup Angles (th and ph)
 load([SimulationFolders.getInstance.ant_lookup '\AntPat.mat'], 'th', 'ph')
 
-
-%% Realization of Rotation matrices
+% Realization of Rotation matrices
 disp('loading Rotation Matrices . . .')
 tic ;
-pathname = SimulationFolders.getInstance.rot_lookup ;
 % 2 X 2
-load([pathname '\u_gar.mat'], 'u_gar', 'th', 'ph')
-load([pathname '\u_garI.mat'], 'u_garI', 'th', 'ph')
-load([pathname '\u_sr.mat'], 'u_sr')
-load([pathname '\u_ts.mat'], 'u_ts')
-load([pathname '\u_tr.mat'], 'u_tr')
+load([dir_rot_lookup '\u_gar.mat'], 'u_gar', 'th', 'ph')
+load([dir_rot_lookup '\u_garI.mat'], 'u_garI', 'th', 'ph')
+load([dir_rot_lookup '\u_sr.mat'], 'u_sr')
+load([dir_rot_lookup '\u_ts.mat'], 'u_ts')
+load([dir_rot_lookup '\u_tr.mat'], 'u_tr')
 % % % 4 X 4
-% % load([pathname '\U_gar.mat'], 'U_gar', 'th', 'ph')
-% % load([pathname '\U_garI.mat'], 'U_garI', 'th', 'ph')
-% % load([pathname '\U_sr.mat'], 'U_sr')
-% % load([pathname '\U_ts.mat'], 'U_ts')
-% % load([pathname '\U_tr.mat'], 'U_tr')
+% % load([dir_rot_lookup '\U_gar.mat'], 'U_gar', 'th', 'ph')
+% % load([dir_rot_lookup '\U_garI.mat'], 'U_garI', 'th', 'ph')
+% % load([dir_rot_lookup '\U_sr.mat'], 'U_sr')
+% % load([dir_rot_lookup '\U_ts.mat'], 'U_ts')
+% % load([dir_rot_lookup '\U_tr.mat'], 'U_tr')
 toc
 
 thd = round( 2 * th * Constants.rad2deg ) / 2 ; % rounding operation is due to accuracy concerns
@@ -151,27 +140,24 @@ for ii = 1 : Npart
 end
 toc
 
-%% Saving Rotation Matrix values
+
+%% SAVE
+% Rotation Matrix values
 disp('saving rotation matrices...')
 tic;
-pathname = SimulationFolders.getInstance.rot_real ;
 
 % 2 X 2
 filenamex = strcat('u_gar_', filename) ;
-writeComplexVar(pathname, filenamex, u_gar2)
+writeComplexVar(dir_rot_real, filenamex, u_gar2)
 filenamex = strcat('u_garI_', filename) ;
-writeComplexVar(pathname, filenamex, u_garI2)
+writeComplexVar(dir_rot_real, filenamex, u_garI2)
 % % % 4 X 4
 % % filenamex = strcat('U_gar_', filename) ;
-% % writeComplexVar(pathname, filenamex, U_gar2)
+% % writeComplexVar(dir_rot_real, filenamex, U_gar2)
 % % filenamex = strcat('U_garI_', filename) ;
-% % writeComplexVar(pathname, filenamex, U_garI2)
+% % writeComplexVar(dir_rot_real, filenamex, U_garI2)
 
 toc
-
-
-
-
 
 end
 

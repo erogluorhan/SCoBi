@@ -15,10 +15,12 @@ dir_out_specular = SimulationFolders.getInstance.out_specular;
 
 %% GET GLOBAL PARAMETERS
 % Receiver Parameters
-G0r = convertDecibelToNatural( RecParams.getInstance.G0r_dB );
+G0r_dB = RecParams.getInstance.G0r_dB;
+G0r = convertDecibelToNatural( G0r_dB );
 polR = RecParams.getInstance.polR;
 % Satellite Parameters
-EIRP = convertDecibelToNatural( SatParams.getInstance.EIRP_dB );
+EIRP_dB = SatParams.getInstance.EIRP_dB;
+EIRP = convertDecibelToNatural( EIRP_dB );
 f_MHz = SatParams.getInstance.f_MHz;
 g_t = SatParams.getInstance.g_t ; % ideal
 e_t1 = SatParams.getInstance.e_t1 ; 
@@ -75,7 +77,6 @@ r_sr = vectorMagnitude(RS) ;  % slant range
 f_Hz = f_MHz * Constants.MHz2Hz ;
 lambda_m = Constants.c / f_Hz ;     % Wavelength
 k0 = 2 * pi * f_Hz / Constants.c ;    % Wave number
-
 
 % Factor Kc
 K = 1i * sqrt(EIRP) * sqrt(G0r) * lambda_m / (4 * pi) ;
@@ -212,7 +213,7 @@ filename = 'dKz' ;
 dKz = readComplexVar(dir_afsa, filename) ;
 filename = 'ANGDEG' ;
 ANGDEG = readVar(dir_afsa, filename) ;
-% Ground Parameters
+% Ground Data
 filename = 'G' ;
 grnd_par = readVar(dir_gnd, filename) ;
 % Layer Thickness

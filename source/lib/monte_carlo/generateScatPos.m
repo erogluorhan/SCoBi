@@ -6,8 +6,8 @@ function generateScatPos(ind_realization, Nr_current)
 % of a vegetation field of the selected vegetation_method. 
 % Defined over Fresnel Zones
 % PARAMS:
-% ind_realization: Current index of the realization that is performed
-% Nr_current: Existing number of realizations in the simulation directory
+%   ind_realization: Current index of the realization that is performed
+%   Nr_current: Existing number of realizations in the simulation directory
 
 
 %% GET GLOBAL PARAMETERS
@@ -30,6 +30,7 @@ elseif strcmp( vegetation_method, Constants.veg_methods.VIRTUAL )
     
     else
         
+        % TO-DO: Implement this method
         generateVirRndScatPositions();
     
     end

@@ -230,8 +230,8 @@ function generateVirRowScatPositions( ind_realization, Nr_current )
     end
 
     % Adjust the vegetation top layer height
-    if highestPlantHeight < sum( VegParams.getInstance.dim_layers_m )
-        highestPlantHeight = sum( VegParams.getInstance.dim_layers_m ); 
+    if highestPlantHeight < sum( dim_layers_m )
+        highestPlantHeight = sum( dim_layers_m ); 
     end
 
 %     % TO-DO: Should be deprecated since virtual vegetation stuies are planned to have only one layer !

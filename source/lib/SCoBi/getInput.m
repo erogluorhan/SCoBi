@@ -1,7 +1,7 @@
 function getInput
 
-% input_files_xml = xmlread( strcat( Directories.getInstance.input, '\', 'inputFiles-Corn.xml' ) );
-input_files_xml = xmlread( strcat( Directories.getInstance.input, '\', 'inputFiles-Paulownia.xml' ) );
+input_files_xml = xmlread( strcat( Directories.getInstance.input, '\', 'inputFiles-Corn.xml' ) );
+% input_files_xml = xmlread( strcat( Directories.getInstance.input, '\', 'inputFiles-Paulownia.xml' ) );
 
 inputFile_sys = getStringFromXML(input_files_xml, ConstantNames.sys_input);
 inputFile_veg = getStringFromXML(input_files_xml, ConstantNames.veg_input);
@@ -322,7 +322,7 @@ phi_row_deg = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_phiRow_deg);   % 
 
 plant_row_spread_m = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_plantRowSpread_m);  % Max scattering dist. of a plant pos between rows (m)                       
 
-plant_col_spread_m = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_plantColSpreadM);  % Max scattering dist. of a plant pos within a row (m)
+plant_col_spread_m = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_plantColSpread_m);  % Max scattering dist. of a plant pos within a row (m)
 
 plugin = getStringFromXML(xDoc, ConstantNames.veg_vir_row_plugin);  % Plugin name to be run for virtual vegetation generation    
 

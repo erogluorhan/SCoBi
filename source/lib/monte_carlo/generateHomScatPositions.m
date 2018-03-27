@@ -1,23 +1,28 @@
 function generateHomScatPositions( ind_realization )
  
-AllPoints_m = readVar(SimulationFolders.getInstance.config, 'AllPoints_m') ;
+%% GET GLOBAL DIRECTORIES
+dir_config = SimulationFolders.getInstance.config;
 
-pT_m = AllPoints_m(:, 1) ;          % Transmitter position
 
-ht = pT_m(3) ;                    % Transmitter height
-
-%% Reading vegetation parameters...
+%% GET GLOBAL PARAMETERS
+% Vegetation Parameters
 dim_layers_m = VegParams.getInstance.dim_layers_m;
-
 scat_cal_veg = VegParams.getInstance.scat_cal_veg;
-
 TYPKND = VegParams.getInstance.TYPKND;
-
 dsty = VegParams.getInstance.dsty;
-
 dim3_m = VegParams.getInstance.dim3_m;
 
-%% Layer parameters
+
+%% READ META-DATA
+% All Positions
+AllPoints_m = readVar(dir_config, 'AllPoints_m') ;
+pT_m = AllPoints_m(:, 1) ;          % Transmitter position
+ht = pT_m(3) ;                    % Transmitter height
+
+
+%% CALCULATIONS
+
+% Layer parameters
 [Nlayer, Ntype] = size(TYPKND) ;
 
 %% Calculations...
@@ -85,6 +90,7 @@ vegetation_plant = SimParams.getInstance.vegetation_plant;
 % Receiver Parameters
 hr_m = RecParams.getInstance.hr_m ;     % Receiver height
 % Vegetation Parameters
+TYPES = VegParams.getInstance.TYPES;
 dim_layers_m = VegParams.getInstance.dim_layers_m;
 
 
@@ -145,7 +151,7 @@ for fz = 1 : Nfz
     
     for ii = N1 : N2
         
-        if ifT == VegParams.getInstance.TYPES.T
+        if ifT == TYPES.T
             % The trunk is attached to the ground
             % Calculate the position for center of gravity
             zp(ii, 1) = -de + LEN / 2 ;            
