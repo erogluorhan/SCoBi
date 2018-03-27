@@ -355,7 +355,8 @@ classdef ParamsManager
             % Simulation Parameters
             Nr = SimParams.getInstance.Nr;
             vegetation_method = SimParams.getInstance.vegetation_method;
-            % Vegetation Parameters
+            % Vegetation Parameters            
+            readExistingVegParams;
             scat_cal_veg = VegParams.getInstance.scat_cal_veg;
             num_scat_cal = sum(sum(sum(scat_cal_veg))) ;
             
@@ -368,7 +369,7 @@ classdef ParamsManager
                     return
                 end
             
-            else vegetation_method == Constants.veg_methods.VIRTUAL
+            elseif vegetation_method == Constants.veg_methods.VIRTUAL
                 if ~calc_diffuse_term && ~calc_specular_term
                     dispMsg = 'Generate Scatterer Positions - SKIPPED (User Preferences - No Specular and Diffuse Term)';
                     Nr_current = NaN;
@@ -376,9 +377,7 @@ classdef ParamsManager
                     return
                 end
             end
-            
-            readExistingVegParams;
-                        
+                                    
             % If passes user preferences, check the existence of files
             all_files = dir(dir_position);
             num_files = numel(all_files) - 2;
