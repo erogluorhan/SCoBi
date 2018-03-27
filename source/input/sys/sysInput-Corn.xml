@@ -9,7 +9,7 @@
         <!--  calc_diffuse_term - 0/1 for whether to calculate Diffuse Term --> 
         <!--   --> 
 
-        <sim_mode>0</sim_mode>
+        <sim_mode>1</sim_mode>
         <ground_cover>1</ground_cover>
 
         <write_attenuation>1</write_attenuation>
