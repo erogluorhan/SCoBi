@@ -11,7 +11,7 @@ classdef VegParams < handle
         
         % Vegetation stage to separate simulations for different stages of 
         % the same vegetation 
-        vegetation_stage
+        vegetation_stage;
         
         % Vegetation particle types struct
         % L: Leaf
@@ -24,13 +24,13 @@ classdef VegParams < handle
         dim_layers_m = 0;
         
         % Number of layers
-        num_layers = 1
+        num_layers = 1;
         
         
-        TYPKND
+        TYPKND;
         
        
-        sTYPKND
+        sTYPKND;
         
         
         num_types;
@@ -42,10 +42,10 @@ classdef VegParams < handle
         scat_cal_veg;
         
         
-        LTK
+        LTK;
         
         
-        dsty
+        dsty;
         
         
         dim1_m

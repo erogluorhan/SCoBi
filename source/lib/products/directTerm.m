@@ -14,7 +14,7 @@ dir_out_direct = SimulationFolders.getInstance.out_direct;
 
 %% GET GLOBAL PARAMETERS
 % Satellite Parameters
-f_MHz = SatParams.getInstance.f_MHz
+f_MHz = SatParams.getInstance.f_MHz;
 EIRP_dB = SatParams.getInstance.EIRP_dB;
 EIRP = convertDecibelToNatural( EIRP_dB );
 g_t = SatParams.getInstance.g_t;
