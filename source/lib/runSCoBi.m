@@ -34,7 +34,7 @@ function runSCoBi
 % Reset the current state of the workspace
 resetCurrentState;
 
-%startGUI;
+startGUI;
 
 % Get input and check validity
 getInput;
