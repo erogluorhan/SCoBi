@@ -146,11 +146,11 @@ classdef ParamsManager
             % Simulation Parameters
             sim_mode = SimSettings.getInstance.sim_mode;
             % Satellite Parameters
-            num_Th = length( SatParams.getInstance.th0_deg );
-            num_Ph = length( SatParams.getInstance.PH0_deg );
+            num_Th = length( SatParams.getInstance.th0_list_deg );
+            num_Ph = length( SatParams.getInstance.PH0_list_deg );
             % Ground Parameters
-            num_VSM = length( GndParams.getInstance.VSM_cm3cm3 );
-            num_RMSH = length( GndParams.getInstance.RMSH_cm );
+            num_VSM = length( GndParams.getInstance.VSM_list_cm3cm3 );
+            num_RMSH = length( GndParams.getInstance.RMSH_list_cm );
             
             
             isValid = 0;
@@ -605,14 +605,11 @@ classdef ParamsManager
         function [result, dispMsg] = isToCalculateSpecularTerm()
             
             %% GET GLOBAL DIRECTORIES
-            dir_out_specular = SimulationFolders.getInstance.out_specular;
+            dir_out_specular_tuple = SimulationFolders.getInstance.out_specular_tuple;
             
             %% GET GLOBAL PARAMETERS
             % Simulation Settings
             calc_specular_term = SimSettings.getInstance.calc_specular_term;
-            % Ground Parameters
-            VSM_cm3cm3 = GndParams.getInstance.VSM_cm3cm3;
-            RMSH_cm = GndParams.getInstance.RMSH_cm;
                         
             % First check the user preferences
             if ~calc_specular_term
@@ -621,13 +618,11 @@ classdef ParamsManager
                 return
             end            
             
-            % If passes user preferences, check the existence of files
-            outName = strcat(dir_out_specular, '\VSM_', num2str( VSM_cm3cm3( ParamsManager.index_VSM ) ), '-RMSH_', num2str(RMSH_cm( ParamsManager.index_RMSH )) );
-            
+            % If passes user preferences, check the existence of files           
             num_files = 0;
             
-            if ( exist(outName,'dir') == 7 )
-                all_files = dir(outName);
+            if ( exist(dir_out_specular_tuple,'dir') == 7 )
+                all_files = dir(dir_out_specular_tuple);
                 num_files = numel(all_files) - 2;
             end
             
@@ -644,7 +639,7 @@ classdef ParamsManager
         function [result, dispMsg] = isToCalculateDiffuseTerm()
             
             %% GET GLOBAL DIRECTORIES
-            dir_freqdiff_b1 = SimulationFolders.getInstance.freqdiff_b1;
+            dir_freqdiff_b1_tuple = SimulationFolders.getInstance.freqdiff_b1_tuple;
             
             %% GET GLOBAL PARAMETERS
             % Simulation Settings
@@ -652,8 +647,8 @@ classdef ParamsManager
             % Simulation Parameters
             Nr = SimParams.getInstance.Nr;
             % Ground Parameters
-            VSM_cm3cm3 = GndParams.getInstance.VSM_cm3cm3;
-            RMSH_cm = GndParams.getInstance.RMSH_cm;
+            VSM_list_cm3cm3 = GndParams.getInstance.VSM_list_cm3cm3;
+            RMSH_list_cm = GndParams.getInstance.RMSH_list_cm;
                         
             % First check the user preferences
             if ~calc_diffuse_term
@@ -662,13 +657,11 @@ classdef ParamsManager
                 return
             end            
             
-            % If passes user preferences, check the existence of files
-            outName = strcat(dir_freqdiff_b1, '\', 'VSM_', num2str( VSM_cm3cm3( ParamsManager.index_VSM ) ), '-RMSH_', num2str( RMSH_cm( ParamsManager.index_RMSH )));
-            
+            % If passes user preferences, check the existence of files            
             Nr_current = 0;
             
-            if ( exist(outName,'dir') == 7 )
-                all_files = dir(outName);
+            if ( exist(dir_freqdiff_b1_tuple,'dir') == 7 )
+                all_files = dir(dir_freqdiff_b1_tuple);
                 num_files = numel(all_files) - 2;
                 Nr_current = num_files / Constants.factor_frediff_b1;
             end

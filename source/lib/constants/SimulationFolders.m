@@ -14,6 +14,8 @@ classdef SimulationFolders < handle
         campaign_date
         plot
         
+        analysis
+        
         hr
         gnd
         veg
@@ -35,36 +37,60 @@ classdef SimulationFolders < handle
         ant
         ant_lookup
         ant_real
+        
         rot
         rot_lookup
         rot_real
+        
         freq
         freqdiff
         freqdiff_b1
+        freqdiff_b1_tuple
         freqdiff_b2
+        freqdiff_b2_tuple
         freqdiff_b3
+        freqdiff_b3_tuple
         freqdiff_b4
+        freqdiff_b4_tuple
         freqdiff_P1
+        freqdiff_P1_tuple
         freqdiff_P2
+        freqdiff_P2_tuple
         freqdiff_P3
+        freqdiff_P3_tuple
         freqdiff_P4
+        freqdiff_P4_tuple
+        
         out
         out_direct
         out_specular
+        out_specular_tuple
         out_diffuse
         out_diffuse_b1
         out_diffuse_b2
         out_diffuse_b3
         out_diffuse_b4
         out_diffuse_P1
+        out_diffuse_P1_tuple
         out_diffuse_P2
+        out_diffuse_P2_tuple
         out_diffuse_P3
+        out_diffuse_P3_tuple
         out_diffuse_P4
+        out_diffuse_P4_tuple
         out_diffuse_NBRCS
+        out_diffuse_NBRCS_tuple
+        
         fig
         fig_direct
         fig_specular
+        fig_specular_P
+        fig_specular_P_vsTH
         fig_diffuse
+        fig_diffuse_P1_vsTH
+        fig_diffuse_NBRCS_vsTH
+        fig_diffuse_P1_vsFZ
+        fig_diffuse_NBRCS_vsFZ
     end
     
     
@@ -132,6 +158,9 @@ classdef SimulationFolders < handle
             obj.sim_name = strcat( obj.plot, '-', SimParams.getInstance.sim_name );
             
             
+            %% Analysis
+            obj.analysis = strcat( obj.sim_name, '\', 'Anaysis') ;  
+            
             %% Receiver Height
             obj.hr = strcat( obj.sim_name, hr_folder) ;  
             
@@ -160,13 +189,23 @@ classdef SimulationFolders < handle
         function initializeDynamicDirs(obj)
             % Initialize dynamically changing simulation directories
             
-            %% Get Global Parameters
-            th0_deg = SatParams.getInstance.th0_deg;
-            PH0_deg = SatParams.getInstance.PH0_deg;
+            %% GET GLOBAL PARAMETERS
+            % Ground Parameters
+            VSM_cm3cm3 = GndParams.getInstance.VSM_list_cm3cm3( ParamsManager.index_VSM );
+            RMSH_cm = GndParams.getInstance.RMSH_list_cm( ParamsManager.index_RMSH );
+            % Satellite Parameters
+            th0_list_deg = SatParams.getInstance.th0_list_deg;
+            PH0_list_deg = SatParams.getInstance.PH0_list_deg;
+            polT = SatParams.getInstance.polT;
+            % Receiver Parameters
+            hpbw_deg = RecParams.getInstance.hpbw_deg;
+            SLL_dB = RecParams.getInstance.SLL_dB;
+            XPL_dB = RecParams.getInstance.XPL_dB;
+            polR = RecParams.getInstance.polR;
             
             %% Angle of incidence
-            th0d_folder = strcat('th0d_', num2str( th0_deg( ParamsManager.index_Th ) ), ...
-                                 '-ph0d_', num2str( PH0_deg( ParamsManager.index_Ph ) ) ) ;
+            th0d_folder = strcat('th0d_', num2str( th0_list_deg( ParamsManager.index_Th ) ), ...
+                                 '-ph0d_', num2str( PH0_list_deg( ParamsManager.index_Ph ) ) ) ;
             obj.th0_deg = strcat(obj.sim_mode, '\', th0d_folder) ;
             
             %% Bistatic Scattering Amplitudes
@@ -182,14 +221,14 @@ classdef SimulationFolders < handle
             obj.observation = strcat(obj.geo, '\', 'OBSERVATION') ;
             
             %% Polarization
-            obj.pol = strcat(obj.th0_deg, '\', SatParams.getInstance.polT, RecParams.getInstance.polR) ;
+            obj.pol = strcat(obj.th0_deg, '\', polT, polR) ;
             
             %Configuration
             obj.config = strcat(obj.th0_deg, '\', 'CONFIG') ;
             
             %% Antenna
-            FolderNameAnt = strcat('thsd_', num2str(RecParams.getInstance.hpbw_deg),...
-                '-SLL_', num2str(RecParams.getInstance.SLL_dB), '-XPL_', num2str(RecParams.getInstance.XPL_dB)) ;
+            FolderNameAnt = strcat('thsd_', num2str( hpbw_deg ),...
+                '-SLL_', num2str( SLL_dB ), '-XPL_', num2str( XPL_dB )) ;
             obj.ant = strcat(obj.th0_deg, '\', 'ANT\', FolderNameAnt) ;            
             obj.ant_lookup = strcat(obj.ant, '\', 'LOOK-UP') ;            
             obj.ant_real = strcat(obj.ant, '\', 'REALIZATION') ;
@@ -202,35 +241,55 @@ classdef SimulationFolders < handle
             %% Frequency Response
             obj.freq = strcat(obj.pol, '\FREQ\', FolderNameAnt) ;            
             obj.freqdiff = strcat(obj.freq, '\', 'DIFFUSE') ;            
-            obj.freqdiff_b1 = strcat(obj.freqdiff, '\', 'b1') ;            
-            obj.freqdiff_b2 = strcat(obj.freqdiff, '\', 'b2') ;            
-            obj.freqdiff_b3 = strcat(obj.freqdiff, '\', 'b3') ;            
-            obj.freqdiff_b4 = strcat(obj.freqdiff, '\', 'b4') ;            
-            obj.freqdiff_P1 = strcat(obj.freqdiff, '\', 'P1') ;            
-            obj.freqdiff_P2 = strcat(obj.freqdiff, '\', 'P2') ;            
-            obj.freqdiff_P3 = strcat(obj.freqdiff, '\', 'P3') ;            
+            obj.freqdiff_b1 = strcat(obj.freqdiff, '\', 'b1') ;          
+            obj.freqdiff_b1_tuple = strcat(obj.freqdiff_b1, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;            
+            obj.freqdiff_b2 = strcat(obj.freqdiff, '\', 'b2') ; 
+            obj.freqdiff_b2_tuple = strcat(obj.freqdiff_b2, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;             
+            obj.freqdiff_b3 = strcat(obj.freqdiff, '\', 'b3') ; 
+            obj.freqdiff_b3_tuple = strcat(obj.freqdiff_b3, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;             
+            obj.freqdiff_b4 = strcat(obj.freqdiff, '\', 'b4') ;  
+            obj.freqdiff_b4_tuple = strcat(obj.freqdiff_b4, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;            
+            obj.freqdiff_P1 = strcat(obj.freqdiff, '\', 'P1') ;  
+            obj.freqdiff_P1_tuple = strcat(obj.freqdiff_P1, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;            
+            obj.freqdiff_P2 = strcat(obj.freqdiff, '\', 'P2') ; 
+            obj.freqdiff_P2_tuple = strcat(obj.freqdiff_P2, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;             
+            obj.freqdiff_P3 = strcat(obj.freqdiff, '\', 'P3') ; 
+            obj.freqdiff_P3_tuple = strcat(obj.freqdiff_P3, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;             
             obj.freqdiff_P4 = strcat(obj.freqdiff, '\', 'P4') ;
+            obj.freqdiff_P4_tuple = strcat(obj.freqdiff_P4, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;  
             
             %% Output
             obj.out = strcat(obj.pol, '\OUTPUT\', FolderNameAnt) ;
             obj.out_direct = strcat(obj.out, '\', 'DIRECT') ;
             obj.out_specular = strcat(obj.out, '\', 'SPECULAR') ;
+            obj.out_specular_tuple = strcat(obj.out_specular, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ; 
             obj.out_diffuse = strcat(obj.out, '\', 'DIFFUSE') ;
             obj.out_diffuse_b1 = strcat(obj.out_diffuse, '\', 'b1') ;
             obj.out_diffuse_b2 = strcat(obj.out_diffuse, '\', 'b2') ;
             obj.out_diffuse_b3 = strcat(obj.out_diffuse, '\', 'b3') ;
             obj.out_diffuse_b4 = strcat(obj.out_diffuse, '\', 'b4') ;
             obj.out_diffuse_P1 = strcat(obj.out_diffuse, '\', 'P1') ;
+            obj.out_diffuse_P1_tuple = strcat(obj.out_diffuse_P1, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ; 
             obj.out_diffuse_P2 = strcat(obj.out_diffuse, '\', 'P2') ;
+            obj.out_diffuse_P2_tuple = strcat(obj.out_diffuse_P2, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ; 
             obj.out_diffuse_P3 = strcat(obj.out_diffuse, '\', 'P3') ;
+            obj.out_diffuse_P3_tuple = strcat(obj.out_diffuse_P3, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ; 
             obj.out_diffuse_P4 = strcat(obj.out_diffuse, '\', 'P4') ;
+            obj.out_diffuse_P4_tuple = strcat(obj.out_diffuse_P4, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ; 
             obj.out_diffuse_NBRCS = strcat(obj.out_diffuse, '\', 'NBRCS') ;
+            obj.out_diffuse_NBRCS_tuple = strcat(obj.out_diffuse_NBRCS, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ; 
             
             %% Figure
-            obj.fig = strcat(obj.hr, '\', 'FIGURE\', FolderNameAnt) ;
+            obj.fig = strcat(obj.sim_mode, '\', 'FIGURE\', polT, polR, '\', FolderNameAnt ) ;
             obj.fig_direct = strcat(obj.fig, '\', 'DIRECT') ;
             obj.fig_specular = strcat(obj.fig, '\', 'SPECULAR') ;
+            obj.fig_specular_P = strcat(obj.fig_specular, '\', 'P') ;
+            obj.fig_specular_P_vsTH = strcat(obj.fig_specular_P, '\', 'vs_TH') ;
             obj.fig_diffuse = strcat(obj.fig, '\', 'DIFFUSE') ;
+            obj.fig_diffuse_P1_vsTH = strcat(obj.fig_diffuse, '\', 'P1', '\', 'vs_TH');
+            obj.fig_diffuse_P1_vsFZ = strcat(obj.fig_diffuse, '\', 'P1', '\', 'vs_FZ');
+            obj.fig_diffuse_NBRCS_vsTH = strcat(obj.fig_diffuse, '\', 'NBRCS', '\', 'vs_TH');
+            obj.fig_diffuse_NBRCS_vsFZ = strcat(obj.fig_diffuse, '\', 'NBRCS', '\', 'vs_FZ');
             
             obj.makeDynamicDirs();
                         
@@ -238,6 +297,11 @@ classdef SimulationFolders < handle
         
         
         function makeStaticDirs(obj)
+        
+            %% Analysis
+            if ~exist(obj.analysis, 'dir')
+                mkdir(obj.analysis);
+            end
         
             %% Receiver Height
             if ~exist(obj.hr, 'dir')
@@ -454,8 +518,32 @@ classdef SimulationFolders < handle
                 mkdir(obj.fig_specular)
             end
 
+            if ~exist(obj.fig_specular_P, 'dir')
+                mkdir(obj.fig_specular_P)
+            end
+
+            if ~exist(obj.fig_specular_P_vsTH, 'dir')
+                mkdir(obj.fig_specular_P_vsTH)
+            end
+
             if ~exist(obj.fig_diffuse, 'dir')
                 mkdir(obj.fig_diffuse)
+            end
+
+            if ~exist(obj.fig_diffuse_P1_vsTH, 'dir')
+                mkdir(obj.fig_diffuse_P1_vsTH)
+            end
+
+            if ~exist(obj.fig_diffuse_P1_vsFZ, 'dir')
+                mkdir(obj.fig_diffuse_P1_vsFZ)
+            end
+
+            if ~exist(obj.fig_diffuse_NBRCS_vsTH, 'dir')
+                mkdir(obj.fig_diffuse_NBRCS_vsTH)
+            end
+
+            if ~exist(obj.fig_diffuse_NBRCS_vsFZ, 'dir')
+                mkdir(obj.fig_diffuse_NBRCS_vsFZ)
             end
         
         end
@@ -490,7 +578,11 @@ classdef SimulationFolders < handle
         
         function out = get.vegetation_plant(obj)
             out = obj.vegetation_plant;
-        end  
+        end   
+        
+        function out = get.analysis(obj)
+            out = obj.analysis;
+        end 
         
         function out = get.hr(obj)
             out = obj.hr;
@@ -584,32 +676,64 @@ classdef SimulationFolders < handle
             out = obj.freqdiff_b1;
         end
         
+        function out = get.freqdiff_b1_tuple(obj)
+            out = obj.freqdiff_b1_tuple;
+        end
+        
         function out = get.freqdiff_b2(obj)
             out = obj.freqdiff_b2;
+        end
+        
+        function out = get.freqdiff_b2_tuple(obj)
+            out = obj.freqdiff_b2_tuple;
         end
         
         function out = get.freqdiff_b3(obj)
             out = obj.freqdiff_b3;
         end
         
+        function out = get.freqdiff_b3_tuple(obj)
+            out = obj.freqdiff_b3_tuple;
+        end
+        
         function out = get.freqdiff_b4(obj)
             out = obj.freqdiff_b4;
+        end
+        
+        function out = get.freqdiff_b4_tuple(obj)
+            out = obj.freqdiff_b4_tuple;
         end
         
         function out = get.freqdiff_P1(obj)
             out = obj.freqdiff_P1;
         end
         
+        function out = get.freqdiff_P1_tuple(obj)
+            out = obj.freqdiff_P1_tuple;
+        end
+        
         function out = get.freqdiff_P2(obj)
             out = obj.freqdiff_P2;
+        end
+        
+        function out = get.freqdiff_P2_tuple(obj)
+            out = obj.freqdiff_P2_tuple;
         end
         
         function out = get.freqdiff_P3(obj)
             out = obj.freqdiff_P3;
         end
         
+        function out = get.freqdiff_P3_tuple(obj)
+            out = obj.freqdiff_P3_tuple;
+        end
+        
         function out = get.freqdiff_P4(obj)
             out = obj.freqdiff_P4;
+        end
+        
+        function out = get.freqdiff_P4_tuple(obj)
+            out = obj.freqdiff_P4_tuple;
         end
         
         function out = get.out(obj)
@@ -648,20 +772,40 @@ classdef SimulationFolders < handle
             out = obj.out_diffuse_P1;
         end
         
+        function out = get.out_diffuse_P1_tuple(obj)
+            out = obj.out_diffuse_P1_tuple;
+        end
+        
         function out = get.out_diffuse_P2(obj)
             out = obj.out_diffuse_P2;
+        end
+        
+        function out = get.out_diffuse_P2_tuple(obj)
+            out = obj.out_diffuse_P2_tuple;
         end
         
         function out = get.out_diffuse_P3(obj)
             out = obj.out_diffuse_P3;
         end
         
+        function out = get.out_diffuse_P3_tuple(obj)
+            out = obj.out_diffuse_P3_tuple;
+        end
+        
         function out = get.out_diffuse_P4(obj)
             out = obj.out_diffuse_P4;
         end
         
+        function out = get.out_diffuse_P4_tuple(obj)
+            out = obj.out_diffuse_P4_tuple;
+        end
+        
         function out = get.out_diffuse_NBRCS(obj)
             out = obj.out_diffuse_NBRCS;
+        end
+        
+        function out = get.out_diffuse_NBRCS_tuple(obj)
+            out = obj.out_diffuse_NBRCS_tuple;
         end
         
         function out = get.fig(obj)
@@ -676,8 +820,32 @@ classdef SimulationFolders < handle
             out = obj.fig_specular;
         end
         
+        function out = get.fig_specular_P(obj)
+            out = obj.fig_specular_P;
+        end
+        
+        function out = get.fig_specular_P_vsTH(obj)
+            out = obj.fig_specular_P_vsTH;
+        end
+        
         function out = get.fig_diffuse(obj)
             out = obj.fig_diffuse;
+        end
+        
+        function out = get.fig_diffuse_P1_vsTH(obj)
+            out = obj.fig_diffuse_P1_vsTH;
+        end
+        
+        function out = get.fig_diffuse_P1_vsFZ(obj)
+            out = obj.fig_diffuse_P1_vsFZ;
+        end
+        
+        function out = get.fig_diffuse_NBRCS_vsTH(obj)
+            out = obj.fig_diffuse_NBRCS_vsTH;
+        end
+        
+        function out = get.fig_diffuse_NBRCS_vsFZ(obj)
+            out = obj.fig_diffuse_NBRCS_vsFZ;
         end
         
     end

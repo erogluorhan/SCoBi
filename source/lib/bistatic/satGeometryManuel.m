@@ -10,8 +10,8 @@ dir_config = SimulationFolders.getInstance.config;
 
 %% GET GLOBAL PARAMETERS
 % Satellite Parameters
-EL0_deg = SatParams.getInstance.EL0_deg( ParamsManager.index_Th );
-PH0_deg = SatParams.getInstance.PH0_deg( ParamsManager.index_Ph );
+EL0_deg = SatParams.getInstance.EL0_list_deg( ParamsManager.index_Th );
+PH0_deg = SatParams.getInstance.PH0_list_deg( ParamsManager.index_Ph );
 
 %% Incoming Signal
 % Angle of Incidence of incoming signal

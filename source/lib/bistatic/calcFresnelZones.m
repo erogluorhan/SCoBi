@@ -9,8 +9,8 @@ function [S0x_m, x1_m, ax1_m, by1_m] = calcFresnelZones(ht_m, hr_m)
 Nfz = SimParams.getInstance.Nfz;
 % Satellite Parameters
 f_Hz = SatParams.getInstance.f_MHz * Constants.MHz2Hz ;
-EL0_deg = SatParams.getInstance.EL0_deg( ParamsManager.index_Th );
-th0t_deg = SatParams.getInstance.th0_deg( ParamsManager.index_Th );
+EL0_deg = SatParams.getInstance.EL0_list_deg( ParamsManager.index_Th );
+th0t_deg = SatParams.getInstance.th0_list_deg( ParamsManager.index_Th );
 
 
 %% CALCULATIONS

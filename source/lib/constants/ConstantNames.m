@@ -18,10 +18,12 @@ classdef ConstantNames
         
         % String constants for Ground Inputs and Params
         gnd_VSM_cm3cm3 = 'VSM_cm3cm3';
+        gnd_VSM_list_cm3cm3 = 'VSM_list_cm3cm3';
         gnd_sand_ratio = 'sand_ratio';
         gnd_clay_ratio = 'clay_ratio';
         gnd_rhob_gcm3 = 'rhob_gcm3';
         gnd_RMSH_cm = 'RMSH_cm';
+        gnd_RMSH_list_cm = 'RMSH_list_cm';
         
         % String constants for Receiver Inputs and Params
         rec_hr_m = 'hr_m';
@@ -36,7 +38,9 @@ classdef ConstantNames
         sat_rsat_m = 'rsat_m';
         sat_rsat_km = 'rsat_km';
         sat_th0_deg = 'th0_deg';
+        sat_th0_list_deg = 'th0_list_deg';
         sat_PH0_deg = 'PH0_deg';
+        sat_PH0_list_deg = 'PH0_list_deg';
         sat_EIRP_dB = 'EIRP_dB';
         sat_polT = 'polT';
         

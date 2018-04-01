@@ -7,7 +7,7 @@ function setConfig
 
 %% GET GLOBAL PARAMETERS
 % Satellite Parameters
-EL0_deg = SatParams.getInstance.EL0_deg( ParamsManager.index_Th );
+EL0_deg = SatParams.getInstance.EL0_list_deg( ParamsManager.index_Th );
 rsat_m = SatParams.getInstance.rsat_m;
 
 % Transmitter Satellite Geometry

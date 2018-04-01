@@ -7,6 +7,7 @@ classdef Directories < handle
     properties (SetAccess = private, GetAccess = public)
         main_dir
         lib
+        analysis
         bistatic
         constants
         gui
@@ -21,7 +22,9 @@ classdef Directories < handle
         input_veg_vir_rnd
         monte_carlo
         param
+        plot
         products
+        SCoBi
         util
     end
     
@@ -58,6 +61,8 @@ classdef Directories < handle
 
             obj.lib = fullfile(obj.main_dir, 'lib');
 
+            obj.analysis = fullfile(obj.lib, 'analysis');
+
             obj.bistatic = fullfile(obj.lib, 'bistatic');
 
             obj.constants = fullfile( obj.lib, 'constants');
@@ -79,7 +84,11 @@ classdef Directories < handle
 
             obj.param = fullfile( obj.lib, 'param');
 
+            obj.plot = fullfile( obj.lib, 'plot');
+
             obj.products = fullfile( obj.lib, 'products');
+
+            obj.SCoBi = fullfile( obj.lib, 'SCoBi');
 
             obj.util = fullfile( obj.lib, 'util');
             
@@ -91,6 +100,10 @@ classdef Directories < handle
         
         function out = get.lib(obj)
             out = obj.lib;        
+        end
+        
+        function out = get.analysis(obj)
+            out = obj.analysis;
         end
         
         function out = get.bistatic(obj)
@@ -149,8 +162,16 @@ classdef Directories < handle
             out = obj.param;
         end
         
+        function out = get.plot(obj)
+            out = obj.plot;
+        end
+        
         function out = get.products(obj)
             out = obj.products;
+        end
+        
+        function out = get.SCoBi(obj)
+            out = obj.SCoBi;
         end
         
         function out = get.util(obj)

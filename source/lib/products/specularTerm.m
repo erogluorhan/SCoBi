@@ -11,6 +11,7 @@ dir_config = SimulationFolders.getInstance.config;
 dir_ant_lookup = SimulationFolders.getInstance.ant_lookup ;
 dir_rot_lookup = SimulationFolders.getInstance.rot_lookup ;
 dir_out_specular = SimulationFolders.getInstance.out_specular;
+dir_out_specular_tuple = SimulationFolders.getInstance.out_specular_tuple;
 
 
 %% GET GLOBAL PARAMETERS
@@ -26,9 +27,6 @@ g_t = SatParams.getInstance.g_t ; % ideal
 e_t1 = SatParams.getInstance.e_t1 ; 
 e_t2 = SatParams.getInstance.e_t2 ;
 polT = SatParams.getInstance.polT;
-% Ground Parameters
-VSM_cm3cm3 = GndParams.getInstance.VSM_cm3cm3( ParamsManager.index_VSM );
-RMSH_cm = GndParams.getInstance.RMSH_cm( ParamsManager.index_RMSH );
 
 
 %% READ OR LOAD META-DATA
@@ -149,44 +147,42 @@ filename3 = strcat('Kc') ;
 writeComplexVar(dir_out_specular, filename3, Kc)
 
 % 2 X 2
-pathname = strcat(dir_out_specular, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str( RMSH_cm ) ) ;
-
 filename1 = strcat('Veg1', polT, polR) ;
 filename2 = strcat('Veg2', polT, polR) ;
 filename01 = strcat('Veg01', polT, polR) ;
 filename02 = strcat('Veg02', polT, polR) ;
-writeComplexVar(pathname, filename1, b_coh1v)
-writeComplexVar(pathname, filename2, b_coh2v)
-writeComplexVar(pathname, filename01, b0_coh1v)
-writeComplexVar(pathname, filename02, b0_coh2v)
+writeComplexVar(dir_out_specular_tuple, filename1, b_coh1v)
+writeComplexVar(dir_out_specular_tuple, filename2, b_coh2v)
+writeComplexVar(dir_out_specular_tuple, filename01, b0_coh1v)
+writeComplexVar(dir_out_specular_tuple, filename02, b0_coh2v)
 
 filename1 = strcat('Bare1', polT, polR) ;
 filename2 = strcat('Bare2', polT, polR) ;
 filename01 = strcat('Bare01', polT, polR) ;
 filename02 = strcat('Bare02', polT, polR) ;
-writeComplexVar(pathname, filename1, b_coh1b)
-writeComplexVar(pathname, filename2, b_coh2b)
-writeComplexVar(pathname, filename01, b0_coh1b)
-writeComplexVar(pathname, filename02, b0_coh2b)
+writeComplexVar(dir_out_specular_tuple, filename1, b_coh1b)
+writeComplexVar(dir_out_specular_tuple, filename2, b_coh2b)
+writeComplexVar(dir_out_specular_tuple, filename01, b0_coh1b)
+writeComplexVar(dir_out_specular_tuple, filename02, b0_coh2b)
 
 % 4 X 4
 filename1 = strcat('P_Veg1', polT, polR) ;
 filename2 = strcat('P_Veg2', polT, polR) ;
 filename01 = strcat('P_Veg01', polT, polR) ;
 filename02 = strcat('P_Veg02', polT, polR) ;
-writeVar(pathname, filename1, P_coh1v)
-writeVar(pathname, filename2, P_coh2v)
-writeVar(pathname, filename01, P0_coh1v)
-writeVar(pathname, filename02, P0_coh2v)
+writeVar(dir_out_specular_tuple, filename1, P_coh1v)
+writeVar(dir_out_specular_tuple, filename2, P_coh2v)
+writeVar(dir_out_specular_tuple, filename01, P0_coh1v)
+writeVar(dir_out_specular_tuple, filename02, P0_coh2v)
 
 filename1 = strcat('P_Bare1', polT, polR) ;
 filename2 = strcat('P_Bare2', polT, polR) ;
 filename01 = strcat('P_Bare01', polT, polR) ;
 filename02 = strcat('P_Bare02', polT, polR) ;
-writeVar(pathname, filename1, P_coh1b)
-writeVar(pathname, filename2, P_coh2b)
-writeVar(pathname, filename01, P0_coh1b)
-writeVar(pathname, filename02, P0_coh2b)
+writeVar(dir_out_specular_tuple, filename1, P_coh1b)
+writeVar(dir_out_specular_tuple, filename2, P_coh2b)
+writeVar(dir_out_specular_tuple, filename01, P0_coh1b)
+writeVar(dir_out_specular_tuple, filename02, P0_coh2b)
 
 
 end

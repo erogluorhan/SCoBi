@@ -14,20 +14,20 @@ classdef SatParams < handle
         % Satellite radius from Earth's center (m)
         rsat_m 
         
-        % Incidence angle - measured between ground zenith and the 
+        % Incidence angle list - measured between ground zenith and the 
         % ground-satellite direction (degrees) 
-        th0_deg
+        th0_list_deg
         
-        % Elveation angle (degrees)
-        EL0_deg
+        % Elveation angle list (degrees)
+        EL0_list_deg
         
-        % Azimuth angle (degrees)- the horizontal angle measured at the 
+        % Azimuth angle list (degrees)- the horizontal angle measured at the 
         % transmitter's position on the earth to Northpole, i.e. measured 
         % clockwise from the North pole IMPORTANT: It is used in Geo 
         % Staellite comm. and different from standard spherical azimuth 
         % direction that is measured from local East in the 
         % counter-clockwise direction.
-        PH0_deg
+        PH0_list_deg
         
         % Pt * G0t - Equivalent Isotropic Radiated Power
         EIRP_dB 
@@ -73,14 +73,14 @@ classdef SatParams < handle
     
     methods
         
-        function initialize(obj, f_MHz, rsat_m, th0_deg, PH0_deg, EIRP_dB, polT )
+        function initialize(obj, f_MHz, rsat_m, th0_list_deg, PH0_list_deg, EIRP_dB, polT )
             % INITIALIZE - Initializes all the properties
             
             obj.f_MHz = f_MHz;
             obj.rsat_m = rsat_m;
-            obj.th0_deg = th0_deg;
-            obj.EL0_deg = 90 - th0_deg;
-            obj.PH0_deg = PH0_deg;
+            obj.th0_list_deg = th0_list_deg;
+            obj.EL0_list_deg = 90 - th0_list_deg;
+            obj.PH0_list_deg = PH0_list_deg;
             obj.EIRP_dB = EIRP_dB; 
             obj.polT = polT;
         end
@@ -93,16 +93,16 @@ classdef SatParams < handle
             out = obj.rsat_m;
         end
         
-        function out = get.th0_deg(obj)
-            out = obj.th0_deg;
+        function out = get.th0_list_deg(obj)
+            out = obj.th0_list_deg;
         end
         
-        function out = get.EL0_deg(obj)
-            out = obj.EL0_deg;
+        function out = get.EL0_list_deg(obj)
+            out = obj.EL0_list_deg;
         end
         
-        function out = get.PH0_deg(obj)
-            out = obj.PH0_deg;
+        function out = get.PH0_list_deg(obj)
+            out = obj.PH0_list_deg;
         end
         
         function out = get.EIRP_dB(obj)
@@ -126,11 +126,11 @@ classdef SatParams < handle
         end
         
         function rep_Th( obj, factor )
-            obj.th0_deg = repmat(obj.th0_deg, 1, factor);
+            obj.th0_list_deg = repmat(obj.th0_list_deg, 1, factor);
         end
         
         function rep_Ph( obj, factor )
-            obj.PH0_deg = repmat(obj.PH0_deg, 1, factor);
+            obj.PH0_list_deg = repmat(obj.PH0_list_deg, 1, factor);
         end
     end
     

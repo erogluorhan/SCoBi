@@ -3,7 +3,7 @@
 
 
 function [rd, PH0_deg, EL0_deg] ...
-    = satGeometry(FolderPath, LatSd, LonSd, LatBd, LonBd, LatGd, LonGd)
+    = satGeometry( LatSd, LonSd, LatBd, LonBd, LatGd, LonGd)
 
 %% GET GLOBAL DIRECTORIES
 dir_config = SimulationFolders.getInstance.config;

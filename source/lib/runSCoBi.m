@@ -31,23 +31,27 @@
 
 function runSCoBi
 
-% Reset the current state of the workspace
-resetCurrentState;
+initSCoBi
 
-startGUI;
+% startGUI;
+
+inputFile_sys = 'sysInput-Paulownia.xml';
+inputFile_veg = 'vegHomInput-Paulownia.xml';
+% inputFile_sys = 'sysInput-Corn.xml';
+% inputFile_veg = 'vegVirRowInput-Corn.xml';
 
 % Get input and check validity
-getInput;
+getInput(inputFile_sys, inputFile_veg);
 
 isInputValid = initWithInputs();
 
 % If input is valid
 if isInputValid
     
-    num_Th = length( SatParams.getInstance.th0_deg );
-    num_Ph = length( SatParams.getInstance.PH0_deg );
-    num_VSM = length( GndParams.getInstance.VSM_cm3cm3 );
-    num_RMSH = length( GndParams.getInstance.RMSH_cm );
+    num_Th = length( SatParams.getInstance.th0_list_deg );
+    num_Ph = length( SatParams.getInstance.PH0_list_deg );
+    num_VSM = length( GndParams.getInstance.VSM_list_cm3cm3 );
+    num_RMSH = length( GndParams.getInstance.RMSH_list_cm );
     
     % Snapshot simulation
     if SimSettings.getInstance.sim_mode == Constants.sim_mode.SNAPSHOT
@@ -126,37 +130,6 @@ end
 
 
 end 
-
-
-
-function resetCurrentState
-
-% Store current debug breakpoints before doing clear all
-myBreakpoints = dbstatus;
-save('myBreakpoints.mat', 'myBreakpoints');
-
-% Clear all the workspace
-clear all;
-clc ;
-
-% Restore debug breakpoints
-load('myBreakpoints.mat');
-dbstop(myBreakpoints);
-clear myBreakpoints;
-if (exist('myBreakpoints.mat','file')) delete('myBreakpoints.mat'); end
-
-% Add all subdirectories to the path
-addpath( genpath( strcat(pwd, '/constants') ) ); % This is required to first addpath
-addpath( genpath( Directories.getInstance.input ) );
-addpath( genpath( Directories.getInstance.bistatic ) );
-addpath( genpath( Directories.getInstance.gui ) );
-addpath( genpath( Directories.getInstance.init ) );
-addpath( genpath( Directories.getInstance.monte_carlo ) );
-addpath( genpath( Directories.getInstance.param ) );
-addpath( genpath( Directories.getInstance.products ) );
-addpath( genpath( Directories.getInstance.util ) );
-
-end
 
 
 

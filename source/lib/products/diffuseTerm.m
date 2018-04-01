@@ -8,14 +8,14 @@ function diffuseTerm(ind_realization)
 %% GET GLOBAL DIRECTORIES
 dir_config = SimulationFolders.getInstance.config;
 dir_freqdiff = SimulationFolders.getInstance.freqdiff;
-dir_freqdiff_b1 = SimulationFolders.getInstance.freqdiff_b1;
-dir_freqdiff_b2 = SimulationFolders.getInstance.freqdiff_b2;
-dir_freqdiff_b3 = SimulationFolders.getInstance.freqdiff_b3;
-dir_freqdiff_b4 = SimulationFolders.getInstance.freqdiff_b4;
-dir_freqdiff_P1 = SimulationFolders.getInstance.freqdiff_P1;
-dir_freqdiff_P2 = SimulationFolders.getInstance.freqdiff_P2;
-dir_freqdiff_P3 = SimulationFolders.getInstance.freqdiff_P3;
-dir_freqdiff_P4 = SimulationFolders.getInstance.freqdiff_P4;
+dir_freqdiff_b1_tuple = SimulationFolders.getInstance.freqdiff_b1_tuple;
+dir_freqdiff_b2_tuple = SimulationFolders.getInstance.freqdiff_b2_tuple;
+dir_freqdiff_b3_tuple = SimulationFolders.getInstance.freqdiff_b3_tuple;
+dir_freqdiff_b4_tuple = SimulationFolders.getInstance.freqdiff_b4_tuple;
+dir_freqdiff_P1_tuple = SimulationFolders.getInstance.freqdiff_P1_tuple;
+dir_freqdiff_P2_tuple = SimulationFolders.getInstance.freqdiff_P2_tuple;
+dir_freqdiff_P3_tuple = SimulationFolders.getInstance.freqdiff_P3_tuple;
+dir_freqdiff_P4_tuple = SimulationFolders.getInstance.freqdiff_P4_tuple;
 
 
 %% GET GLOBAL PARAMETERS
@@ -28,9 +28,6 @@ EIRP = convertDecibelToNatural( EIRP_dB );
 % Receiver Parameters
 G0r_dB = RecParams.getInstance.G0r_dB;
 G0r = convertDecibelToNatural( G0r_dB );
-% Ground Parameters
-VSM_cm3cm3 = GndParams.getInstance.VSM_cm3cm3( ParamsManager.index_VSM );
-RMSH_cm = GndParams.getInstance.RMSH_cm( ParamsManager.index_RMSH );
 % Vegetation Parameters
 scat_cal_veg = VegParams.getInstance.scat_cal_veg ;
 TYPKND = VegParams.getInstance.TYPKND;
@@ -286,165 +283,157 @@ writeComplexVar(dir_freqdiff, filename3, Ki)
 
 % ====================================================
 % b1
-pathname = strcat( dir_freqdiff_b1, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('b1_inc1_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b1_inc1_t1))
+writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc1_t1))
 filename1 = strcat('b1_inc2_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b1_inc2_t1))
+writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc2_t1))
 filename1 = strcat('b1_inc3_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b1_inc3_t1))
+writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc3_t1))
 filename1 = strcat('b1_inc4_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b1_inc4_t1))
+writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc4_t1))
 
 filename1 = strcat('b1_inc1_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b1_inc1_t2))
+writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc1_t2))
 filename1 = strcat('b1_inc2_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b1_inc2_t2))
+writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc2_t2))
 filename1 = strcat('b1_inc3_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b1_inc3_t2))
+writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc3_t2))
 filename1 = strcat('b1_inc4_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b1_inc4_t2))
+writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc4_t2))
 
 % b2
-pathname = strcat(dir_freqdiff_b2, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('b2_inc1_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b2_inc1_t1))
+writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc1_t1))
 filename1 = strcat('b2_inc2_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b2_inc2_t1))
+writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc2_t1))
 filename1 = strcat('b2_inc3_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b2_inc3_t1))
+writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc3_t1))
 filename1 = strcat('b2_inc4_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b2_inc4_t1))
+writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc4_t1))
 
 filename1 = strcat('b2_inc1_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b2_inc1_t2))
+writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc1_t2))
 filename1 = strcat('b2_inc2_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b2_inc2_t2))
+writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc2_t2))
 filename1 = strcat('b2_inc3_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b2_inc3_t2))
+writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc3_t2))
 filename1 = strcat('b2_inc4_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b2_inc4_t2))
+writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc4_t2))
 
 % b3
-pathname = strcat(dir_freqdiff_b3, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('b3_inc1_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b3_inc1_t1))
+writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc1_t1))
 filename1 = strcat('b3_inc2_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b3_inc2_t1))
+writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc2_t1))
 filename1 = strcat('b3_inc3_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b3_inc3_t1))
+writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc3_t1))
 filename1 = strcat('b3_inc4_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b3_inc4_t1))
+writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc4_t1))
 
 filename1 = strcat('b3_inc1_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b3_inc1_t2))
+writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc1_t2))
 filename1 = strcat('b3_inc2_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b3_inc2_t2))
+writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc2_t2))
 filename1 = strcat('b3_inc3_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b3_inc3_t2))
+writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc3_t2))
 filename1 = strcat('b3_inc4_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b3_inc4_t2))
+writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc4_t2))
 
 % b4
-pathname = strcat(dir_freqdiff_b4, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('b4_inc1_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b4_inc1_t1))
+writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc1_t1))
 filename1 = strcat('b4_inc2_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b4_inc2_t1))
+writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc2_t1))
 filename1 = strcat('b4_inc3_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b4_inc3_t1))
+writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc3_t1))
 filename1 = strcat('b4_inc4_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b4_inc4_t1))
+writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc4_t1))
 
 filename1 = strcat('b4_inc1_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b4_inc1_t2))
+writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc1_t2))
 filename1 = strcat('b4_inc2_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b4_inc2_t2))
+writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc2_t2))
 filename1 = strcat('b4_inc3_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b4_inc3_t2))
+writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc3_t2))
 filename1 = strcat('b4_inc4_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(pathname, filename1, (b4_inc4_t2))
+writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc4_t2))
 
 % =====================================================
 % P1
-pathname = strcat( dir_freqdiff_P1, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('P1_inc1_t1', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P1_inc1_t1))
+writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc1_t1))
 filename1 = strcat('P1_inc2_t1', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P1_inc2_t1))
+writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc2_t1))
 filename1 = strcat('P1_inc3_t1', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P1_inc3_t1))
+writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc3_t1))
 filename1 = strcat('P1_inc4_t1', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P1_inc4_t1))
+writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc4_t1))
 
 filename1 = strcat('P1_inc1_t2', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P1_inc1_t2))
+writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc1_t2))
 filename1 = strcat('P1_inc2_t2', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P1_inc2_t2))
+writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc2_t2))
 filename1 = strcat('P1_inc3_t2', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P1_inc3_t2))
+writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc3_t2))
 filename1 = strcat('P1_inc4_t2', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P1_inc4_t2))
+writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc4_t2))
 
 % P2
-pathname = strcat( dir_freqdiff_P2, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('P2_inc1_t1', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P2_inc1_t1))
+writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc1_t1))
 filename1 = strcat('P2_inc2_t1', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P2_inc2_t1))
+writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc2_t1))
 filename1 = strcat('P2_inc3_t1', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P2_inc3_t1))
+writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc3_t1))
 filename1 = strcat('P2_inc4_t1', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P2_inc4_t1))
+writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc4_t1))
 
 filename1 = strcat('P2_inc1_t2', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P2_inc1_t2))
+writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc1_t2))
 filename1 = strcat('P2_inc2_t2', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P2_inc2_t2))
+writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc2_t2))
 filename1 = strcat('P2_inc3_t2', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P2_inc3_t2))
+writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc3_t2))
 filename1 = strcat('P2_inc4_t2', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P2_inc4_t2))
+writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc4_t2))
 
 % P3
-pathname = strcat( dir_freqdiff_P3, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('P3_inc1_t1', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P3_inc1_t1))
+writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc1_t1))
 filename1 = strcat('P3_inc2_t1', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P3_inc2_t1))
+writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc2_t1))
 filename1 = strcat('P3_inc3_t1', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P3_inc3_t1))
+writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc3_t1))
 filename1 = strcat('P3_inc4_t1', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P3_inc4_t1))
+writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc4_t1))
 
 filename1 = strcat('P3_inc1_t2', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P3_inc1_t2))
+writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc1_t2))
 filename1 = strcat('P3_inc2_t2', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P3_inc2_t2))
+writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc2_t2))
 filename1 = strcat('P3_inc3_t2', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P3_inc3_t2))
+writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc3_t2))
 filename1 = strcat('P3_inc4_t2', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P3_inc4_t2))
+writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc4_t2))
 
 % P4
-pathname = strcat( dir_freqdiff_P4, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
 filename1 = strcat('P4_inc1_t1', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P4_inc1_t1))
+writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc1_t1))
 filename1 = strcat('P4_inc2_t1', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P4_inc2_t1))
+writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc2_t1))
 filename1 = strcat('P4_inc3_t1', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P4_inc3_t1))
+writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc3_t1))
 filename1 = strcat('P4_inc4_t1', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P4_inc4_t1))
+writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc4_t1))
 
 filename1 = strcat('P4_inc1_t2', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P4_inc1_t2))
+writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc1_t2))
 filename1 = strcat('P4_inc2_t2', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P4_inc2_t2))
+writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc2_t2))
 filename1 = strcat('P4_inc3_t2', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P4_inc3_t2))
+writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc3_t2))
 filename1 = strcat('P4_inc4_t2', '_R', num2str(ind_realization)) ;
-writeVar(pathname, filename1, (P4_inc4_t2))
+writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc4_t2))
 
 
 end

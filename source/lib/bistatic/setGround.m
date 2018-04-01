@@ -12,8 +12,8 @@ dir_gnd = SimulationFolders.getInstance.gnd;
 f_MHz = SatParams.getInstance.f_MHz;
 f_Hz = f_MHz * Constants.MHz2Hz ;
 % Ground Parameters
-VSM_cm3cm3 = GndParams.getInstance.VSM_cm3cm3( ParamsManager.index_VSM );
-RMSH_cm = GndParams.getInstance.RMSH_cm( ParamsManager.index_RMSH );
+VSM_cm3cm3 = GndParams.getInstance.VSM_list_cm3cm3( ParamsManager.index_VSM );
+RMSH_cm = GndParams.getInstance.RMSH_list_cm( ParamsManager.index_RMSH );
 sand_ratio = GndParams.getInstance.sand_ratio;
 clay_ratio = GndParams.getInstance.clay_ratio;
 rhob_gcm3 = GndParams.getInstance.rhob_gcm3;
