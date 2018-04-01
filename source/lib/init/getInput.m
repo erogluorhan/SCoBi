@@ -1,10 +1,4 @@
-function getInput
-
-input_files_xml = xmlread( strcat( Directories.getInstance.input, '\', 'inputFiles-Corn.xml' ) );
-% input_files_xml = xmlread( strcat( Directories.getInstance.input, '\', 'inputFiles-Paulownia.xml' ) );
-
-inputFile_sys = getStringFromXML(input_files_xml, ConstantNames.sys_input);
-inputFile_veg = getStringFromXML(input_files_xml, ConstantNames.veg_input);
+function getInput(inputFile_sys, inputFile_veg)
 
 %% SIMULATION SETTINGS 
 setSimSettings( inputFile_sys );
@@ -36,7 +30,7 @@ function setGndParams( inputFile )
 
 xDoc = xmlread( strcat( Directories.getInstance.input_sys, '\', inputFile ) );
 
-VSM_cm3cm3 = getDoubleArrayFromXML(xDoc, ConstantNames.gnd_VSM_cm3cm3);        % Theta probe 
+VSM_list_cm3cm3 = getDoubleArrayFromXML(xDoc, ConstantNames.gnd_VSM_list_cm3cm3);        % Theta probe 
 
 sand_ratio = getDoubleFromXML(xDoc, ConstantNames.gnd_sand_ratio);  % Sand ratio of the soil texture
 
@@ -44,10 +38,10 @@ clay_ratio = getDoubleFromXML(xDoc, ConstantNames.gnd_clay_ratio);  % Clay ratio
 
 rhob_gcm3 = getDoubleFromXML(xDoc, ConstantNames.gnd_rhob_gcm3);  % Soil bulk density    
 
-RMSH_cm = getDoubleArrayFromXML(xDoc, ConstantNames.gnd_RMSH_cm);  % Surface rms height (cm)
+RMSH_list_cm = getDoubleArrayFromXML(xDoc, ConstantNames.gnd_RMSH_list_cm);  % Surface rms height (cm)
 
 % Initialize Ground Parameters
-GndParams.getInstance.initialize(VSM_cm3cm3, sand_ratio, clay_ratio, rhob_gcm3, RMSH_cm );
+GndParams.getInstance.initialize(VSM_list_cm3cm3, sand_ratio, clay_ratio, rhob_gcm3, RMSH_list_cm );
 
 end
 
@@ -84,16 +78,16 @@ rsat_m = getDoubleFromXML(xDoc, ConstantNames.sat_rsat_km) * Constants.km2m;    
 
 % TO-DO: This is for satGeometryManual. There should be an option for
 % satGeometry
-th0_deg = getDoubleArrayFromXML(xDoc, ConstantNames.sat_th0_deg);   % Incidence angle      
+th0_list_deg = getDoubleArrayFromXML(xDoc, ConstantNames.sat_th0_list_deg);   % Incidence angle      
 
-PH0_deg = getDoubleArrayFromXML(xDoc, ConstantNames.sat_PH0_deg);    % Azimuth angle
+PH0_list_deg = getDoubleArrayFromXML(xDoc, ConstantNames.sat_PH0_list_deg);    % Azimuth angle
 
 EIRP_dB = getDoubleFromXML(xDoc, ConstantNames.sat_EIRP_dB);    % Equivalent Isotropic Radiated Power
 
 polT = getStringFromXML(xDoc, ConstantNames.sat_polT);  % Satellite polarization                        
 
 % Initialize Satellite Parameters
-SatParams.getInstance.initialize( f_MHz, rsat_m, th0_deg, PH0_deg, ...
+SatParams.getInstance.initialize( f_MHz, rsat_m, th0_list_deg, PH0_list_deg, ...
                                           EIRP_dB, polT)
 
 end

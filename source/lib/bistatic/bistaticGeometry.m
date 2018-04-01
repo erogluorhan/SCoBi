@@ -9,8 +9,8 @@ dir_config = SimulationFolders.getInstance.config;
 
 %% GET GLOBAL PARAMETERS
 % Satellite Parameters
-th0t_deg = SatParams.getInstance.th0_deg( ParamsManager.index_Th );
-PH0_deg = SatParams.getInstance.PH0_deg( ParamsManager.index_Ph );
+th0t_deg = SatParams.getInstance.th0_list_deg( ParamsManager.index_Th );
+PH0_deg = SatParams.getInstance.PH0_list_deg( ParamsManager.index_Ph );
 % Receiver Parameters
 hpbw_deg = RecParams.getInstance.hpbw_deg;
 hr_m = RecParams.getInstance.hr_m;

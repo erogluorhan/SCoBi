@@ -22,7 +22,7 @@ function varargout = gui_goGPS(varargin)
 
 % Edit the above text to modify the response to help gui_goGPS
 
-% Last Modified by GUIDE v2.5 19-Apr-2013 20:03:23
+% Last Modified by GUIDE v2.5 28-Mar-2018 11:20:14
 
 %----------------------------------------------------------------------------------------------
 %                           goGPS v0.4.3
@@ -100,23 +100,23 @@ delete(gcf)
 
 % --------------------------------------------------------------------
 
-%   MODE
+%   SIM_MODE
 % ===============================================================
 
-% --- Executes on selection change in mode.
-function mode_Callback(hObject, eventdata, handles)
-% hObject    handle to mode (see GCBO)
+% --- Executes on selection change in sim_mode.
+function sim_mode_Callback(hObject, eventdata, handles)
+% hObject    handle to sim_mode (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns mode contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from mode
+% Hints: contents = cellstr(get(hObject,'String')) returns sim_mode contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from sim_mode
 global goGUI
     goGUI.syncFromGUI(goGUI.idUI.lProcMode);
 
 % --- Executes during object creation, after setting all properties.
-function mode_CreateFcn(hObject, eventdata, handles) %#ok<*DEFNU>
-% hObject    handle to mode (see GCBO)
+function sim_mode_CreateFcn(hObject, eventdata, handles) %#ok<*DEFNU>
+% hObject    handle to sim_mode (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -126,20 +126,20 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-% --- Executes on selection change in nav_mon.
-function nav_mon_Callback(hObject, eventdata, handles)
-% hObject    handle to nav_mon (see GCBO)
+% --- Executes on selection change in ground_cover.
+function ground_cover_Callback(hObject, eventdata, handles)
+% hObject    handle to ground_cover (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns nav_mon contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from nav_mon
+% Hints: contents = cellstr(get(hObject,'String')) returns ground_cover contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from ground_cover
 global goGUI
     goGUI.syncFromGUI(goGUI.idUI.lCaptMode);
 
 % --- Executes during object creation, after setting all properties.
-function nav_mon_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to nav_mon (see GCBO)
+function ground_cover_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to ground_cover (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 

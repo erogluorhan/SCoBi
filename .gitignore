@@ -1,5 +1,12 @@
 # Folders
 source/sims/*
 
+
 # Files
 design/UML-EA/*.ldb
+
+source/input/sys/sysInput-Paulownia-PAPER_PBAND*
+
+source/lib/runSCoBi_*.m
+source/lib/SCoBi/mainSCoBi_*.m
+source/lib/products/diffuseTerm_*.m

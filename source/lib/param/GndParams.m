@@ -9,7 +9,7 @@ classdef GndParams < handle
     properties (SetAccess = private, GetAccess = public)
         % Volumetric soil moisture (cm3/cm3) [0,1] 
         % The amount of moisture content (cm3) in 1 cm3 of soil
-        VSM_cm3cm3
+        VSM_list_cm3cm3
         
         % Sand content ratio of the soil texture [0,1]
         sand_ratio
@@ -21,7 +21,7 @@ classdef GndParams < handle
         rhob_gcm3
         
         % Surface rms height (cm)
-        RMSH_cm
+        RMSH_list_cm
         
         % Ground polarization
         polG = 'V';
@@ -56,18 +56,18 @@ classdef GndParams < handle
     
     methods
         
-        function initialize(obj, VSM_cm3cm3, sand_ratio, clay_ratio, rhob_gcm3, RMSH_cm )
+        function initialize(obj, VSM_list_cm3cm3, sand_ratio, clay_ratio, rhob_gcm3, RMSH_list_cm )
             % INITIALIZE - Initializes all the properties
             
-            obj.VSM_cm3cm3 = VSM_cm3cm3;
+            obj.VSM_list_cm3cm3 = VSM_list_cm3cm3;
             obj.sand_ratio = sand_ratio;
             obj.clay_ratio = clay_ratio;
             obj.rhob_gcm3 = rhob_gcm3;
-            obj.RMSH_cm = RMSH_cm;    
+            obj.RMSH_list_cm = RMSH_list_cm;    
         end
         
-        function out = get.VSM_cm3cm3(obj)
-            out = obj.VSM_cm3cm3;        
+        function out = get.VSM_list_cm3cm3(obj)
+            out = obj.VSM_list_cm3cm3;        
         end
         
         function out = get.sand_ratio(obj)
@@ -82,8 +82,8 @@ classdef GndParams < handle
             out = obj.rhob_gcm3;
         end
         
-        function out = get.RMSH_cm(obj)
-            out = obj.RMSH_cm;
+        function out = get.RMSH_list_cm(obj)
+            out = obj.RMSH_list_cm;
         end
         
         function out = get.polG(obj)
@@ -91,11 +91,11 @@ classdef GndParams < handle
         end
         
         function rep_VSM( obj, factor )
-            obj.VSM_cm3cm3 = repmat(obj.VSM_cm3cm3, 1, factor);
+            obj.VSM_list_cm3cm3 = repmat(obj.VSM_list_cm3cm3, 1, factor);
         end
         
         function rep_RMSH( obj, factor )
-            obj.RMSH_cm = repmat(obj.RMSH_cm, 1, factor);
+            obj.RMSH_list_cm = repmat(obj.RMSH_list_cm, 1, factor);
         end
     end
     
