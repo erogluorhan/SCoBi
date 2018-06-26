@@ -6,8 +6,10 @@ function plotSpecular_vsTH
 
 
 %% INPUT FILES
-inputFile_sys = 'sysInput-Paulownia-PAPER_PBAND-hr_20.xml';
-inputFile_veg = 'vegHomInput-Paulownia.xml';
+% inputFile_sys = 'sysInput-Paulownia-PAPER_PBAND-hr_20.xml';
+% inputFile_veg = 'vegHomInput-Paulownia.xml';
+inputFile_sys = 'sysInput-CORN_PAPER-row_0.xml';
+inputFile_veg = 'vegVirRowInput-Corn.xml';
 
 
 %% GET INPUT FOR INITIAL START

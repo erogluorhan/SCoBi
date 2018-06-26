@@ -11,6 +11,7 @@ epsr = VegParams.getInstance.epsr;
 parm1_deg = VegParams.getInstance.parm1_deg;
 parm2_deg = VegParams.getInstance.parm2_deg;
 dim1_m = VegParams.getInstance.dim1_m;
+dim2_m = VegParams.getInstance.dim2_m;
 dim3_m = VegParams.getInstance.dim3_m;
 
 
@@ -42,7 +43,8 @@ for ii = 1 : Nlayer
                     PROB = [ parm1_deg(kk, jj, ii), parm2_deg(kk, jj, ii) ] ;
                     % TO-DO: Should be revised for the case leaves are
                     % scatterer
-                    RAD = dim1_m(kk, jj, ii) ;
+%                     RAD = dim1_m(kk, jj, ii) ;
+                    RAD = ( dim1_m(kk, jj, ii) + dim2_m(kk, jj, ii) ) / 2;
                     LEN = dim3_m(kk, jj, ii) ; % length  % for cylinders (trunks and branches)
                     
                     fScatAmp(filename, PROB, RAD, LEN, EPS ) ;
@@ -161,6 +163,8 @@ for ii = 1 : N
     pin = phid(1, 1) * Constants.deg2rad ;
     ts = thsd(ii, 1) * Constants.deg2rad ;
     ps = phsd(ii, 1) * Constants.deg2rad ;
+    thcyl = thcyl * Constants.deg2rad ;
+    phcyl = phcyl * Constants.deg2rad ;
 
     % TO-DO: If leaf is counted as a scatterer in the future, add ellipse!
     % dd : direct - direct

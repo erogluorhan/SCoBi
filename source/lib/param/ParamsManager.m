@@ -278,7 +278,7 @@ classdef ParamsManager
                 parm1_deg = VegParams.getInstance.parm1_deg;
                 parm2_deg = VegParams.getInstance.parm2_deg;
 
-                if strcmp( input_params(ConstantNames.veg_hom_vegetationStage), vegetation_stage )
+                if strcmp( input_params(ConstantNames.veg_vegetationStage), vegetation_stage )
                     if isequal( input_params(ConstantNames.veg_hom_TYPES), TYPES )
                         if isequal( input_params(ConstantNames.veg_hom_dimLayers_m), dim_layers_m )
                             if isequal( input_params(ConstantNames.veg_hom_TYPKND), TYPKND )                                          
@@ -313,19 +313,19 @@ classdef ParamsManager
                 if vegetation_isRow
                     %% GET GLOBAL PARAMETERS
                     % Virtual Row-Structured Vegetation Parameters
+                    vegetation_stage = VegParams.getInstance.vegetation_stage;
                     plugin = VegVirRowParams.getInstance.plugin;
                     row_space_m = VegVirRowParams.getInstance.row_space_m;
                     col_space_m = VegVirRowParams.getInstance.col_space_m;
                     phi_row_deg = VegVirRowParams.getInstance.phi_row_deg;
-                    plant_row_spread_m = VegVirRowParams.getInstance.plant_row_spread_m;
-                    plant_col_spread_m = VegVirRowParams.getInstance.plant_col_spread_m;
+                    seed_fluctuation_m = VegVirRowParams.getInstance.seed_fluctuation_m;
 
-                    if input_params(ConstantNames.veg_vir_row_plugin).isTheSame( plugin )
-                        if input_params(ConstantNames.veg_vir_row_rowSpace_m) == row_space_m
-                            if input_params(ConstantNames.veg_vir_row_colSpace_m) == col_space_m
-                                if input_params(ConstantNames.veg_vir_row_phiRow_deg) == phi_row_deg
-                                    if input_params(ConstantNames.veg_vir_row_plantRowSpread_m) == plant_row_spread_m
-                                        if input_params(ConstantNames.veg_vir_row_plantColSpread_m) == plant_col_spread_m
+                    if strcmp( input_params(ConstantNames.veg_vegetationStage), vegetation_stage )
+                        if input_params(ConstantNames.veg_vir_row_plugin).isTheSame( plugin )
+                            if input_params(ConstantNames.veg_vir_row_rowSpace_m) == row_space_m
+                                if input_params(ConstantNames.veg_vir_row_colSpace_m) == col_space_m
+                                    if input_params(ConstantNames.veg_vir_row_phiRow_deg) == phi_row_deg
+                                        if input_params(ConstantNames.veg_vir_row_seedFluctuation_m) == seed_fluctuation_m
                                             isEqual = 1;
                                         end
                                     end
@@ -646,9 +646,6 @@ classdef ParamsManager
             calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
             % Simulation Parameters
             Nr = SimParams.getInstance.Nr;
-            % Ground Parameters
-            VSM_list_cm3cm3 = GndParams.getInstance.VSM_list_cm3cm3;
-            RMSH_list_cm = GndParams.getInstance.RMSH_list_cm;
                         
             % First check the user preferences
             if ~calc_diffuse_term
@@ -720,7 +717,7 @@ classdef ParamsManager
             % If vegetation method is homogenous
             if vegetation_method == Constants.veg_methods.HOMOGENOUS
             
-                keySet{end+1} = ConstantNames.veg_hom_vegetationStage;
+                keySet{end+1} = ConstantNames.veg_vegetationStage;
                 keySet{end+1} = ConstantNames.veg_hom_TYPES;
                 keySet{end+1} = ConstantNames.veg_hom_dimLayers_m;
                 keySet{end+1} = ConstantNames.veg_hom_TYPKND;
@@ -756,23 +753,23 @@ classdef ParamsManager
             else
                 % If vegetation method is virtual row-structured
                 if vegetation_isRow
+                    keySet{end+1} = ConstantNames.veg_vegetationStage;
                     keySet{end+1} = ConstantNames.veg_vir_row_plugin;
                     keySet{end+1} = ConstantNames.veg_vir_row_rowSpace_m;
                     keySet{end+1} = ConstantNames.veg_vir_row_colSpace_m;
                     keySet{end+1} = ConstantNames.veg_vir_row_phiRow_deg;
-                    keySet{end+1} = ConstantNames.veg_vir_row_plantRowSpread_m;
-                    keySet{end+1} = ConstantNames.veg_vir_row_plantColSpread_m;
+                    keySet{end+1} = ConstantNames.veg_vir_row_seedFluctuation_m;
 
 
                     %% GET GLOBAL PARAMETERS
                     % Virtual Row-Structured Vegetation Parameters
                     % Assign to map values
+                    valueSet{end+1} = VegParams.getInstance.vegetation_stage;
                     valueSet{end+1} = VegVirRowParams.getInstance.plugin;
                     valueSet{end+1} = VegVirRowParams.getInstance.row_space_m;
                     valueSet{end+1} = VegVirRowParams.getInstance.col_space_m;
                     valueSet{end+1} = VegVirRowParams.getInstance.phi_row_deg;
-                    valueSet{end+1} = VegVirRowParams.getInstance.plant_row_spread_m;
-                    valueSet{end+1} = VegVirRowParams.getInstance.plant_col_spread_m;
+                    valueSet{end+1} = VegVirRowParams.getInstance.seed_fluctuation_m;
                 
                 % TO-DO: If vegetation method is virtual random
                 else

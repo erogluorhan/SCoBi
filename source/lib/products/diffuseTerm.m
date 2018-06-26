@@ -650,7 +650,7 @@ for fz = 1 : Nfz    % Fresnel Zones
         dKz_iI = squeeze(dKz(:, ANGDEG == round(180 - thidI), :)) ;
         dKz_o = squeeze(dKz(:, ANGDEG == round(thsd(pp)), :)) ;
         dKz_oI = squeeze(dKz(:, ANGDEG == round(180 - thsdI(pp)), :)) ;
-        
+
         zp = pP(pp, 3) ;
         
         [tp_i, tp_iI, tp_o, tp_oI] = CalcTransMat(layerIndex, zp, dim_layers_m, dKz_i, dKz_iI, dKz_o, dKz_oI) ;

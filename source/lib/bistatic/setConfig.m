@@ -13,6 +13,7 @@ rsat_m = SatParams.getInstance.rsat_m;
 % Transmitter Satellite Geometry
 rd_m = sqrt( rsat_m ^ 2 - (Constants.re * cos( deg2rad( EL0_deg ) )) ^ 2) - Constants.re * sin( deg2rad( EL0_deg ) ) ; % ~ Slant range
 
+%% TO-DO: Work on the realistic SatGeo
 %% SATELLITE GEOMETRY
 satGeometryManuel(rd_m) ;
 

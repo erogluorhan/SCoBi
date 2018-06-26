@@ -1,5 +1,7 @@
 # Folders
 source/sims/*
+source/input/*
+source/lib/analysis/*
 
 
 # Files

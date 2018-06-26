@@ -15,41 +15,32 @@ function generateVirRowScatPositions( ind_realization, Nr_current )
     %% GET GLOBAL PARAMETERS
     % Simulation Parameters
     Nr = SimParams.getInstance.Nr;
+    Nfz = SimParams.getInstance.Nfz;
     % Vegetation Parameters
     TYPES = VegParams.getInstance.TYPES;
     % Virtual Row-Structured Vegetation Parameters
     plugin = VegVirRowParams.getInstance.plugin;
     row_space_m = VegVirRowParams.getInstance.row_space_m;
     col_space_m = VegVirRowParams.getInstance.col_space_m;
-    plant_row_spread_m = VegVirRowParams.getInstance.plant_row_spread_m;
-    plant_col_spread_m = VegVirRowParams.getInstance.plant_col_spread_m;
-    % Use the row azimuth angle from local East (x axis) instead of local North
-    phi_row_rad = degtorad( 90 - VegVirRowParams.getInstance.phi_row_deg );
+    seed_fluctuation_m = VegVirRowParams.getInstance.seed_fluctuation_m;
+    phi_row_deg = VegVirRowParams.getInstance.phi_row_deg;
+    % Use the crop row azimuth angle from local East instead of local North
+    phi_row_rad = degtorad( 90 - phi_row_deg );
     
     % Constant Structs
     particleDataStruct = Constants.particleDataStruct;
     
     
     %% LOAD META-DATA
-    filenamex = 'AllPoints_m' ;
-    AllPoints_m = readVar(dir_config, filenamex) ;
-
     % Fresnel Zone Ellipses on the ground    
     filenamex = 'ellipse_s_m' ;
     ellipse_s_m = readVar(dir_config, filenamex) ;
 
     filenamex = 'ellipse_s_centers_m' ;
     ellipse_s_centers_m = readVar(dir_config, filenamex) ;
-
-    % Transmitter Satellite Rotation along Z-Axis
-    filenamex = 'AntRotZt' ;
-    AntRotZt = readVar(dir_config, filenamex) ;
-
-    % Ground to Specular Frame Transformation
-    filenamex = 'Tgs' ;
-    Tgs = readVar(dir_config, filenamex) ;
     
     
+    %% TO-DO:Change the names of the below variables that are equal to global params
     %% DEFINE PERSISTENT VARIABLES
     persistent highestPlantHeight 
     persistent dim_layers_m scat_cal_veg LTK TYPKND ...
@@ -59,12 +50,6 @@ function generateVirRowScatPositions( ind_realization, Nr_current )
   
 
     %% Slant Range
-    
-    pSc2_m = AllPoints_m(:, 9);    % Center of first Fresnel Zone
-    
-    pT_m = AllPoints_m(:, 1) ;          % Transmitter
-
-    ht = pT_m(3) ;
 
     majorAxis = 2 * ellipse_s_m(:, 1);
     minorAxis = 2 * ellipse_s_m(:, 2);
@@ -93,14 +78,13 @@ function generateVirRowScatPositions( ind_realization, Nr_current )
                     % epsrIm: dielectric constant imaginary part for any type/kind
     
     % Generate Vegetation Field in the selected Fresnel Zone
-    [numFresnelZones, ~] = size(ellipse_s_m);
     
     % TO-DO: Below position actually is a position relative to the
         % center of Fresnel zone, instead of pure specular or ground frame. i.e.
         % there is a small difference between the specular point and FZ
         % centers
-    startPos_fz = [-fieldSide(numFresnelZones)/2;      % The bottom-left corner of the field. 
-                -fieldSide(numFresnelZones)/2;      % pSc2_m is assumed to be shifted to (0,0), it will be added later
+    startPos_fz = [-fieldSide(Nfz)/2;      % The bottom-left corner of the field. 
+                -fieldSide(Nfz)/2;      % pSc2_m is assumed to be shifted to (0,0), it will be added later
                 0];                                     % i.e. It will be shifted back to its original position.
 
     % Generate plants in the field if they are in any of the fresnel zones
@@ -109,32 +93,39 @@ function generateVirRowScatPositions( ind_realization, Nr_current )
         for jj = 1 : numCols(end)
 
             currentPos_fz = startPos_fz + [(jj-1) * col_space_m; (ii-1) * row_space_m; 0];
-            currentPos_fz(1) = currentPos_fz(1) + ( -plant_row_spread_m ) + 2 * plant_row_spread_m * rand;
-            currentPos_fz(2) = currentPos_fz(2) + ( -plant_col_spread_m) + 2 * plant_col_spread_m * rand;
+            
+            % Fluctuate plant position
+            fluctuationAngle = deg2rad(360 * rand);
+            fluctuationRadius = seed_fluctuation_m * rand;
+            currentPos_fz(1) = currentPos_fz(1) + fluctuationRadius * cos(fluctuationAngle);
+            currentPos_fz(2) = currentPos_fz(2) + fluctuationRadius * sin(fluctuationAngle);
 
             currentPosRotated_fz = fieldRotZ * (currentPos_fz);
-            currentPosRotated = currentPosRotated_fz + ellipse_s_centers_m(:,end); % ground frame
+            currentPosFinal = currentPosRotated_fz + ellipse_s_centers_m(:,end); % ground frame
 
             % Determine which fresnel zone the position is in, if any
-            kk = numFresnelZones;
-            while ( kk > 0 )
+            ff = Nfz;
+            while ( ff > 0 )
 
-                fzAngle = atan( ellipse_s_centers_m(2,kk) / ellipse_s_centers_m(1,kk) );
+                fzAngle = atan( ellipse_s_centers_m(2,ff) / ellipse_s_centers_m(1,ff) );
 
-                if isPointInEllipse(currentPosRotated, majorAxis(kk)/2, minorAxis(kk)/2, ellipse_s_centers_m(:,kk), fzAngle)
-                    kk = kk - 1;
+                if isPointInEllipse(currentPosFinal, majorAxis(ff)/2, minorAxis(ff)/2, ellipse_s_centers_m(:,ff), fzAngle)
+%                 if isPointInFZRect( currentPosRotated_fz, majorAxis(ff)/2, minorAxis(ff)/2, fzAngle )
+                    ff = ff - 1;
                 else
                     break;
                 end
 
             end
 
-            if kk < numFresnelZones
+            if ff < Nfz
+                
+                ff = ff + 1;
 
                 % Call the virtual vegetation plugin's generatePlant function
-                [plantHeight, plantParticles] = plugin.generatePlant( TYPES, currentPosRotated );
+                [plantHeight, plantParticles] = plugin.generatePlant( TYPES, currentPosFinal );
                 
-                plantParticles(:,particleDataStruct.fzIndex) = kk+1;
+                plantParticles(:,particleDataStruct.fzIndex) = ff;
                 
                 particleData = [particleData; plantParticles];
                 
@@ -219,13 +210,6 @@ function generateVirRowScatPositions( ind_realization, Nr_current )
 
             parm2_deg = VegParams.getInstance.parm2_deg * Nr_current;  
         end
-        
-        particleData_realizations = cell(Nr,1);
-        
-        particleDataPerKind_realizations = cell(Nr,1);
-        
-        %numParticlesPerFZ_realizations = cell(Nr,1);
-        numParticlesPerFZ_realizations = 0;
 
     end
 
@@ -233,76 +217,7 @@ function generateVirRowScatPositions( ind_realization, Nr_current )
     if highestPlantHeight < sum( dim_layers_m )
         highestPlantHeight = sum( dim_layers_m ); 
     end
-
-%     % TO-DO: Should be deprecated since virtual vegetation stuies are planned to have only one layer !
-%     % Adjust the corresponding layers to the types because it was not finalized
-%     % in GenerateCorn() method
-%     adjustLayersToTypes(ind_realization);
-
-%     % TO-DO: Move from here to analysis part
-%     % %% OE: Figures for testing
-%     figure
-%     axis equal
-%     hold on
-%     
-%     % Draw scatterer positions
-%     indexParticleDataExceptLeaf = particleData(:, particleDataStruct.Type) ~= TYPES.L; % Choose types other than leaf 
-%     particleDataExceptLeaf = particleData(indexParticleDataExceptLeaf,:);
-%     temp = [];
-%     for ii = 1 : numFresnelZones
-%         indFresnelZone = particleDataExceptLeaf(:,particleDataStruct.fzIndex) == ii;
-%         temp = [temp; particleDataExceptLeaf(indFresnelZone,:)];
-%         numParticlesPerFZExceptLeaf(ii,1) = length(temp);
-%     end
-%     particleDataExceptLeaf = temp;
-%     
-%     %particleDataExceptLeaf_sf = Tgs * particleDataExceptLeaf(:, particleDataStruct.posX:particleDataStruct.posZ)';
-%     
-%     N2 = 1 ;
-%     for fz = 1 : numFresnelZones
-%         
-%         color = 'r.';
-%         if mod(fz,2) == 0
-%             color = 'b.';
-%         end
-%         N1 = N2 ;
-%         N2 = numParticlesPerFZExceptLeaf(fz) ;
-%         if N2 > N1
-%             scatter(particleDataExceptLeaf( N1:N2, particleDataStruct.posX ), particleDataExceptLeaf( N1:N2, particleDataStruct.posY ), color);
-%             %scatter(particleDataExceptLeaf_sf(1, N1:N2), particleDataExceptLeaf_sf(2, N1:N2), color);
-%         elseif N2 == 0
-%             N2 = 1;
-%         end
-%     
-%     end
-%     
-%     
-%     % Draw fresnel zones
-%     fz_thetas = -pi : 0.01 : pi;
-%     
-%     lenR = length(fz_thetas);
-%     tempR = zeros(3,lenR);
-%     
-%     for ii = 1 : numFresnelZones
-%         
-%         tempR(1,:) = majorAxis(ii) / 2 * cos(fz_thetas);
-%         tempR(2,:) = minorAxis(ii) / 2 * sin(fz_thetas);
-%         tempR = AntRotZt * tempR;
-%         fz_x = ellipse_s_centers_m(1,ii) + tempR(1,:);
-%         fz_y = ellipse_s_centers_m(2,ii) + tempR(2,:);
-%         
-%         fz_sf = Tgs * [fz_x; fz_y; zeros(1, length(fz_x))];
-%         
-%         plot(fz_x, fz_y, 'r--')
-%         %plot(fz_sf(1,:), fz_sf(2,:), 'r--')
-%     end
-%     xlabel('East ->')
-%     ylabel('North ->')
-%     % 
-%     % %% OE: End of figures for testing
-
-   
-    particleData_realizations{ind_realization} = particleData;
+    
                 
     % Calculate Fresnel Zone Areas and corrsponding volumes 
     fresnelZoneAreas = pi * majorAxis/2 .* minorAxis/2;
@@ -441,5 +356,24 @@ function result = isPointInEllipse( position, semiMajorAxis, semiMinorAxis, elli
     k = ellipseCenter(2);
 
     result = ( cos(ellipseAngle)*(x - h) + sin(ellipseAngle)*(y - k) )^2 / semiMajorAxis^2 + ( sin(ellipseAngle)*(x - h) - cos(ellipseAngle)*(y - k) )^2 / semiMinorAxis^2 <= 1.0;
+
+end
+
+
+function result = isPointInFZRect( position_sf, fzSemiMajorAxis, fzSemiMinorAxis, fzAngle_rad) 
+
+    fzRotZ = [cos(-fzAngle_rad) -sin(-fzAngle_rad) 0;
+                 sin(-fzAngle_rad) cos(-fzAngle_rad)  0;
+                 0 0 1] ;
+    
+    position_sf_fzRot = fzRotZ * position_sf;    
+
+    x = position_sf_fzRot(1);
+    y = position_sf_fzRot(2);
+    
+    rectSemiMajor = sqrt(pi) / 2 * fzSemiMajorAxis ;  % semi-major side
+    rectSemiMinor = sqrt(pi) / 2 * fzSemiMinorAxis ;  % semi-minor side
+
+    result = ( x >= -rectSemiMajor && x <= rectSemiMajor && y >= -rectSemiMinor && y <= rectSemiMinor );
 
 end

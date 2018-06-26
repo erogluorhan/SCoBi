@@ -19,11 +19,8 @@ classdef VegVirRowParams < handle
         % Azimuth angle of field rows from local North (degrees)
         phi_row_deg
         
-        % Max scattering dist. of a plant pos between rows (m)
-        plant_row_spread_m
-        
-        % Max scattering dist. of a plant pos within a row (m)
-        plant_col_spread_m
+        % Max scattering dist. of a plant pos from periodic row structure (m)
+        seed_fluctuation_m
         
         % Plugin class instance that will be handling the virtual 
         % vegetation plant generation
@@ -58,20 +55,19 @@ classdef VegVirRowParams < handle
     methods        
         
         function initialize(obj, row_space_m, col_space_m, phi_row_deg, ...
-                plant_row_spread_m, plant_col_spread_m, plugin )
+                seed_fluctuation_m, plugin, vegetation_stage )
             % INITIALIZE - Initializes all the properties
             
             obj.row_space_m = row_space_m;
             obj.col_space_m = col_space_m;
             obj.phi_row_deg = phi_row_deg;
-            obj.plant_row_spread_m = plant_row_spread_m;
-            obj.plant_col_spread_m = plant_col_spread_m;
+            obj.seed_fluctuation_m = seed_fluctuation_m;
             
             % Call the virtual vegetation plugin's initialize function
             obj.plugin = feval(plugin);
-            obj.plugin.initialize;
+            obj.plugin.initialize( vegetation_stage );
             
-            VegParams.getInstance.initializeStage( obj.plugin.stage );
+            VegParams.getInstance.initializeStage( vegetation_stage );
                       
         end 
          
@@ -88,12 +84,8 @@ classdef VegVirRowParams < handle
             out = obj.phi_row_deg;
         end
         
-        function out = get.plant_row_spread_m(obj)
-            out = obj.plant_row_spread_m;
-        end
-        
-        function out = get.plant_col_spread_m(obj)
-            out = obj.plant_col_spread_m;
+        function out = get.seed_fluctuation_m(obj)
+            out = obj.seed_fluctuation_m;
         end
         
         function out = get.plugin(obj)
