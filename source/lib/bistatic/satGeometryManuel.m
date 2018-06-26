@@ -89,6 +89,7 @@ writeVar(dir_config, filename, TgtI) ;
 filename = 'rd_m' ;
 writeVar(dir_config, filename, rd_m) ;
 
+%% TO-DO: Decide whether to store these two (They might not be used)
 % PH0 : Azimuth angle from local north axis - clockwise
 filename = 'PH0_deg' ;
 writeVar(dir_config, filename, PH0_deg ) ;

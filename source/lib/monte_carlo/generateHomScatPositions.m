@@ -86,7 +86,6 @@ dir_fzones = SimulationFolders.getInstance.fzones;
 %% GET GLOBAL PARAMETERS
 % Simulation Parameters
 Nfz = SimParams.getInstance.Nfz;
-vegetation_plant = SimParams.getInstance.vegetation_plant;
 % Receiver Parameters
 hr_m = RecParams.getInstance.hr_m ;     % Receiver height
 % Vegetation Parameters
@@ -94,12 +93,16 @@ TYPES = VegParams.getInstance.TYPES;
 dim_layers_m = VegParams.getInstance.dim_layers_m;
 
 
+%% READ META-DATA
+Tgs = readVar( dir_config, 'Tgs' ) ;   % G -> SP
+
+
 %% CALCULATIONS
 % Layer Depth and Height
 d = sum(dim_layers_m) ;        % thickness of layer in meter
 
-hr_m = hr_m - d ;         % heigth of antenna from tree tops in meter
-ht = ht - d ;         % heigth of transmitter from tree tops in meter
+hr_m = hr_m - d ;         % heigth of antenna from veg. layer top in meter
+ht = ht - d ;         % heigth of transmitter from veg. layer top in meter
 
 % Ellipse on the layer where z = -ds (layer top)
 [~, ~, ax1, by1] = calcFresnelZones(ht + ds, hr_m + ds) ;
@@ -114,6 +117,8 @@ bbe = by1 ; % minor axis
 % Illuminated Volume
 As = pi * aas .* bbs ; % area on top layer
 Ae = pi * aae .* bbe ; % area on bottom layer
+
+% TO-DO: Finalize Homogenous volume filtering method
 VOL = (de - ds) * (As + Ae) / 2 ;
 
 % Above VOL produces the same volume results with the following 
@@ -130,12 +135,6 @@ VOL = (de - ds) * (As + Ae) / 2 ;
 % Number of particles
 Npart = ceil(VOL * rho) ;
 disp(strcat('# of kind in Fresnel Zones :', num2str(Npart)))
-
-% TO-DO: Decide what to do with this
-if strcmp(vegetation_plant, 'OneTrunkCenter')
-    Npart(:) = 1 ;
-    Nfz = 1 ;
-end
 
 % Positions of particles (xp_sf, yp_sf, zp)
 xp_sf = zeros(Npart(end), 1) ;
@@ -159,14 +158,15 @@ for fz = 1 : Nfz
             % Generating zp between ds (layer top) and de (layer bottom)
             % Calculate the position for center of gravity
             s = -ds ; e = -de ;
-            zp(ii, 1) = s + (e - s) * rand(1) ;            
+            zp(ii, 1) = s + (e - s) * rand(1) ;
         end
         
-        [S0x, x1, ax1, by1] = calcFresnelZones(ht + abs(zp(ii, 1)), hr_m + abs(zp(ii, 1))) ;        
+        % TO-DO: Finalize Homogenous volume filtering method
+        [S0x, x1, ax1, by1] = calcFresnelZones(ht + abs(zp(ii, 1)), hr_m + abs(zp(ii, 1))) ;
 
         % outer ellipse
-        a2 = ax1(fz) ;  % major axis
-        b2 = by1(fz) ;  % minor axis
+        a2 = ax1(fz) ;  % semi-major axis
+        b2 = by1(fz) ;  % semi-minor axis
         
         % inner ellipse
         if fz == 1   % first Fresnel zone         
@@ -177,10 +177,12 @@ for fz = 1 : Nfz
             b1 = by1(fz - 1) ;            
         end 
         
+        % TO-DO: Finalize Homogenous Fresnel Zone representation method:
+        % Rectanbular OR Elliptical?
         a1_r = sqrt(pi) / 2 * a1 ;
         b1_r = sqrt(pi) / 2 * b1 ;
-        a2_r = sqrt(pi) / 2 * a2 ;  % major side
-        b2_r = sqrt(pi) / 2 * b2 ;  % minor side
+        a2_r = sqrt(pi) / 2 * a2 ;  % semi-major side
+        b2_r = sqrt(pi) / 2 * b2 ;  % semi-minor side
   
         outRect = 0 ;    % outside inner rectangle
         while ~outRect
@@ -198,12 +200,6 @@ for fz = 1 : Nfz
         xp_sf(ii, 1) = x1(fz) + xx_r ;
         yp_sf(ii, 1) = yy_r ;
         
-        % TO-DO: Decide what to do with this
-        if strcmp(vegetation_plant, 'OneTrunkCenter')
-            xp_sf(ii, 1) = S0x ;
-            yp_sf(ii, 1) = 2 * b2_r ;
-        end
-        
     end
     
 end
@@ -216,7 +212,6 @@ zp = zp + d;
 pP_sf = [xp_sf, yp_sf, zp] ;
 
 % Convert specular frame positions to ground frame
-Tgs = readVar( dir_config, 'Tgs' ) ;   % G -> SP
 pP = (Tgs' * pP_sf')';  % Tsg = Tgs'  (SP -> G)
 
 

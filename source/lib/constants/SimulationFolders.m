@@ -119,66 +119,80 @@ classdef SimulationFolders < handle
         
         function initializeStaticDirs(obj)
             
+            %% GET GLOBAL DIRECTORIES
+            main_dir = Directories.getInstance.main_dir;
+            
+            %% GET GLOBAL PARAMETERS
+            % Simulation Parameters
+            sim_name = SimParams.getInstance.sim_name;
+            sim_mode = SimSettings.getInstance.sim_mode;
+            campaign = SimParams.getInstance.campaign;
+            campaign_date = SimParams.getInstance.campaign_date;
+            plot = SimParams.getInstance.plot;
+            vegetation_method = SimParams.getInstance.vegetation_method;
+            vegetation_plant = SimParams.getInstance.vegetation_plant;
+            vegetation_isRow = SimParams.getInstance.vegetation_isRow;
+            % Receiver Parameters
+            hr_m = RecParams.getInstance.hr_m;
+            % Vegetation Parameters
+            vegetation_stage = VegParams.getInstance.vegetation_stage;
             
             
             % Initialize static simulation directories
 
-            obj.simulations = strcat( Directories.getInstance.main_dir, '\sims');
+            obj.simulations = strcat( main_dir, '\sims');
             
-            obj.vegetation_method = strcat( obj.simulations, '\', SimParams.getInstance.vegetation_method );
+            obj.vegetation_method = strcat( obj.simulations, '\', vegetation_method );
             
-            hr_folder = strcat( '\hr_', num2str(RecParams.getInstance.hr_m) );
+            hr_folder = strcat( '\hr_', num2str(hr_m) );
             
-            if strcmp( SimParams.getInstance.vegetation_method, Constants.veg_methods.HOMOGENOUS )
+            if strcmp( vegetation_method, Constants.veg_methods.HOMOGENOUS )
                 
-                obj.vegetation_plant = strcat( obj.vegetation_method, '\', SimParams.getInstance.vegetation_plant );
+                obj.vegetation_plant = strcat( obj.vegetation_method, '\', vegetation_plant );
             
-            elseif strcmp( SimParams.getInstance.vegetation_method, Constants.veg_methods.VIRTUAL )
+            elseif strcmp( vegetation_method, Constants.veg_methods.VIRTUAL )
                 
-                if SimParams.getInstance.vegetation_isRow
+                if vegetation_isRow
                     
-                    obj.vegetation_plant = strcat( obj.vegetation_method, '-row', '\', SimParams.getInstance.vegetation_plant );
+                    obj.vegetation_plant = strcat( obj.vegetation_method, '-row', '\', vegetation_plant );
                 
                 else
                     
-                    obj.vegetation_plant = strcat( obj.vegetation_method, '-rnd\', SimParams.getInstance.vegetation_plant );
+                    obj.vegetation_plant = strcat( obj.vegetation_method, '-rnd\', vegetation_plant );
                 
                 end
                 
             end
             
-            obj.vegetation_stage = strcat( obj.vegetation_plant, '\', VegParams.getInstance.vegetation_stage );
+            obj.vegetation_stage = strcat( obj.vegetation_plant, '\', vegetation_stage );
             
-            obj.campaign = strcat( obj.vegetation_stage, '\', SimParams.getInstance.campaign );
+            obj.campaign = strcat( obj.vegetation_stage, '\', campaign );
             
-            obj.campaign_date = strcat( obj.campaign, '-', SimParams.getInstance.campaign_date );
+            obj.campaign_date = strcat( obj.campaign, '-', campaign_date );
             
-            obj.plot = strcat( obj.campaign_date, '-plot_', SimParams.getInstance.plot );
+            obj.plot = strcat( obj.campaign_date, '-plot_', plot );
             
-            obj.sim_name = strcat( obj.plot, '-', SimParams.getInstance.sim_name );
+            obj.sim_name = strcat( obj.plot, '-', sim_name );
             
             
             %% Analysis
-            obj.analysis = strcat( obj.sim_name, '\', 'Anaysis') ;  
+            obj.analysis = strcat( obj.sim_name, '\', 'Analysis') ;  
             
             %% Receiver Height
             obj.hr = strcat( obj.sim_name, hr_folder) ;  
             
             %% Average Forward Scattering Amplitude
             obj.afsa = strcat(obj.hr, '\', 'AFSA') ;
-           
-            %% Ground
-            obj.gnd = strcat(obj.hr, '\', 'GND') ;
             
             %% Vegetation
             obj.veg = strcat(obj.hr, '\', 'VEG') ;
             
             %% Simulation Mode
-            if SimSettings.getInstance.sim_mode == Constants.sim_mode.SNAPSHOT
+            if sim_mode == Constants.sim_mode.SNAPSHOT
                 
                 obj.sim_mode = strcat( obj.hr, '\', ConstantNames.set_simMode_snapshot );
             
-            elseif SimSettings.getInstance.sim_mode == Constants.sim_mode.TIME_SERIES
+            elseif sim_mode == Constants.sim_mode.TIME_SERIES
                 
                 obj.sim_mode = strcat( obj.hr, '\', ConstantNames.set_simMode_timeSeries );
                 
@@ -203,13 +217,20 @@ classdef SimulationFolders < handle
             XPL_dB = RecParams.getInstance.XPL_dB;
             polR = RecParams.getInstance.polR;
             
+            
+            %% Ground
+            obj.gnd = strcat(obj.hr, '\', 'GND', '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ; 
+            
+            
             %% Angle of incidence
             th0d_folder = strcat('th0d_', num2str( th0_list_deg( ParamsManager.index_Th ) ), ...
                                  '-ph0d_', num2str( PH0_list_deg( ParamsManager.index_Ph ) ) ) ;
             obj.th0_deg = strcat(obj.sim_mode, '\', th0d_folder) ;
             
+            
             %% Bistatic Scattering Amplitudes
             obj.fscat = strcat(obj.th0_deg, '\', 'FSCAT') ;
+            
             
             %% Geometry
             obj.geo = strcat(obj.th0_deg, '\', 'GEO') ;
@@ -220,11 +241,13 @@ classdef SimulationFolders < handle
             obj.scattering = strcat(obj.geo, '\', 'SCATTERING') ;            
             obj.observation = strcat(obj.geo, '\', 'OBSERVATION') ;
             
+            
             %% Polarization
             obj.pol = strcat(obj.th0_deg, '\', polT, polR) ;
             
             %Configuration
             obj.config = strcat(obj.th0_deg, '\', 'CONFIG') ;
+            
             
             %% Antenna
             FolderNameAnt = strcat('thsd_', num2str( hpbw_deg ),...
@@ -233,10 +256,12 @@ classdef SimulationFolders < handle
             obj.ant_lookup = strcat(obj.ant, '\', 'LOOK-UP') ;            
             obj.ant_real = strcat(obj.ant, '\', 'REALIZATION') ;
             
+            
             %% Rotation
             obj.rot = strcat(obj.pol, '\', 'ROT') ;            
             obj.rot_lookup = strcat(obj.rot, '\', 'LOOK-UP') ;            
             obj.rot_real = strcat(obj.rot, '\', 'REALIZATION') ;
+            
             
             %% Frequency Response
             obj.freq = strcat(obj.pol, '\FREQ\', FolderNameAnt) ;            
@@ -257,6 +282,7 @@ classdef SimulationFolders < handle
             obj.freqdiff_P3_tuple = strcat(obj.freqdiff_P3, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;             
             obj.freqdiff_P4 = strcat(obj.freqdiff, '\', 'P4') ;
             obj.freqdiff_P4_tuple = strcat(obj.freqdiff_P4, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;  
+            
             
             %% Output
             obj.out = strcat(obj.pol, '\OUTPUT\', FolderNameAnt) ;
@@ -279,6 +305,7 @@ classdef SimulationFolders < handle
             obj.out_diffuse_NBRCS = strcat(obj.out_diffuse, '\', 'NBRCS') ;
             obj.out_diffuse_NBRCS_tuple = strcat(obj.out_diffuse_NBRCS, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ; 
             
+            
             %% Figure
             obj.fig = strcat(obj.sim_mode, '\', 'FIGURE\', polT, polR, '\', FolderNameAnt ) ;
             obj.fig_direct = strcat(obj.fig, '\', 'DIRECT') ;
@@ -297,6 +324,10 @@ classdef SimulationFolders < handle
         
         
         function makeStaticDirs(obj)
+            
+            %% GET GLOBAL PARAMETERS
+            % Simulation Parameters
+            vegetation_method = SimParams.getInstance.vegetation_method;
         
             %% Analysis
             if ~exist(obj.analysis, 'dir')
@@ -312,11 +343,6 @@ classdef SimulationFolders < handle
             if ~exist(obj.afsa, 'dir')
                 mkdir(obj.afsa)
             end
-
-            %% Ground
-            if ~exist(obj.gnd, 'dir')
-                mkdir(obj.gnd)
-            end
             
             %% Vegetation
             if ~exist(obj.veg, 'dir')
@@ -328,7 +354,7 @@ classdef SimulationFolders < handle
                 mkdir(obj.sim_mode)
             end
             
-            if strcmp( SimParams.getInstance.vegetation_method, Constants.veg_methods.HOMOGENOUS )
+            if strcmp( vegetation_method, Constants.veg_methods.HOMOGENOUS )
                 VegParams.getInstance.write;
             end
         
@@ -336,6 +362,12 @@ classdef SimulationFolders < handle
         
         
         function makeDynamicDirs(obj)
+            
+
+            %% Ground
+            if ~exist(obj.gnd, 'dir')
+                mkdir(obj.gnd)
+            end
             
             %% Angle of incidence
             if ~exist(obj.th0_deg, 'dir')

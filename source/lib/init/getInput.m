@@ -177,7 +177,7 @@ function setVegHomParams( inputFile )
     
 xDoc = xmlread( strcat( Directories.getInstance.input_veg_hom, '\', inputFile ) );
 
-vegetation_stage = getStringFromXML(xDoc, ConstantNames.veg_hom_vegetationStage);
+vegetation_stage = getStringFromXML(xDoc, ConstantNames.veg_vegetationStage);
 
 dim_layers_m = getDoubleArrayFromXML(xDoc, ConstantNames.veg_hom_dimLayers_m);    %  Layer dimensions vector
 
@@ -314,15 +314,15 @@ col_space_m = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_colSpace_m);    %
 
 phi_row_deg = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_phiRow_deg);   % Azimuth angle of field rows from local North (degrees)
 
-plant_row_spread_m = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_plantRowSpread_m);  % Max scattering dist. of a plant pos between rows (m)                       
-
-plant_col_spread_m = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_plantColSpread_m);  % Max scattering dist. of a plant pos within a row (m)
+seed_fluctuation_m = getDoubleFromXML(xDoc, ConstantNames.veg_vir_row_seedFluctuation_m);  % Max scattering dist. of a plant pos within a row (m)
 
 plugin = getStringFromXML(xDoc, ConstantNames.veg_vir_row_plugin);  % Plugin name to be run for virtual vegetation generation    
 
+vegetation_stage = getStringFromXML( xDoc, ConstantNames.veg_vegetationStage );
+
 % Initialize Virtual Row-Structured Vegetation Parameters
 VegVirRowParams.getInstance.initialize( row_space_m, col_space_m, ...
-    phi_row_deg, plant_row_spread_m, plant_col_spread_m, plugin);
+    phi_row_deg, seed_fluctuation_m, plugin, vegetation_stage);
 
 end
 

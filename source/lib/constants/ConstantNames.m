@@ -65,7 +65,8 @@ classdef ConstantNames
         set_calcSpecularTerm = 'calc_specular_term';
         set_calcDiffuseTerm = 'calc_diffuse_term';
         
-        veg_hom_vegetationStage = 'vegetation_stage';
+        veg_vegetationStage = 'vegetation_stage';
+        
         veg_hom_TYPES = 'TYPES';
         veg_hom_TYPKND = 'TYPKND';
         veg_hom_dimLayers_m = 'dim_layers_m';
@@ -82,8 +83,7 @@ classdef ConstantNames
         veg_vir_row_rowSpace_m = 'row_space_m';
         veg_vir_row_colSpace_m = 'col_space_m';
         veg_vir_row_phiRow_deg = 'phi_row_deg';
-        veg_vir_row_plantRowSpread_m = 'plant_row_spread_m';
-        veg_vir_row_plantColSpread_m = 'plant_col_spread_m';
+        veg_vir_row_seedFluctuation_m = 'seed_fluctuation_m';
         
     end
     

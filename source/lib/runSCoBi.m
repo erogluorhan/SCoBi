@@ -36,6 +36,7 @@ initSCoBi
 % startGUI;
 
 inputFile_sys = 'sysInput-Paulownia.xml';
+% inputFile_sys = 'sysInput-Paulownia-PAPER_PBAND-hr_20.xml';
 inputFile_veg = 'vegHomInput-Paulownia.xml';
 % inputFile_sys = 'sysInput-Corn.xml';
 % inputFile_veg = 'vegVirRowInput-Corn.xml';
@@ -48,13 +49,24 @@ isInputValid = initWithInputs();
 % If input is valid
 if isInputValid
     
-    num_Th = length( SatParams.getInstance.th0_list_deg );
-    num_Ph = length( SatParams.getInstance.PH0_list_deg );
-    num_VSM = length( GndParams.getInstance.VSM_list_cm3cm3 );
-    num_RMSH = length( GndParams.getInstance.RMSH_list_cm );
+    
+    %% GET GLOBAL PARAMETERS
+    % Simulation Settings
+    sim_mode = SimSettings.getInstance.sim_mode;
+    % Satellite Parameters
+    th0_list_deg = SatParams.getInstance.th0_list_deg;
+    PH0_list_deg = SatParams.getInstance.PH0_list_deg;
+    % Ground Parameters
+    VSM_list_cm3cm3 = GndParams.getInstance.VSM_list_cm3cm3;
+    RMSH_list_cm = GndParams.getInstance.RMSH_list_cm;
+    
+    num_Th = length( th0_list_deg );
+    num_Ph = length( PH0_list_deg );
+    num_VSM = length( VSM_list_cm3cm3 );
+    num_RMSH = length( RMSH_list_cm );
     
     % Snapshot simulation
-    if SimSettings.getInstance.sim_mode == Constants.sim_mode.SNAPSHOT
+    if sim_mode == Constants.sim_mode.SNAPSHOT
         
         % For each theta (looking angle)
         for tt = 1 : num_Th
@@ -139,7 +151,7 @@ if (~isunix || (ismac && verLessThan('matlab', '7.14')))
     [mode, mode_vinc, mode_data, mode_ref, flag_ms_pos, flag_ms, flag_ge, flag_cov, flag_NTRIP, flag_amb, ...
         flag_skyplot, flag_plotproc, flag_var_dyn_model, flag_stopGOstop, flag_SP3, flag_SBAS, flag_IAR, ...
         filerootIN, filerootOUT, filename_R_obs, filename_M_obs, ...
-        filename_nav, filename_ref, filename_pco, pos_M_man, protocol_idx, multi_antenna_rf, iono_model, tropo_model,fsep_char] = gui_goGPS;
+        filename_nav, filename_ref, filename_pco, pos_M_man, protocol_idx, multi_antenna_rf, iono_model, tropo_model,fsep_char] = gui_SCoBi;
 end
 
 end

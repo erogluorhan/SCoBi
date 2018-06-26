@@ -176,6 +176,7 @@ alpha = 0.2 ; % 0.5 ;  % sidelobe width
 gg = abs(1 / (1 - a) * exp( -(tan(th) / tan(ths)) .^ 2)...
         - a / (1 - a) * exp(-(alpha * tan(th) / tan(ths)) .^ 2)) ;
 
+% To eliminate the angles that are over 0.4pi degrees from main beam
 XX = min(min(gg(:, (th2 > 0.4*pi) & (th2 < 0.45*pi)))) ;
 gg(:, th2 > pi/2) = XX ;
 gg(gg < XX) = XX ;

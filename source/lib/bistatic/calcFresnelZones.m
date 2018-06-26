@@ -59,9 +59,9 @@ for nn = 1 : Nfz
     p_m = -nump_m3 / denp_m2 ;
     x1_m(nn) = Dist_m / 2 + p_m ; % distance to the center of the ellipse
     
-    % minor axis
+    % semi-minor axis
     by1_m(nn) = b_m * sqrt(1 - c_m ^ 2 / denp_m2) ;
-    % major axis
+    % semi-major axis
     ax1_m(nn) = by1_m(nn) * a_m / sqrt(denp_m2) ;
     
 end

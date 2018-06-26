@@ -9,6 +9,8 @@ classdef Constants
         km2m = 1e3;
          
         m2cm = 1e2;
+         
+        m2mm = 1e3;
         
         deg2rad = pi / 180 ;
         

@@ -10,13 +10,8 @@ tstart = datetime('now') %#ok<NOPRT,*NASGU>
 
 
 %% GET GLOBAL PARAMETERS
-% Simulation Settings
-calc_direct_term = SimSettings.getInstance.calc_direct_term;
-calc_specular_term = SimSettings.getInstance.calc_specular_term;
-calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
 % Simulation Parameters
 Nr = SimParams.getInstance.Nr;
-vegetation_method = SimParams.getInstance.vegetation_method;
 
 
 %% INITIALIZE BISTATIC CONFIGURATION AND GROUND

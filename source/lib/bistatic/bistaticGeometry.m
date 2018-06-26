@@ -8,6 +8,8 @@ dir_config = SimulationFolders.getInstance.config;
 
 
 %% GET GLOBAL PARAMETERS
+% Simulation Parameters
+Nfz = SimParams.getInstance.Nfz;
 % Satellite Parameters
 th0t_deg = SatParams.getInstance.th0_list_deg( ParamsManager.index_Th );
 PH0_deg = SatParams.getInstance.PH0_list_deg( ParamsManager.index_Ph );
@@ -99,7 +101,7 @@ pSc_m = [x1_m(1); 0; 0] ;
 pSc2_m = AntRotZt * pSc_m  ;
 
 ellipse_s_m = [ax1_m, by1_m] ; % specular point Fresnel zone
-ellipse_s_centers_m = AntRotZt * [x1_m'; zeros(1,10); zeros(1,10)] ;
+ellipse_s_centers_m = AntRotZt * [x1_m'; zeros(1,Nfz); zeros(1,Nfz)] ;
 
 %% Reciever footprint - ellipse
 
