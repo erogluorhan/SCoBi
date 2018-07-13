@@ -30,16 +30,16 @@
         <!--  Nr - Number of realizations -->  
         <!--  Nfz  - Number of Fresnel Zones -->
 
-        <sim_name>kurum</sim_name>
+        <sim_name>eroglu</sim_name>
         <campaign>MSU</campaign>
-        <campaign_date>20171103</campaign_date>
+        <campaign_date>20180406</campaign_date>
         <plot>01</plot>
 
         <vegetation_method>vir</vegetation_method>
         <vegetation_isRow>1</vegetation_isRow>
         <vegetation_plant>Corn</vegetation_plant>
 
-        <Nr>2</Nr>
+        <Nr>20</Nr>
 
         <Nfz>10</Nfz>
     </SIM_INPUT>
