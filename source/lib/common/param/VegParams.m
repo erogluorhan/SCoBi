@@ -8,11 +8,6 @@ classdef VegParams < handle
     
     properties (SetAccess = private, GetAccess = public)
         
-        
-        % Vegetation stage to separate simulations for different stages of 
-        % the same vegetation 
-        vegetation_stage;
-        
         % Vegetation particle types struct
         % L: Leaf
         % B: Branch
@@ -96,11 +91,8 @@ classdef VegParams < handle
     
     methods
         
-        function initialize(obj, vegetation_stage, dim_layers_m, particleIDs, particlesCell, layersCell )
-            % INITIALIZE - Initializes all the properties from input file           
-        
-                        
-            obj.vegetation_stage = vegetation_stage;
+        function initialize(obj, dim_layers_m, particleIDs, particlesCell, layersCell )
+            % INITIALIZE - Initializes all the properties from input file  
             
             obj.dim_layers_m = dim_layers_m;
             obj.num_layers = length( obj.dim_layers_m );         
@@ -238,12 +230,6 @@ classdef VegParams < handle
             obj.epsr = epsr;
             obj.parm1_deg = parm1_deg;
             obj.parm2_deg = parm2_deg;
-            
-        end
-        
-        function initializeStage(obj, stage)
-
-            obj.vegetation_stage = stage;
             
         end
          

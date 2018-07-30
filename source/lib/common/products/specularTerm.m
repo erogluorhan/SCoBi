@@ -215,7 +215,7 @@ filename = 'ANGDEG' ;
 ANGDEG = readVar(dir_afsa, filename) ;
 % Ground Data
 filename = 'G' ;
-grnd_par = readVar(dir_gnd, filename) ;
+grnd_par = readComplexVar(dir_gnd, filename) ;
 % Layer Thickness
 % filename = 'D' ;
 % D = readVar(dir_veg, filename) ;
@@ -243,9 +243,11 @@ t_sb = [1 0; 0 1] ;
 
 
 %% GROUND REFLECTION MATRIX
-h = grnd_par(1, 1) ;
+h = real(grnd_par(1, 1)) ;
 
-epsg = grnd_par(1, 2) + 1i * grnd_par(1, 3) ;
+% TO-DO: Solve for multilayered ground
+% epsg = grnd_par(1, 2) + 1i * grnd_par(1, 3) ;
+epsg = grnd_par(2, 1);
 
 ths = degtorad(thsd) ;
 [RGHIF, RGVIF, ~, ~] = reflectionCoeff(ths, ths, epsg, h) ;

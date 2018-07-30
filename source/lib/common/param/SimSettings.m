@@ -41,6 +41,9 @@ classdef SimSettings < handle
         % 0: Do not calculate
         % 1: Calculate
         calc_diffuse_term
+        
+        % Flag for drawing live plots during simulations
+        draw_live_plots
     end
     
     
@@ -72,7 +75,7 @@ classdef SimSettings < handle
     methods
         
         function initialize(obj, simulator_id, sim_mode_id, gnd_cover_id, write_attenuation, ...
-                calc_direct_term, calc_specular_term, calc_diffuse_term )
+                calc_direct_term, calc_specular_term, calc_diffuse_term, draw_live_plots )
             % INITIALIZE - Initializes all the properties
             
             obj.simulator_id = simulator_id;
@@ -82,6 +85,7 @@ classdef SimSettings < handle
             obj.calc_direct_term = calc_direct_term;
             obj.calc_specular_term = calc_specular_term;
             obj.calc_diffuse_term = calc_diffuse_term; 
+            obj.draw_live_plots = draw_live_plots; 
         end
         
         function out = get.simulator_id(obj)
@@ -110,6 +114,10 @@ classdef SimSettings < handle
         
         function out = get.calc_diffuse_term(obj)
             out = obj.calc_diffuse_term;
+        end
+        
+        function out = get.draw_live_plots(obj)
+            out = obj.draw_live_plots;
         end
     end
     

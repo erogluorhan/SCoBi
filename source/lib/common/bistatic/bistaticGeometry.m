@@ -26,6 +26,7 @@ ant_pat_Rx_id = RxParams.getInstance.ant_pat_Rx_id; % Receiver antenna pattern g
 th0_Rx_deg = RxParams.getInstance.th0_Rx_deg;       % Antenna Looking Angle (angle of Incidence)
 th0_Rx_rad = degtorad(th0_Rx_deg) ;
 ph0_Rx_deg = RxParams.getInstance.ph0_Rx_deg;       % Azimuth Angle of Receiver position
+ph0_Rx_deg = 90 - ph0_Rx_deg;
 ph0_Rx_rad = degtorad(ph0_Rx_deg) ;
 % If recevier antenna pattern is Generalized-Gaussian, its footprint
 % ellipse will be calculated below

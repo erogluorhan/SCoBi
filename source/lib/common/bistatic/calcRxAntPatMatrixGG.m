@@ -15,7 +15,7 @@ hpbw_deg = RxGGParams.getInstance.hpbw_deg;
 
 
 %% CALCULATIONS
-
+% TO-DO: Make a continous range
 if SLL_dB == 15 ;
     a = 0.18 ; % 0.35 ;  % 15 dB    
 elseif SLL_dB == 20 ;

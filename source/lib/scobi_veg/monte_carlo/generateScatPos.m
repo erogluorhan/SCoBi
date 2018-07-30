@@ -30,7 +30,7 @@ elseif veg_method_id == Constants.id_veg_vir
     
     elseif veg_vir_orientation_id == Constants.id_veg_vir_random_spread
         
-        % TO-DO: Implement this method
+        % TO-DO: Should be implemented when Virtual Random-spread is added
         generateVirRndScatPositions();
     
     end

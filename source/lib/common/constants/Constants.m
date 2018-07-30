@@ -24,6 +24,9 @@ classdef Constants
         % Speed of light - m/s
         c = 3e8;
         
+        % Air Dielectric Constant
+        eps_diel_air = 1.0 - 0.0 * 1i ;
+        
         version = '1.0';
         
         ant_pat_th_range_deg = 180;
@@ -33,10 +36,17 @@ classdef Constants
 
         %% CELL LISTS 
         % Simulators
-        id_veg = 1;
-        id_multi_layer = 2;
-        simulators = {'SCoBi-Veg', 'SCoBi-ML'};
+        id_veg_agr = 1;
+        id_veg_for = 2;
+        id_multi_layer = 3;
+        simulators = {'SCoBi-Veg(Agriculture)', 'SCoBi-Veg(Forest)', 'SCoBi-ML'};
         
+        % Sim-Modes
+        id_snapshot = 1;
+        id_time_series = 2;
+        sim_modes = {'Snapshot', 'Time-series'};
+        
+        % Ground-cover
         id_bare_soil = 1;
         id_veg_cover = 2;  
         gnd_covers = {'Bare-soil', 'Vegetation'};
@@ -62,13 +72,13 @@ classdef Constants
         Rx_orientations = {'Fixed', 'Specular-facing'};
         
         id_Rx_GG = 1;
-        id_Rx_cos_pow_n = 2;
-        id_Rx_user_defined = 3;
-        Rx_ant_pats = {'Generalized-Gaussian', 'Cosine to the power n', 'User-defined'};
+        id_Rx_user_defined = 2;
+        id_Rx_cos_pow_n = 3;
+        Rx_ant_pats = {'Generalized-Gaussian', 'User-defined', 'Cosine to the power n'};
         
-        id_mironov = 1;
-        id_dobson = 2;
-        diel_models = {'Mironov', 'Dobson'};
+        id_dobson = 1;
+        id_mironov = 2;
+        diel_models = {'Dobson', 'Mironov'};
         
         
         %% STRUCTS

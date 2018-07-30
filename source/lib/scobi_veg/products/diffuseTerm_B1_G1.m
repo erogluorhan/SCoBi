@@ -475,9 +475,11 @@ dim_layers_m = VegParams.getInstance.dim_layers_m;
 % Ground Parameters
 disp('Reading ground parameters...')
 filenamex = 'G' ;
-grnd_par = readVar( dir_gnd, filenamex );
-h = grnd_par(1, 1) ;
-epsg = grnd_par(1, 2) + ( 1i * grnd_par(1, 3) ) ;
+grnd_par = readComplexVar( dir_gnd, filenamex );
+h = real(grnd_par(1, 1)) ;
+% TO-DO: Solve for multilayered ground
+% epsg = grnd_par(1, 2) + 1i * grnd_par(1, 3) ;
+epsg = grnd_par(2, 1);
 
 % Incremental Propagation Constant
 disp('Reading Incremental propagation constants...')

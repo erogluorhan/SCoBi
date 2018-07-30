@@ -9,7 +9,7 @@ classdef DynParams < handle
     properties (SetAccess = private, GetAccess = public) 
         
         % Day-of-year for timestamping purposes
-        doy
+        DOYs
         
         % Transmitter Incidence Angle of incoming signal list - measured between ground zenith and the 
         % ground-Transmitter direction (degrees) 
@@ -63,10 +63,10 @@ classdef DynParams < handle
     
     methods
         
-        function initialize(obj, doy, th0_Tx_list_deg, ph0_Tx_list_deg, VSM_list_cm3cm3, RMSH_list_cm )
+        function initialize(obj, DOYs, th0_Tx_list_deg, ph0_Tx_list_deg, VSM_list_cm3cm3, RMSH_list_cm )
             % INITIALIZE - Initializes all the properties
             
-            obj.doy = doy;
+            obj.DOYs = DOYs;
             obj.th0_Tx_list_deg = th0_Tx_list_deg;
             obj.el0_Tx_list_deg = 90 - th0_Tx_list_deg;
             obj.ph0_Tx_list_deg = ph0_Tx_list_deg;
@@ -74,8 +74,8 @@ classdef DynParams < handle
             obj.RMSH_list_cm = RMSH_list_cm; 
         end
         
-        function out = get.doy(obj)
-            out = obj.doy;
+        function out = get.DOYs(obj)
+            out = obj.DOYs;
         end
         
         function out = get.el0_Tx_list_deg(obj)

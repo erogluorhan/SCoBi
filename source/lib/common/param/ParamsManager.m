@@ -305,7 +305,6 @@ classdef ParamsManager < handle
             
                 %% GET GLOBAL PARAMETERS
                 % Vegetation Parameters
-                vegetation_stage = VegParams.getInstance.vegetation_stage;
                 TYPES = VegParams.getInstance.TYPES;
                 dim_layers_m = VegParams.getInstance.dim_layers_m;
                 TYPKND = VegParams.getInstance.TYPKND;
@@ -318,22 +317,20 @@ classdef ParamsManager < handle
                 epsr = VegParams.getInstance.epsr;
                 parm1_deg = VegParams.getInstance.parm1_deg;
                 parm2_deg = VegParams.getInstance.parm2_deg;
-
-                if strcmp( input_params(ConstantNames.veg_vegetationStage), vegetation_stage )
-                    if isequal( input_params(ConstantNames.veg_hom_TYPES), TYPES )
-                        if isequal( input_params(ConstantNames.veg_hom_dimLayers_m), dim_layers_m )
-                            if isequal( input_params(ConstantNames.veg_hom_TYPKND), TYPKND )                                          
-                                if isequal( input_params(ConstantNames.veg_hom_scatCalVeg), scat_cal_veg )
-                                    if isequal( input_params(ConstantNames.veg_hom_LTK), LTK )
-                                        if isequal( input_params(ConstantNames.veg_hom_dsty), dsty )
-                                            if isequal( input_params(ConstantNames.veg_hom_dim1_m), dim1_m )
-                                                if isequal( input_params(ConstantNames.veg_hom_dim2_m), dim2_m )
-                                                    if isequal( input_params(ConstantNames.veg_hom_dim3_m), dim3_m )
-                                                        if isequal( input_params(ConstantNames.veg_hom_epsr), epsr )
-                                                            if isequal( input_params(ConstantNames.veg_hom_parm1_deg), parm1_deg )
-                                                                if isequal( input_params(ConstantNames.veg_hom_parm2_deg), parm2_deg )
-                                                                    isEqual = 1;
-                                                                end
+                
+                if isequal( input_params(ConstantNames.veg_hom_TYPES), TYPES )
+                    if isequal( input_params(ConstantNames.veg_hom_dimLayers_m), dim_layers_m )
+                        if isequal( input_params(ConstantNames.veg_hom_TYPKND), TYPKND )                                          
+                            if isequal( input_params(ConstantNames.veg_hom_scatCalVeg), scat_cal_veg )
+                                if isequal( input_params(ConstantNames.veg_hom_LTK), LTK )
+                                    if isequal( input_params(ConstantNames.veg_hom_dsty), dsty )
+                                        if isequal( input_params(ConstantNames.veg_hom_dim1_m), dim1_m )
+                                            if isequal( input_params(ConstantNames.veg_hom_dim2_m), dim2_m )
+                                                if isequal( input_params(ConstantNames.veg_hom_dim3_m), dim3_m )
+                                                    if isequal( input_params(ConstantNames.veg_hom_epsr), epsr )
+                                                        if isequal( input_params(ConstantNames.veg_hom_parm1_deg), parm1_deg )
+                                                            if isequal( input_params(ConstantNames.veg_hom_parm2_deg), parm2_deg )
+                                                                isEqual = 1;
                                                             end
                                                         end
                                                     end
@@ -354,7 +351,7 @@ classdef ParamsManager < handle
                 if veg_vir_orientation_id == Constants.id_veg_vir_row_crop
                     %% GET GLOBAL PARAMETERS
                     % Virtual Row-Structured Vegetation Parameters
-                    vegetation_stage = VegParams.getInstance.vegetation_stage;
+                    vegetation_stage = VegVirRowParams.getInstance.vegetation_stage;
                     plugin = VegVirRowParams.getInstance.plugin;
                     row_space_m = VegVirRowParams.getInstance.row_space_m;
                     col_space_m = VegVirRowParams.getInstance.col_space_m;
@@ -378,7 +375,8 @@ classdef ParamsManager < handle
                 % Else if veg_method is virtual random
                 elseif veg_vir_orientation_id == Constants.id_veg_vir_random_spread
                    
-                    % TO-DO: Implement for virtual random vegetation 
+                    % TO-DO: Should be implemented if Virtual Random-spread vegetation is added
+                    
                 end
             end
             
@@ -389,54 +387,80 @@ classdef ParamsManager < handle
             %% GET GLOBAL DIRECTORIES
             dir_position = SimulationFolders.getInstance.position;
             
+            
             %% GET GLOBAL PARAMETERS
             % Simulation Settings
-            calc_specular_term = SimSettings.getInstance.calc_specular_term;
-            calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
-            % Simulation Parameters
-            Nr = SimParams.getInstance.Nr;
-            veg_method_id = SimParams.getInstance.veg_method_id;
-            % Vegetation Parameters            
-            readExistingVegParams;
-            scat_cal_veg = VegParams.getInstance.scat_cal_veg;
-            num_scat_cal = sum(sum(sum(scat_cal_veg))) ;
+            gnd_cover_id = SimSettings.getInstance.gnd_cover_id;          
             
-            % First check the user preferences
-            if veg_method_id == Constants.id_veg_hom
-                if ~calc_diffuse_term
-                    dispMsg = 'Generate Scatterer Positions - SKIPPED (User Preferences - No Diffuse Term)';
-                    Nr_current = NaN;
-                    result = Constants.need_for_run.NO;
-                    return
-                end
             
-            elseif veg_method_id == Constants.id_veg_vir
-                if ~calc_diffuse_term && ~calc_specular_term
-                    dispMsg = 'Generate Scatterer Positions - SKIPPED (User Preferences - No Specular and Diffuse Term)';
-                    Nr_current = NaN;
-                    result = Constants.need_for_run.NO;
-                    return
-                end
-            end
-                                    
-            % If passes user preferences, check the existence of files
-            all_files = dir(dir_position);
-            num_files = numel(all_files) - 2;
-            Nr_current = num_files / num_scat_cal ;
-
-            if isnan(Nr_current) || isinf(Nr_current), Nr_current = 0; end
-            
-            if Nr_current >= Nr
-                dispMsg = 'Generate Scatterer Positions - SKIPPED - Already exists!';
+            % If ground cover is Bare-soil, then no need for scatterer
+            % positions
+            if gnd_cover_id == Constants.id_bare_soil
+                
+                dispMsg = 'Generate Scatterer Positions - SKIPPED (Ground cover - Bare-soil)';
+                Nr_current = NaN;
                 result = Constants.need_for_run.NO;
-            else
-                if Nr_current > 0
-                    dispMsg = 'Generate Scatterer Positions - Partially exists!';
-                    result = Constants.need_for_run.PARTIAL;
-                else
-                    dispMsg = 'Generate Scatterer Positions';
-                    result = Constants.need_for_run.FULL;
+                return
+                
+            % Else if ground cover is Vegetation, then need for scatterer 
+            % positions depends on other parameters
+            elseif gnd_cover_id == Constants.id_veg_cover
+                                
+            
+                %% GET GLOBAL DIRECTORIES
+                dir_position = SimulationFolders.getInstance.position;
+
+
+                %% GET GLOBAL PARAMETERS
+                % Simulation Settings
+                calc_specular_term = SimSettings.getInstance.calc_specular_term;
+                calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
+                % Simulation Parameters
+                Nr = SimParams.getInstance.Nr;
+                veg_method_id = SimParams.getInstance.veg_method_id;
+                % Vegetation Parameters            
+                readExistingVegParams;
+                scat_cal_veg = VegParams.getInstance.scat_cal_veg;
+                num_scat_cal = sum(sum(sum(scat_cal_veg))) ;
+
+                % First check the user preferences
+                if veg_method_id == Constants.id_veg_hom
+                    if ~calc_diffuse_term
+                        dispMsg = 'Generate Scatterer Positions - SKIPPED (User Preferences - No Diffuse Term)';
+                        Nr_current = NaN;
+                        result = Constants.need_for_run.NO;
+                        return
+                    end
+
+                elseif veg_method_id == Constants.id_veg_vir
+                    if ~calc_diffuse_term && ~calc_specular_term
+                        dispMsg = 'Generate Scatterer Positions - SKIPPED (User Preferences - No Specular and Diffuse Term)';
+                        Nr_current = NaN;
+                        result = Constants.need_for_run.NO;
+                        return
+                    end
                 end
+
+                % If passes user preferences, check the existence of files
+                all_files = dir(dir_position);
+                num_files = numel(all_files) - 2;
+                Nr_current = num_files / num_scat_cal ;
+
+                if isnan(Nr_current) || isinf(Nr_current), Nr_current = 0; end
+
+                if Nr_current >= Nr
+                    dispMsg = 'Generate Scatterer Positions - SKIPPED - Already exists!';
+                    result = Constants.need_for_run.NO;
+                else
+                    if Nr_current > 0
+                        dispMsg = 'Generate Scatterer Positions - Partially exists!';
+                        result = Constants.need_for_run.PARTIAL;
+                    else
+                        dispMsg = 'Generate Scatterer Positions';
+                        result = Constants.need_for_run.FULL;
+                    end
+                end
+                
             end
             
         end
@@ -642,40 +666,75 @@ classdef ParamsManager < handle
             end
             
         end
+
+function [result, dispMsg] = isToCalculateDirectTerm()
+
+%% GET GLOBAL PARAMETERS    
+% Simulation Settings
+simulator_id = SimSettings.getInstance.simulator_id;
+
+
+% If the simulator is SCoBi-Veg, then Direct term is calculated
+if simulator_id == Constants.id_veg_agr ...
+    || simulator_id == Constants.id_veg_for
+
+    dispMsg = 'Direct Term';
+    result = Constants.need_for_run.FULL;
+
+elseif simulator_id == Constants.id_multi_layer
+
+    dispMsg = '';
+    result = Constants.need_for_run.NO;
+
+end
+
+end
         
-        function [result, dispMsg] = isToCalculateSpecularTerm()
-            
-            %% GET GLOBAL DIRECTORIES
-            dir_out_specular_tuple = SimulationFolders.getInstance.out_specular_tuple;
-            
-            %% GET GLOBAL PARAMETERS
-            % Simulation Settings
-            calc_specular_term = SimSettings.getInstance.calc_specular_term;
-                        
-            % First check the user preferences
-            if ~calc_specular_term
-                dispMsg = 'Specular Term - SKIPPED (User Preferences - No Specular Term)';
-                result = Constants.need_for_run.NO;
-                return
-            end            
-            
-            % If passes user preferences, check the existence of files           
-            num_files = 0;
-            
-            if ( exist(dir_out_specular_tuple,'dir') == 7 )
-                all_files = dir(dir_out_specular_tuple);
-                num_files = numel(all_files) - 2;
-            end
-            
-            if num_files == Constants.num_out_specular
-                dispMsg = 'Specular Term - SKIPPED - Already exists!';
-                result = Constants.need_for_run.NO;
-            else
-                dispMsg = 'Specular Term';
-                result = Constants.need_for_run.FULL;
-            end
-            
-        end
+function [result, dispMsg] = isToCalculateSpecularTerm()
+
+%% GET GLOBAL DIRECTORIES
+dir_out_specular_tuple = SimulationFolders.getInstance.out_specular_tuple;
+
+%% GET GLOBAL PARAMETERS
+% Simulation Settings
+simulator_id = SimSettings.getInstance.simulator_id;
+calc_specular_term = SimSettings.getInstance.calc_specular_term;
+
+
+if simulator_id == Constants.id_veg_agr ...
+    || simulator_id == Constants.id_veg_for
+
+    % First check the user preferences
+    if ~calc_specular_term
+        dispMsg = 'Specular Term - SKIPPED (User Preferences - No Specular Term)';
+        result = Constants.need_for_run.NO;
+        return
+    end            
+
+    % If passes user preferences, check the existence of files           
+    num_files = 0;
+
+    if ( exist(dir_out_specular_tuple,'dir') == 7 )
+        all_files = dir(dir_out_specular_tuple);
+        num_files = numel(all_files) - 2;
+    end
+
+    if num_files == Constants.num_out_specular
+        dispMsg = 'Specular Term - SKIPPED - Already exists!';
+        result = Constants.need_for_run.NO;
+    else
+        dispMsg = 'Specular Term';
+        result = Constants.need_for_run.FULL;
+    end
+
+elseif simulator_id == Constants.id_multi_layer
+
+    dispMsg = '';
+    result = Constants.need_for_run.NO;
+
+end
+
+end
         
         function [result, dispMsg] = isToCalculateDiffuseTerm()
             
@@ -758,7 +817,6 @@ classdef ParamsManager < handle
             % If vegetation method is homogenous
             if veg_method_id == Constants.id_veg_hom
             
-                keySet{end+1} = ConstantNames.veg_vegetationStage;
                 keySet{end+1} = ConstantNames.veg_hom_TYPES;
                 keySet{end+1} = ConstantNames.veg_hom_dimLayers_m;
                 keySet{end+1} = ConstantNames.veg_hom_TYPKND;
@@ -776,7 +834,6 @@ classdef ParamsManager < handle
                 %% GET GLOBAL PARAMETERS
                 % Vegetation Parameters
                 % Assign to map values
-                valueSet{end+1} = VegParams.getInstance.vegetation_stage;
                 valueSet{end+1} = VegParams.getInstance.TYPES;
                 valueSet{end+1} = VegParams.getInstance.dim_layers_m;
                 valueSet{end+1} = VegParams.getInstance.TYPKND;
@@ -806,7 +863,7 @@ classdef ParamsManager < handle
                     %% GET GLOBAL PARAMETERS
                     % Virtual Row-Structured Vegetation Parameters
                     % Assign to map values
-                    valueSet{end+1} = VegParams.getInstance.vegetation_stage;
+                    valueSet{end+1} = VegVirRowParams.getInstance.vegetation_stage;
                     valueSet{end+1} = VegVirRowParams.getInstance.plugin;
                     valueSet{end+1} = VegVirRowParams.getInstance.row_space_m;
                     valueSet{end+1} = VegVirRowParams.getInstance.col_space_m;
@@ -817,7 +874,7 @@ classdef ParamsManager < handle
                 % is Random_spread
                 elseif veg_vir_orientation_id == Constants.id_veg_vir_random_spread
                     
-                    % Implement for virtual random vegetation
+                    % TO-DO: Should be implemented if Virtual Random-spread vegetation is added
                     
                 end
             end
