@@ -12,7 +12,7 @@
 %
 %    Copyright (C) 2018-2023 Mehmet Kurum, Orhan Eroglu
 %--------------------------------------------------------------------------
-%
+% dx
 %    This program is free software: You can redistribute it and/or modify
 %    it under the terms of the GNU General Public License as published by
 %    the Free Software Foundation, either version 3 of the License, or
@@ -31,36 +31,83 @@
 
 function runSCoBi
 
-simulator_id = 2;
 
+%% WORKSPACE MANAGEMENT
+% Reset workspace
+resetWS();
+
+% Add the common path to start running SCoBi
+addpath( genpath( strcat(pwd, '/common') ) );
+
+
+%% MAIN SCOBI WINDOW (SIMULATOR SELECTION)
+% Open the main SCoBi GUI for simulator selection
+simulator_id = gui_SCoBiMain();
+
+% If no output from GUI, terminate program
+if (isempty(simulator_id))
+    
+    fprintf('SCoBi terminated by the user\n');
+    
+    return
+end
+
+% Initialize workspace for the selected simulator
 initSCoBiWS( simulator_id );
 
-% startGUI;
 
-% if (~isunix || (ismac && verLessThan('matlab', '7.14')))
-%     [mode, mode_vinc, mode_data, mode_ref, flag_ms_pos, flag_ms, flag_ge, flag_cov, flag_NTRIP, flag_amb, ...
-%         flag_skyplot, flag_plotproc, flag_var_dyn_model, flag_stopGOstop, flag_SP3, flag_SBAS, flag_IAR, ...
-%         filerootIN, filerootOUT, filename_R_obs, filename_M_obs, ...
-%         filename_nav, filename_ref, filename_pco, pos_M_man, protocol_idx, multi_antenna_rf, iono_model, tropo_model,fsep_char] = gui_SCoBi;
-% end
-% 
-% if (isempty(mode))
-%     
-%     fprintf('SCoBi terminated by the user\n');
-%     
-%     return
-% end
+%% START GUI FOR THE SELECTED SIMULATOR
+inputStruct = startSelectedGUI( simulator_id );
+
+% If no output from GUI, terminate program
+if (isempty(inputStruct))
+    
+    fprintf('SCoBi terminated by the user\n');
+    
+    return
+end
 
 if simulator_id == Constants.id_multi_layer
     
-    inputFile_sys = 'default_input-scobi_ml.xml';
+    runSCoBiML( simulator_id, inputStruct );
+    
+elseif simulator_id == Constants.id_veg_agr || ...
+       simulator_id == Constants.id_veg_for
+   
+   runSCoBiVeg( simulator_id, inputStruct );
+   
+end
 
-    inputFile_veg = 'vegHomInput-Paulownia.xml';
-% 
-    inputFile_dyn = 'default_input-ml.xlsx';
 
+end 
+
+
+function resetWS
+
+% Store current debug breakpoints before doing clear all
+myBreakpoints = dbstatus;
+save('myBreakpoints.mat', 'myBreakpoints');
+
+% Clear all the workspace
+clear all;
+clc ;
+
+% Restore debug breakpoints
+load('myBreakpoints.mat');
+dbstop(myBreakpoints);
+clear myBreakpoints;
+
+if ( exist('myBreakpoints.mat','file') ) 
+    delete('myBreakpoints.mat'); 
+end
+
+end
+
+
+function runSCoBiML( simulator_id, inputStruct )
+    
     % Get input and check validity
-    getInput(inputFile_sys, inputFile_veg, inputFile_dyn);
+    getInput(simulator_id, inputStruct);
 
     % TO-DO: Input Validity check
 %     isInputValid = initWithInputs();
@@ -77,23 +124,16 @@ if simulator_id == Constants.id_multi_layer
     % Initialize the directories depending on theta,
     % phi, VSM, and RMSH
     SimulationFolders.getInstance.initializeDynamicDirs();
-
-    Main_MSU_ML_process
     
-elseif simulator_id == Constants.id_veg
+    mainSCoBiML();
+    
+end
 
-    inputFile_sys = 'default_input-scobi_veg.xml';
-    % inputFile_sys = 'sysInput-Paulownia-PAPER_PBAND-hr_20.xml';
-    % inputFile_sys = 'sysInput-Corn.xml';
 
-    inputFile_veg = 'vegHomInput-Paulownia.xml';
-    % inputFile_veg = 'vegVirRowInput-CORN_PAPER-row0-R1_R4.xml';
-
-    inputFile_dyn = 'default_input-snapshot.xlsx';
-    % inputFile_dyn = 'default_input-time_series.xlsx';
+function runSCoBiVeg( simulator_id, inputStruct )
 
     % Get input and check validity
-    getInput(inputFile_sys, inputFile_veg, inputFile_dyn);
+    getInput(simulator_id, inputStruct);
 
     isInputValid = initWithInputs();
 
@@ -189,27 +229,39 @@ elseif simulator_id == Constants.id_veg
         return
 
     end
+    
 end
 
 
-end 
 
+function inputStruct = startSelectedGUI( simulator_id )
 
+inputStruct = [];
 
-function startGUI
-
+% TO-DO: Check this!
+% If the OS is not UNIX OR it is MAC and Matlab version below 7.14
 if (~isunix || (ismac && verLessThan('matlab', '7.14')))
-    [mode, mode_vinc, mode_data, mode_ref, flag_ms_pos, flag_ms, flag_ge, flag_cov, flag_NTRIP, flag_amb, ...
-        flag_skyplot, flag_plotproc, flag_var_dyn_model, flag_stopGOstop, flag_SP3, flag_SBAS, flag_IAR, ...
-        filerootIN, filerootOUT, filename_R_obs, filename_M_obs, ...
-        filename_nav, filename_ref, filename_pco, pos_M_man, protocol_idx, multi_antenna_rf, iono_model, tropo_model,fsep_char] = gui_SCoBi;
-end
-
-if (isempty(mode))
     
-    fprintf('SCoBi terminated by the user\n');
+    % If simulator is SCoBi-Veg (Agriculture)
+    if simulator_id == Constants.id_veg_agr
+        
+        inputStruct = gui_SCoBi_Veg;
     
-    return
+    % Else if simulator is SCoBi-Veg (Forest)
+    elseif simulator_id == Constants.id_veg_for
+        
+        inputStruct = gui_SCoBi_Veg;
+    
+    % Else if simulator is SCoBi-ML (MultiLayer)
+    elseif simulator_id == Constants.id_multi_layer
+        
+        inputStruct = gui_SCoBi_ML;
+        
+    else
+        
+        % GUIs for new simulators should be added here.
+     
+    end
     
 end
 

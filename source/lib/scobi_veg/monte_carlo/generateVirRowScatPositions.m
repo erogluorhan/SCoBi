@@ -347,33 +347,21 @@ function generateVirRowScatPositions( ind_realization, Nr_current )
 
 end
 
-
-function result = isPointInEllipse( position, semiMajorAxis, semiMinorAxis, ellipseCenter, ellipseAngle) 
-
-    x = position(1);
-    y = position(2);
-    h = ellipseCenter(1);
-    k = ellipseCenter(2);
-
-    result = ( cos(ellipseAngle)*(x - h) + sin(ellipseAngle)*(y - k) )^2 / semiMajorAxis^2 + ( sin(ellipseAngle)*(x - h) - cos(ellipseAngle)*(y - k) )^2 / semiMinorAxis^2 <= 1.0;
-
-end
-
-
-function result = isPointInFZRect( position_sf, fzSemiMajorAxis, fzSemiMinorAxis, fzAngle_rad) 
-
-    fzRotZ = [cos(-fzAngle_rad) -sin(-fzAngle_rad) 0;
-                 sin(-fzAngle_rad) cos(-fzAngle_rad)  0;
-                 0 0 1] ;
-    
-    position_sf_fzRot = fzRotZ * position_sf;    
-
-    x = position_sf_fzRot(1);
-    y = position_sf_fzRot(2);
-    
-    rectSemiMajor = sqrt(pi) / 2 * fzSemiMajorAxis ;  % semi-major side
-    rectSemiMinor = sqrt(pi) / 2 * fzSemiMinorAxis ;  % semi-minor side
-
-    result = ( x >= -rectSemiMajor && x <= rectSemiMajor && y >= -rectSemiMinor && y <= rectSemiMinor );
-
-end
+% TO-DO: Decide what to do
+% function result = isPointInFZRect( position_sf, fzSemiMajorAxis, fzSemiMinorAxis, fzAngle_rad) 
+% 
+%     fzRotZ = [cos(-fzAngle_rad) -sin(-fzAngle_rad) 0;
+%                  sin(-fzAngle_rad) cos(-fzAngle_rad)  0;
+%                  0 0 1] ;
+%     
+%     position_sf_fzRot = fzRotZ * position_sf;    
+% 
+%     x = position_sf_fzRot(1);
+%     y = position_sf_fzRot(2);
+%     
+%     rectSemiMajor = sqrt(pi) / 2 * fzSemiMajorAxis ;  % semi-major side
+%     rectSemiMinor = sqrt(pi) / 2 * fzSemiMinorAxis ;  % semi-minor side
+% 
+%     result = ( x >= -rectSemiMajor && x <= rectSemiMajor && y >= -rectSemiMinor && y <= rectSemiMinor );
+% 
+% end

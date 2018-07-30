@@ -22,7 +22,7 @@ t = datetime('now') %#ok<NOPRT>
 setConfig;
 
 % Ground Parameters
-setGround  ;
+setGround;
 
 
 %% GENERATE SCATTERING POSITIONS
@@ -135,7 +135,13 @@ end
 disp('+++++++++++++   CALCULATE DIRECT CONTRIBUTION   +++++++++++++++++++')
 t = datetime('now') %#ok<NOPRT,*NASGU>
 
-directTerm ;
+[needForDirectTerm, dispMsg] = ParamsManager.isToCalculateDirectTerm();
+
+disp( dispMsg );
+
+if needForDirectTerm == Constants.need_for_run.FULL
+    directTerm ;
+end
 
 
 %% CALCULATE SPECULAR CONTRIBUTION

@@ -24,7 +24,11 @@ classdef VegVirRowParams < handle
         
         % Plugin class instance that will be handling the virtual 
         % vegetation plant generation
-        plugin
+        plugin          
+        
+        % Vegetation stage to separate simulations for different stages of 
+        % the same vegetation 
+        vegetation_stage;  
         
     end
     
@@ -56,7 +60,10 @@ classdef VegVirRowParams < handle
         
         function initialize(obj, row_space_m, col_space_m, phi_row_deg, ...
                 seed_fluctuation_m, plugin, vegetation_stage )
-            % INITIALIZE - Initializes all the properties
+            % INITIALIZE - Initializes all the properties         
+        
+                        
+            obj.vegetation_stage = vegetation_stage;
             
             obj.row_space_m = row_space_m;
             obj.col_space_m = col_space_m;
@@ -66,8 +73,6 @@ classdef VegVirRowParams < handle
             % Call the virtual vegetation plugin's initialize function
             obj.plugin = feval(plugin);
             obj.plugin.initialize( vegetation_stage );
-            
-            VegParams.getInstance.initializeStage( vegetation_stage );
                       
         end 
          

@@ -1,7 +1,7 @@
 # Folders
 source/sims/*
-source/input/*
-source/lib/analysis/*
+source/input/obsolete/*
+source/lib/scobi_veg/analysis/*
 
 
 # Files
@@ -10,5 +10,5 @@ design/UML-EA/*.ldb
 source/input/sys/sysInput-Paulownia-PAPER_PBAND*
 
 source/lib/runSCoBi_*.m
-source/lib/SCoBi/mainSCoBi_*.m
-source/lib/products/diffuseTerm_*.m
+source/lib/common/SCoBi/mainSCoBi_*.m
+source/lib/scobi_veg/products/diffuseTerm_*.m

@@ -11,6 +11,9 @@ classdef Directories < handle
         common
         common_bistatic
         common_constants
+        common_gui
+        common_gui_ml
+        common_gui_veg
         common_init
         common_param
         common_products
@@ -20,6 +23,7 @@ classdef Directories < handle
         input
         input_dyn
         input_sys
+        input_ml
         input_veg
         input_veg_hom
         input_veg_vir
@@ -29,7 +33,6 @@ classdef Directories < handle
         
         scobi_veg
         scobi_veg_analysis
-        scobi_veg_gui
         scobi_veg_init
         scobi_veg_monte_carlo
         scobi_veg_param
@@ -77,6 +80,7 @@ classdef Directories < handle
             obj.input = fullfile( obj.main_dir, 'input');
             obj.input_dyn = fullfile( obj.input, 'dyn');
             obj.input_sys = fullfile( obj.input, 'sys');
+            obj.input_ml = fullfile( obj.input, 'multi_layer');
             obj.input_veg = fullfile( obj.input, 'veg');
             obj.input_veg_hom = fullfile( obj.input_veg, Constants.veg_methods{Constants.id_veg_hom} );
             obj.input_veg_vir = fullfile( obj.input_veg, Constants.veg_methods{Constants.id_veg_vir} );
@@ -91,6 +95,12 @@ classdef Directories < handle
             obj.common_bistatic = fullfile(obj.common, 'bistatic');
             
             obj.common_constants = fullfile( obj.common, 'constants');
+
+            obj.common_gui = fullfile( obj.common, 'gui');
+
+            obj.common_gui_ml = fullfile( obj.common_gui, 'multilayer');
+
+            obj.common_gui_veg = fullfile( obj.common_gui, 'veg');
             
             obj.common_init = fullfile( obj.common, 'init');
 
@@ -107,8 +117,6 @@ classdef Directories < handle
             obj.scobi_veg = fullfile(obj.lib, 'scobi_veg');
 
             obj.scobi_veg_analysis = fullfile(obj.scobi_veg, 'analysis');
-
-            obj.scobi_veg_gui = fullfile( obj.scobi_veg, 'gui');
             
             obj.scobi_veg_init = fullfile( obj.scobi_veg, 'init');
 
@@ -170,6 +178,10 @@ classdef Directories < handle
             out = obj.input_dyn;
         end
         
+        function out = get.input_ml(obj)
+            out = obj.input_ml;
+        end
+        
         function out = get.input_sys(obj)
             out = obj.input_sys;
         end
@@ -210,8 +222,16 @@ classdef Directories < handle
             out = obj.scobi_veg_analysis;
         end
         
-        function out = get.scobi_veg_gui(obj)
-            out = obj.scobi_veg_gui;
+        function out = get.common_gui(obj)
+            out = obj.common_gui;
+        end
+        
+        function out = get.common_gui_ml(obj)
+            out = obj.common_gui_ml;
+        end
+        
+        function out = get.common_gui_veg(obj)
+            out = obj.common_gui_veg;
         end
         
         function out = get.scobi_veg_init(obj)

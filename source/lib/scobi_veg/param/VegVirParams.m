@@ -8,7 +8,7 @@ classdef VegVirParams < handle
     % using the get() functions provided by it.
     
     
-    properties (SetAccess = private, GetAccess = public)        
+    properties (SetAccess = private, GetAccess = public)    
 
     end
     

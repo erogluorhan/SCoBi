@@ -18,6 +18,13 @@ classdef ConstantNames
         
         % TO-DO: There are changes! for every kind of inputs
         
+        
+        % String constants for simulators
+        scobi_veg_agr = 'SCoBi-Veg(Agriculture)';
+        scobi_veg_for = 'SCoBi-Veg(Forest)';
+        scobi_ml = 'SCoBi-ML';
+        
+        
         % String constants for Ground Inputs and Parameters
         dyn_th0_Tx_list_deg = 'th0_Tx_list_deg';
         dyn_ph0_Tx_list_deg = 'ph0_Tx_list_deg';
@@ -47,7 +54,7 @@ classdef ConstantNames
         % String constants for Transmitter Inputs and Params
         Tx_f_MHz = 'f_MHz';
         r_Tx_m = 'r_Tx_m';
-        Tx_rsat_km = 'rsat_km';
+        Tx_r_Tx_km = 'r_Tx_km';
         Tx_EIRP_dB = 'EIRP_dB';
         Tx_pol_Tx = 'pol_Tx';
         
