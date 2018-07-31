@@ -18,6 +18,9 @@ lastInputFile = 'last_input.mat';
 % Struct data to provide input parameters as output of GUI
 inputStruct
 
+% % Struct input data that is most recently loaded into GUI
+% loadedInputStruct
+
 end
 
 methods
@@ -1262,6 +1265,8 @@ if ~isequaln( obj.inputStruct, inputStruct )
         save(filename, 'inputStruct');
 
         obj.inputStruct = inputStruct;
+
+%         obj.loadedInputStruct = inputStruct;
 
         filename = strcat( dir_gui_ml, '/', obj.lastInputFile);
         lastInput.lastInputFileName = strcat( path, file );

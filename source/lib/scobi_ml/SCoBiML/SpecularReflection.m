@@ -12,14 +12,19 @@ dir_afsa = SimulationFolders.getInstance.afsa;
 
 
 %% GET GLOBAL PARAMETERS
+% Simulation Settings
+gnd_cover_id = SimSettings.getInstance.gnd_cover_id;
 % Vegetation Parameters
-dim_layers_m = VegParams.getInstance.dim_layers_m;
-num_layers = VegParams.getInstance.num_layers;
+if gnd_cover_id == Constants.id_veg_cover
+    dim_layers_m = VegParams.getInstance.dim_layers_m;
+    num_layers = VegParams.getInstance.num_layers;
+end
 % Transmitter Parameters
 g_t = TxParams.getInstance.g_t ;    % Ideal Transmitter Antenna pattern
 e_t1 = TxParams.getInstance.e_t1 ;  % Transmitter Pol State 
 e_t2 = TxParams.getInstance.e_t2 ;
 % Receiver Parameters
+ant_pat_Rx_id = RxParams.getInstance.ant_pat_Rx_id;
 ant_pat_res_deg = RxParams.getInstance.ant_pat_res_deg;
 
 
@@ -56,6 +61,15 @@ thrd = AngS2R_rf(1, 1) ;
 phrd = AngS2R_rf(2, 1) ;
 
 
+if ant_pat_Rx_id == Constants.id_Rx_user_defined
+    
+    [~, Nth] = size(th);
+
+    % Calculate the antenna pattern resolution in degrees
+    ant_pat_res_deg = Constants.ant_pat_th_range_deg / (Nth - 1);
+
+end
+
 ant_pat_res_factor = 1 / ant_pat_res_deg;
 
 thd = round( ant_pat_res_factor * radtodeg(th)) / ant_pat_res_factor ; % rounding operation is due to accuracy concerns
@@ -81,11 +95,15 @@ dKz_s = squeeze(dKz(:, ANGDEG == round(thsd), :)) ;
 ArgH = 0 ;
 ArgV = 0 ;
 
-for ii = 1 : num_layers
-    
-    ArgH = ArgH + dKz_s(1, ii) * dim_layers_m(ii, 1) ;
-    ArgV = ArgV + dKz_s(2, ii) * dim_layers_m(ii, 1) ;
-    
+if gnd_cover_id == Constants.id_veg_cover
+
+    for ii = 1 : num_layers
+
+            ArgH = ArgH + dKz_s(1, ii) * dim_layers_m(ii, 1) ;
+            ArgV = ArgV + dKz_s(2, ii) * dim_layers_m(ii, 1) ;
+
+    end
+
 end
 
 % vegetation trasmissivity
@@ -94,6 +112,7 @@ t_sv = [exp(+1i * ArgV) 0; 0 exp(+1i * ArgH)] ;
 t_sb = [1 0; 0 1] ;
 % r_s = [1 0; 0 1] ;
 
+% TO-DO: Solve for vegetated covers
 
 %% Specular Term
 r_coh1v = g_r * u_sr * t_sv * r_s * t_sv * u_ts * g_t * e_t1 ;   % field

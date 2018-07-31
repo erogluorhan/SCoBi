@@ -19,6 +19,7 @@ dir_out_specular_tuple = SimulationFolders.getInstance.out_specular_tuple;
 G0r_dB = RxParams.getInstance.G0r_dB;
 G0r = convertDecibelToNatural( G0r_dB );
 pol_Rx = RxParams.getInstance.pol_Rx;
+ant_pat_Rx_id = RxParams.getInstance.ant_pat_Rx_id;
 ant_pat_res_deg = RxParams.getInstance.ant_pat_res_deg;
 % Transmitter Parameters
 EIRP_dB = TxParams.getInstance.EIRP_dB;
@@ -85,6 +86,15 @@ Kc = K * exp(1i * k0 * (r_st + r_sr)) / (r_st + r_sr) ;
 thrd = AngS2R_rf(1, 1) ;
 phrd = AngS2R_rf(2, 1) ;
 
+
+if ant_pat_Rx_id == Constants.id_Rx_user_defined
+    
+    [~, Nth] = size(th);
+
+    % Calculate the antenna pattern resolution in degrees
+    ant_pat_res_deg = Constants.ant_pat_th_range_deg / (Nth - 1);
+
+end
 
 ant_pat_res_factor = 1 / ant_pat_res_deg;
 

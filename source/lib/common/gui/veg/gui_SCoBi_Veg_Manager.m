@@ -11,19 +11,12 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
         % Default input file that should be under \SCoBi\source\input\sys
         defaultInputFileName = 'default_input-scobi_veg.mat';   
         
-        % Full path and name of the input file that is saved
-        % It is empty until first saved by the user.
-        savedInputFileName = [];
-        
         % Full path and name of the input file that is studied in the last
         % execution of SCoBi is kept in the following file, if any 
         lastInputFile = 'last_input.mat';
         
         % Struct data to provide input parameters as output of GUI
         inputStruct
-
-        % Struct input data that is most recently loaded into GUI
-        loadedInputStruct
            
     end
     
@@ -385,7 +378,7 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
                 % If file and path are not empty
                 if length(path)>1 && length(file)>1
                 
-                    obj.loadedInputStruct = obj.loadGUIFromInputFile( file, path );
+                    obj.inputStruct = obj.loadGUIFromInputFile( file, path );
                     
                 end
                 
@@ -394,47 +387,21 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
             % on Save Settings
             if sum(intersect(idEl, obj.uiIDs.pb_save_inputs)) > 0
                     
-                savingResult = obj.saveGUIToInputFile( file, path );
-
-                if savingResult == 1
-                    %% GET GLOBAL DIRECTORIES
-                    dir_gui_veg = Directories.getInstance.common_gui_veg;
-
-                    filename = strcat( dir_gui_veg, '/', obj.lastInputFile);
-                    lastInput.lastInputFileName = obj.savedInputFileName;
-                    save(filename, 'lastInput');
-
-                end
+                obj.saveGUIToInputFile();
                 
             end
             
             % on SCoBi
             if sum(intersect(idEl, obj.uiIDs.pb_SCoBi)) > 0
 
-                savedInputFile = 1;
+                % Try to save GUI values to an input file first
+                % It will perform a check for any changes to the loaded or recently 
+                % saved inputs   
+                savingResult = obj.saveGUIToInputFile();
 
-                if isempty( obj.savedInputFileName )
+                if savingResult == 1 || savingResult == 2
 
-                    savedInputFile = 0;
-
-                    savingResult = obj.saveGUIToInputFile();
-
-                    if savingResult == 1
-
-                        %% GET GLOBAL DIRECTORIES
-                        dir_gui_veg = Directories.getInstance.common_gui_veg;
-
-                        filename = strcat( dir_gui_veg, '/', obj.lastInputFile);
-                        lastInput.lastInputFileName = obj.savedInputFileName;
-                        save(filename, 'lastInput');
-
-                        uiresume(obj.handles.panel_main);
-
-                    elseif savingResult == 2
-
-                        uiresume(obj.handles.panel_main);
-
-                    end
+                    uiresume(obj.handles.panel_main);
 
                 end
                 
@@ -1081,12 +1048,12 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
             % If there is an input file from the last execution of SCoBi
             if ~isempty( lastInputFileName ) && exist( lastInputFileName,'file' )
                 
-                obj.loadedInputStruct = obj.loadGUIFromInputFile( [], lastInputFileName );
+                obj.inputStruct = obj.loadGUIFromInputFile( [], lastInputFileName );
                 
             % Else if the default input exists, load it
             elseif exist([strcat(dir_input_sys, '/') obj.defaultInputFileName],'file')
                 
-                obj.loadedInputStruct = obj.loadGUIFromInputFile( obj.defaultInputFileName);
+                obj.inputStruct = obj.loadGUIFromInputFile( obj.defaultInputFileName);
                 
             % Else, make a warning about it and open an empty GUI
             else
@@ -1214,7 +1181,7 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
         
         
         % Load the state of the gui from a matlab file.
-        function inputStruct = loadGUIFromInputFile( obj, filename, pathname )
+        function [inputStruct] = loadGUIFromInputFile( obj, filename, pathname )
             
             
             %% GET GLOBAL DIRECTORIES
@@ -1410,160 +1377,167 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
         end
         
         % Save the state of the GUI to a matlab file
-        function savingResult = saveGUIToInputFile(obj, filename, pathname )
-             
-            
-            %% SIMULATION SETTINGS PANEL ELEMENTS
-            sim_mode_id                     = obj.getElVal(obj.uiIDs.popup_sim_mode);            
-            inputStruct.sim_mode            = Constants.sim_modes{ 1, sim_mode_id };
-            
-            gnd_cover_id                    = obj.getElVal(obj.uiIDs.popup_gnd_cover);            
-            inputStruct.gnd_cover           = Constants.gnd_covers{ 1, gnd_cover_id };
-            
-            inputStruct.write_attenuation	= obj.getElVal(obj.uiIDs.cb_write_attenuation);
-            
-            inputStruct.calc_direct_term	= obj.getElVal(obj.uiIDs.cb_calc_direct_term);
-            
-            inputStruct.calc_specular_term	= obj.getElVal(obj.uiIDs.cb_calc_specular_term);
-            
-            inputStruct.calc_diffuse_term	= obj.getElVal(obj.uiIDs.cb_calc_diffuse_term);
-            
-            
-            %% SIMULATION INPUTS PANEL ELEMENTS 
-            inputStruct.sim_name        = obj.getElVal(obj.uiIDs.edit_sim_name);
-            
-            inputStruct.campaign        = obj.getElVal(obj.uiIDs.edit_campaign);
-            
-            inputStruct.campaign_date	= obj.getElVal(obj.uiIDs.edit_campaign_date);
-            
-            inputStruct.plot            = obj.getElVal(obj.uiIDs.edit_plot);
-            
-            inputStruct.veg_plant       = obj.getElVal(obj.uiIDs.edit_veg_plant);
-            
-            veg_method_id               = obj.getElVal(obj.uiIDs.popup_veg_method);
-            inputStruct.veg_method      = Constants.veg_methods{ 1, veg_method_id };
-            
-            % If vegetation method is Virtual, then assign Virtual
-            % orientation
-            if veg_method_id == Constants.id_veg_vir
-                veg_vir_orientation_id          = obj.getElVal(obj.uiIDs.popup_veg_vir_orientations);
-                inputStruct.veg_vir_orientation	= Constants.veg_vir_orientations{ 1, veg_vir_orientation_id };
-            end
-            
-            inputStruct.Nr	= str2double(obj.getElVal(obj.uiIDs.edit_Nr));
-            
-            if isnan(inputStruct.Nr)
-                inputStruct.Nr = 1;
-            end
-            
-            inputStruct.Nfz	= str2double(obj.getElVal(obj.uiIDs.edit_Nfz));
-            
-            if isnan(inputStruct.Nfz)
-                inputStruct.Nfz = 1;
-            end
-            
-            
-            %% TRANSMITTER (Tx) INPUTS PANEL ELEMENTS  
-            inputStruct.f_MHz     = str2double(obj.getElVal(obj.uiIDs.edit_f_MHz));
-            
-            inputStruct.r_Tx_km	= str2double(obj.getElVal(obj.uiIDs.edit_r_Tx_km));
-            
-            inputStruct.EIRP_dB	= str2double(obj.getElVal(obj.uiIDs.edit_EIRP_dB));
-            
-            pol_Tx_id       = obj.getElVal(obj.uiIDs.popup_pol_Tx);
-            inputStruct.pol_Tx	= Constants.polarizations{ 1, pol_Tx_id };
-            
-            
-            %% RECEIVER (Rx) INPUTS PANEL ELEMENTS 
-            inputStruct.hr_m      = str2double(obj.getElVal(obj.uiIDs.edit_hr_m));
-            
-            inputStruct.G0r_dB	= str2double(obj.getElVal(obj.uiIDs.edit_G0r_dB));
-            
-            pol_Rx_id       = obj.getElVal(obj.uiIDs.popup_pol_Rx);
-            inputStruct.pol_Rx	= Constants.polarizations{ 1, pol_Rx_id };
-            
-            orientation_Rx_id       = obj.getElVal(obj.uiIDs.popup_orientation_Rx);
-            inputStruct.orientation_Rx	= Constants.Rx_orientations{ 1, orientation_Rx_id };
-            
-            % If receiver orientation is fixed, then assign incidence and
-            % azimuth angles
-            if orientation_Rx_id == Constants.id_Rx_fixed
-                inputStruct.th0_Rx_deg	= str2double(obj.getElVal(obj.uiIDs.edit_th0_Rx));
-                inputStruct.ph0_Rx_deg	= str2double(obj.getElVal(obj.uiIDs.edit_ph0_Rx));
-            end
-            
-            ant_pat_Rx_id       = obj.getElVal(obj.uiIDs.popup_ant_pat_Rx);
-            inputStruct.ant_pat_Rx	= Constants.Rx_ant_pats{ 1, ant_pat_Rx_id };
-            
-            % If receiver antenna pattern is Generalized-Gaussian, then 
-            % assign GG params
-            if ant_pat_Rx_id == Constants.id_Rx_GG
-                
-                inputStruct.hpbw_deg = obj.getElVal(obj.uiIDs.edit_hpbw_deg);
-                inputStruct.SLL_dB	= obj.getElVal(obj.uiIDs.edit_SLL_dB);
-                inputStruct.XPL_dB	= obj.getElVal(obj.uiIDs.edit_XPL_dB);
-                
-            elseif ant_pat_Rx_id == Constants.id_Rx_user_defined
-                
-                % TO-DO: User0-defined filename
-                
-            end
-            
-            inputStruct.ant_pat_res_deg_Rx	= str2double(obj.getElVal(obj.uiIDs.edit_ant_pat_res_Rx));
-            
-            
-            %% GROUND INPUTS PANEL ELEMENTS
-            inputStruct.sand_ratio	= str2double(obj.getElVal(obj.uiIDs.edit_sand_ratio));
-            
-            inputStruct.clay_ratio	= str2double(obj.getElVal(obj.uiIDs.edit_clay_ratio));
-            
-            inputStruct.rhob_gcm3     = str2double(obj.getElVal(obj.uiIDs.edit_rhob_gcm3));
-            
-            diel_model_id       = obj.getElVal(obj.uiIDs.popup_diel_model);
-            inputStruct.diel_model	= Constants.diel_models{ 1, diel_model_id };
-            
-            
-            %% INPUT FILES PANEL ELEMENTS
-            inputStruct.dyn_inputs_file	= obj.getElVal(obj.uiIDs.edit_dyn_inputs_file);
-            
-            inputStruct.ant_pat_Rx_file	= obj.getElVal(obj.uiIDs.edit_ant_pat_Rx_file);
-            
-            inputStruct.veg_inputs_file     = obj.getElVal(obj.uiIDs.edit_veg_inputs_file);            
+        function savingResult = saveGUIToInputFile(obj )
+        % savingResult: 0 - Didn't save. Not good to go
+        % savingResult: 1 - Saved. Good to go
+        % savingResult: 2 - Didn't save, but good to go
 
 
-            %% SAVE ALL TO FILE                
-            if ~isequaln( obj.loadedInputStruct, inputStruct )
+        %% GET GLOBAL DIRECTORIES
+        dir_gui_veg = Directories.getInstance.common_gui_veg;
+     
+            
+        %% SIMULATION SETTINGS PANEL ELEMENTS
+        sim_mode_id                     = obj.getElVal(obj.uiIDs.popup_sim_mode);            
+        inputStruct.sim_mode            = Constants.sim_modes{ 1, sim_mode_id };
 
-                filter = {'*.mat'};
-                [file, path] = uiputfile(filter, 'Save Input File');
+        gnd_cover_id                    = obj.getElVal(obj.uiIDs.popup_gnd_cover);            
+        inputStruct.gnd_cover           = Constants.gnd_covers{ 1, gnd_cover_id };
 
-                % If file and path are not empty
-                if length(path)>1 && length(file)>1
+        inputStruct.write_attenuation	= obj.getElVal(obj.uiIDs.cb_write_attenuation);
 
-                    obj.savedInputFileName = strcat( path, file );
+        inputStruct.calc_direct_term	= obj.getElVal(obj.uiIDs.cb_calc_direct_term);
 
-                    filename = strcat( pathname, filename );
+        inputStruct.calc_specular_term	= obj.getElVal(obj.uiIDs.cb_calc_specular_term);
 
-                    save(filename, 'inputStruct');
+        inputStruct.calc_diffuse_term	= obj.getElVal(obj.uiIDs.cb_calc_diffuse_term);
 
-                    savingResult = 1;
 
-                    obj.inputStruct = inputStruct;
+        %% SIMULATION INPUTS PANEL ELEMENTS 
+        inputStruct.sim_name        = obj.getElVal(obj.uiIDs.edit_sim_name);
 
-                else
+        inputStruct.campaign        = obj.getElVal(obj.uiIDs.edit_campaign);
 
-                    % No valid save file info. Do not save and not good to go
-                    savingResult = 0;
+        inputStruct.campaign_date	= obj.getElVal(obj.uiIDs.edit_campaign_date);
 
-                end
+        inputStruct.plot            = obj.getElVal(obj.uiIDs.edit_plot);
 
-            else
-                % No change on the input file; so, do not save but good to go.
-                savingResult = 2;
+        inputStruct.veg_plant       = obj.getElVal(obj.uiIDs.edit_veg_plant);
+
+        veg_method_id               = obj.getElVal(obj.uiIDs.popup_veg_method);
+        inputStruct.veg_method      = Constants.veg_methods{ 1, veg_method_id };
+
+        % If vegetation method is Virtual, then assign Virtual
+        % orientation
+        if veg_method_id == Constants.id_veg_vir
+            veg_vir_orientation_id          = obj.getElVal(obj.uiIDs.popup_veg_vir_orientations);
+            inputStruct.veg_vir_orientation	= Constants.veg_vir_orientations{ 1, veg_vir_orientation_id };
+        end
+
+        inputStruct.Nr	= str2double(obj.getElVal(obj.uiIDs.edit_Nr));
+
+        if isnan(inputStruct.Nr)
+            inputStruct.Nr = 1;
+        end
+
+        inputStruct.Nfz	= str2double(obj.getElVal(obj.uiIDs.edit_Nfz));
+
+        if isnan(inputStruct.Nfz)
+            inputStruct.Nfz = 1;
+        end
+
+
+        %% TRANSMITTER (Tx) INPUTS PANEL ELEMENTS  
+        inputStruct.f_MHz     = str2double(obj.getElVal(obj.uiIDs.edit_f_MHz));
+
+        inputStruct.r_Tx_km	= str2double(obj.getElVal(obj.uiIDs.edit_r_Tx_km));
+
+        inputStruct.EIRP_dB	= str2double(obj.getElVal(obj.uiIDs.edit_EIRP_dB));
+
+        pol_Tx_id       = obj.getElVal(obj.uiIDs.popup_pol_Tx);
+        inputStruct.pol_Tx	= Constants.polarizations{ 1, pol_Tx_id };
+
+
+        %% RECEIVER (Rx) INPUTS PANEL ELEMENTS 
+        inputStruct.hr_m      = str2double(obj.getElVal(obj.uiIDs.edit_hr_m));
+
+        inputStruct.G0r_dB	= str2double(obj.getElVal(obj.uiIDs.edit_G0r_dB));
+
+        pol_Rx_id       = obj.getElVal(obj.uiIDs.popup_pol_Rx);
+        inputStruct.pol_Rx	= Constants.polarizations{ 1, pol_Rx_id };
+
+        orientation_Rx_id       = obj.getElVal(obj.uiIDs.popup_orientation_Rx);
+        inputStruct.orientation_Rx	= Constants.Rx_orientations{ 1, orientation_Rx_id };
+
+        % If receiver orientation is fixed, then assign incidence and
+        % azimuth angles
+        if orientation_Rx_id == Constants.id_Rx_fixed
+            inputStruct.th0_Rx_deg	= str2double(obj.getElVal(obj.uiIDs.edit_th0_Rx));
+            inputStruct.ph0_Rx_deg	= str2double(obj.getElVal(obj.uiIDs.edit_ph0_Rx));
+        end
+
+        ant_pat_Rx_id       = obj.getElVal(obj.uiIDs.popup_ant_pat_Rx);
+        inputStruct.ant_pat_Rx	= Constants.Rx_ant_pats{ 1, ant_pat_Rx_id };
+
+        % If receiver antenna pattern is Generalized-Gaussian, then 
+        % assign GG params
+        if ant_pat_Rx_id == Constants.id_Rx_GG
+
+            inputStruct.hpbw_deg = obj.getElVal(obj.uiIDs.edit_hpbw_deg);
+            inputStruct.SLL_dB	= obj.getElVal(obj.uiIDs.edit_SLL_dB);
+            inputStruct.XPL_dB	= obj.getElVal(obj.uiIDs.edit_XPL_dB);
+
+        elseif ant_pat_Rx_id == Constants.id_Rx_user_defined
+
+            % TO-DO: User0-defined filename
+
+        end
+
+        inputStruct.ant_pat_res_deg_Rx	= str2double(obj.getElVal(obj.uiIDs.edit_ant_pat_res_Rx));
+
+
+        %% GROUND INPUTS PANEL ELEMENTS
+        inputStruct.sand_ratio	= str2double(obj.getElVal(obj.uiIDs.edit_sand_ratio));
+
+        inputStruct.clay_ratio	= str2double(obj.getElVal(obj.uiIDs.edit_clay_ratio));
+
+        inputStruct.rhob_gcm3     = str2double(obj.getElVal(obj.uiIDs.edit_rhob_gcm3));
+
+        diel_model_id       = obj.getElVal(obj.uiIDs.popup_diel_model);
+        inputStruct.diel_model	= Constants.diel_models{ 1, diel_model_id };
+
+
+        %% INPUT FILES PANEL ELEMENTS
+        inputStruct.dyn_inputs_file	= obj.getElVal(obj.uiIDs.edit_dyn_inputs_file);
+
+        inputStruct.ant_pat_Rx_file	= obj.getElVal(obj.uiIDs.edit_ant_pat_Rx_file);
+
+        inputStruct.veg_inputs_file     = obj.getElVal(obj.uiIDs.edit_veg_inputs_file);            
+
+
+        %% SAVE ALL TO FILE                
+        if ~isequaln( obj.inputStruct, inputStruct )
+
+            filter = {'*.mat'};
+            [file, path] = uiputfile(filter, 'Save Input File');
+
+            % If file and path are not empty
+            if length(path)>1 && length(file)>1
+
+                savingResult = 1;
+
+                filename = strcat( path, file );
+
+                save(filename, 'inputStruct');
 
                 obj.inputStruct = inputStruct;
 
+                filename = strcat( dir_gui_veg, '/', obj.lastInputFile);
+                lastInput.lastInputFileName = strcat( path, file );
+                save(filename, 'lastInput');
+
+            else
+
+                % No valid save file info. Do not save and not good to go
+                savingResult = 0;
+
             end
+
+        else
+            % No change on the input file; so, do not save but good to go.
+            savingResult = 2;
+
+        end
             
         end
         

@@ -59,7 +59,8 @@ ind = 0;
 DOYs = [];
 
 % If sim_mode is Time-series, then input contains timestamps
-if sim_mode_id == Constants.id_time_series
+if simulator_id == Constants.id_multi_layer ...
+    || sim_mode_id == Constants.id_time_series
     
     ind = ind + 1;
     DOYs = num(:, ind);
