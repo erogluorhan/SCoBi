@@ -885,8 +885,8 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
                       
                       obj.setElVal( obj.uiIDs.cb_calc_diffuse_term, 0 );
                       obj.setElVal( obj.uiIDs.popup_veg_method, Constants.id_veg_hom );
-                      obj.setElVal( obj.uiIDs.edit_Nr, 1 );
-                      obj.setElVal( obj.uiIDs.edit_Nfz, 1 );
+                      obj.setElVal( obj.uiIDs.edit_Nr, num2str(1) );
+                      obj.setElVal( obj.uiIDs.edit_Nfz, num2str(1) );
 
                   end
 
@@ -904,8 +904,8 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
                       
                       obj.setElVal( obj.uiIDs.cb_calc_diffuse_term, 0 );
                       obj.setElVal( obj.uiIDs.popup_veg_method, Constants.id_veg_hom );
-                      obj.setElVal( obj.uiIDs.edit_Nr, 1 );
-                      obj.setElVal( obj.uiIDs.edit_Nfz, 1 );
+                      obj.setElVal( obj.uiIDs.edit_Nr, num2str(1) );
+                      obj.setElVal( obj.uiIDs.edit_Nfz, num2str(1) );
 
                   end
                   
@@ -941,7 +941,7 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
 
                   obj.setElStatus(obj.uiGroups.on_popup_ant_pat_Rx_GG, 0, 0);
                       
-                  obj.setElVal( obj.uiIDs.edit_ant_pat_res_Rx, 0 );
+                  obj.setElVal( obj.uiIDs.edit_ant_pat_res_Rx, num2str(0) );
 
                   obj.setElStatus(obj.uiGroups.on_popup_ant_pat_Rx_user_defined, 1, 0);
                   
@@ -949,7 +949,7 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
 
                   obj.setElStatus(obj.uiGroups.on_popup_ant_pat_Rx_GG, 1, 0);
                       
-%                   obj.setElVal( obj.uiIDs.edit_ant_pat_res_Rx, 1 );
+%                   obj.setElVal( obj.uiIDs.edit_ant_pat_res_Rx, num2str(1) );
 
                   obj.setElStatus(obj.uiGroups.on_popup_ant_pat_Rx_user_defined, 0, 0);
             end
@@ -1286,17 +1286,17 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
                 obj.setElVal(obj.uiIDs.popup_veg_vir_orientations, veg_vir_orientation_id, 0);
             end
             
-            obj.setElVal(obj.uiIDs.edit_Nr, inputStruct.Nr, 0);
+            obj.setElVal(obj.uiIDs.edit_Nr, num2str(inputStruct.Nr), 0);
             
-            obj.setElVal(obj.uiIDs.edit_Nfz, inputStruct.Nfz, 0);
+            obj.setElVal(obj.uiIDs.edit_Nfz, num2str(inputStruct.Nfz), 0);
             
             
             %% TRANSMITTER (Tx) INPUTS
-            obj.setElVal(obj.uiIDs.edit_f_MHz, inputStruct.f_MHz, 0);
+            obj.setElVal(obj.uiIDs.edit_f_MHz, num2str(inputStruct.f_MHz), 0);
             
-            obj.setElVal(obj.uiIDs.edit_r_Tx_km, inputStruct.r_Tx_km, 0);
+            obj.setElVal(obj.uiIDs.edit_r_Tx_km, num2str(inputStruct.r_Tx_km), 0);
             
-            obj.setElVal(obj.uiIDs.edit_EIRP_dB, inputStruct.EIRP_dB, 0);
+            obj.setElVal(obj.uiIDs.edit_EIRP_dB, num2str(inputStruct.EIRP_dB), 0);
             
             obj.init_popup_pol_Tx();
             pol_Tx_id = findElementIdInCell( Constants.polarizations, inputStruct.pol_Tx );
@@ -1304,9 +1304,9 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
             
             
             %% RECEIVER (Rx) INPUTS
-            obj.setElVal(obj.uiIDs.edit_hr_m, inputStruct.hr_m, 0);
+            obj.setElVal(obj.uiIDs.edit_hr_m, num2str(inputStruct.hr_m), 0);
             
-            obj.setElVal(obj.uiIDs.edit_G0r_dB, inputStruct.G0r_dB, 0);
+            obj.setElVal(obj.uiIDs.edit_G0r_dB, num2str(inputStruct.G0r_dB), 0);
             
             obj.init_popup_pol_Rx();
             pol_Rx_id = findElementIdInCell( Constants.polarizations, inputStruct.pol_Rx );
@@ -1320,9 +1320,9 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
             % azimuth agles
             if orientation_Rx_id == Constants.id_Rx_fixed
                 
-                obj.setElVal(obj.uiIDs.edit_th0_Rx, inputStruct.th0_Rx_deg, 0);
+                obj.setElVal(obj.uiIDs.edit_th0_Rx, num2str(inputStruct.th0_Rx_deg), 0);
             
-                obj.setElVal(obj.uiIDs.edit_ph0_Rx, inputStruct.ph0_Rx_deg, 0);
+                obj.setElVal(obj.uiIDs.edit_ph0_Rx, num2str(inputStruct.ph0_Rx_deg), 0);
                 
             end
             
@@ -1334,13 +1334,13 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
             % load the corresponding inputs
             if ant_pat_Rx_id == Constants.id_Rx_GG
             
-                obj.setElVal(obj.uiIDs.edit_ant_pat_res_Rx, inputStruct.ant_pat_res_deg_Rx, 0);
+                obj.setElVal(obj.uiIDs.edit_ant_pat_res_Rx, num2str(inputStruct.ant_pat_res_deg_Rx), 0);
             
-                obj.setElVal(obj.uiIDs.edit_hpbw_deg, inputStruct.hpbw_deg, 0);
+                obj.setElVal(obj.uiIDs.edit_hpbw_deg, num2str(inputStruct.hpbw_deg), 0);
                 
-                obj.setElVal(obj.uiIDs.edit_SLL_dB, inputStruct.SLL_dB, 0);
+                obj.setElVal(obj.uiIDs.edit_SLL_dB, num2str(inputStruct.SLL_dB), 0);
                 
-                obj.setElVal(obj.uiIDs.edit_XPL_dB, inputStruct.XPL_dB, 0);
+                obj.setElVal(obj.uiIDs.edit_XPL_dB, num2str(inputStruct.XPL_dB), 0);
                 
             elseif ant_pat_Rx_id == Constants.id_Rx_user_defined
                 
@@ -1350,11 +1350,11 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
             
             
             %% GROUND INPUTS
-            obj.setElVal(obj.uiIDs.edit_sand_ratio, inputStruct.sand_ratio, 0);
+            obj.setElVal(obj.uiIDs.edit_sand_ratio, num2str(inputStruct.sand_ratio), 0);
             
-            obj.setElVal(obj.uiIDs.edit_clay_ratio, inputStruct.clay_ratio, 0);
+            obj.setElVal(obj.uiIDs.edit_clay_ratio, num2str(inputStruct.clay_ratio), 0);
             
-            obj.setElVal(obj.uiIDs.edit_rhob_gcm3, inputStruct.rhob_gcm3, 0);
+            obj.setElVal(obj.uiIDs.edit_rhob_gcm3, num2str(inputStruct.rhob_gcm3), 0);
             
             obj.init_popup_diel_model();
             diel_model_id = findElementIdInCell( Constants.diel_models, inputStruct.diel_model );
