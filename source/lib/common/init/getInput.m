@@ -343,31 +343,26 @@ campaign_date = inputStruct.campaign_date;
 plot = inputStruct.plot;
 
 % Vegetation method
-% If sim_mode is Snapshot, then veg_method depends on gnd_cover 
-if sim_mode_id == Constants.id_snapshot
+veg_method_id = [];
+% If gnd_cover is Vegetation, then veg_method is taken from inputs
+if gnd_cover_id == Constants.id_veg_cover
     
-    % If gnd_cover is Vegetation, then veg_method is taken from inputs
-    if gnd_cover_id == Constants.id_veg_cover
+    % If sim_mode is Snapshot, then veg_method depends on input
+    if sim_mode_id == Constants.id_snapshot
 
         veg_method_id = findElementIdInCell( Constants.veg_methods, inputStruct.veg_method );
-       
-    % Else if gnd_cover is Bare-soil, then veg_method is not used
-    elseif gnd_cover_id == Constants.id_bare_soil
         
-        veg_method_id = [];
-        
+    % Else if sim_mode is Time-series, veg_method can only be Homogenous
+    elseif sim_mode_id == Constants.id_time_series
+
+        veg_method_id = Constants.id_veg_hom;
+
     end
-    
-% Else if sim_mode is Time-series, veg_method can only be Homogenous
-elseif sim_mode_id == Constants.id_time_series
-    
-    veg_method_id = Constants.id_veg_hom;
     
 end    
 
 % Virtual Vegetation Orientation
 veg_vir_orientation_id = [];
-
 % If veg_method is 'Virtual' only
 if veg_method_id == Constants.id_veg_vir
     veg_vir_orientation_id = findElementIdInCell( Constants.veg_vir_orientations, inputStruct.veg_vir_orientation );

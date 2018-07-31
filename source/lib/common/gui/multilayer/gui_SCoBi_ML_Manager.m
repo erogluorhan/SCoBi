@@ -727,7 +727,7 @@ if obj.is_popup_sim_mode_snapshot()
       % vegetation related fields should not be enabled
       if obj.is_popup_gnd_cover_bare_soil()
 
-          obj.setElVal( obj.uiIDs.edit_Nr, 1 );
+          obj.setElVal( obj.uiIDs.edit_Nr, num2str(1) );
 
       end
 
@@ -741,7 +741,7 @@ if obj.is_popup_gnd_cover_vegetation()
       % vegetation related fields should not be enabled
       if obj.is_popup_sim_mode_time_series()
 
-          obj.setElVal( obj.uiIDs.edit_Nr, 1 );
+          obj.setElVal( obj.uiIDs.edit_Nr, num2str(1) );
 
       end
 
@@ -767,7 +767,7 @@ if obj.is_popup_ant_pat_Rx_user_defined()
 
       obj.setElStatus(obj.uiGroups.on_popup_ant_pat_Rx_GG, 0, 0);
 
-      obj.setElVal( obj.uiIDs.edit_ant_pat_res_Rx, '0' );
+      obj.setElVal( obj.uiIDs.edit_ant_pat_res_Rx, num2str(0) );
 
       obj.setElStatus(obj.uiGroups.on_popup_ant_pat_Rx_user_defined, 1, 0);
 
@@ -775,7 +775,7 @@ elseif obj.is_popup_ant_pat_Rx_GG()
 
       obj.setElStatus(obj.uiGroups.on_popup_ant_pat_Rx_GG, 1, 0);
 
-      obj.setElVal( obj.uiIDs.edit_ant_pat_res_Rx, '3' );
+      obj.setElVal( obj.uiIDs.edit_ant_pat_res_Rx, num2str(3) );
 
       obj.setElStatus(obj.uiGroups.on_popup_ant_pat_Rx_user_defined, 0, 0);
 end
@@ -1065,15 +1065,15 @@ obj.setElVal(obj.uiIDs.edit_plot, inputStruct.plot, 0);
 
 obj.setElVal(obj.uiIDs.edit_veg_plant, inputStruct.veg_plant, 0);
 
-obj.setElVal(obj.uiIDs.edit_Nr, inputStruct.Nr, 0);
+obj.setElVal(obj.uiIDs.edit_Nr, num2str(inputStruct.Nr), 0);
 
 
 %% TRANSMITTER (Tx) INPUTS
-obj.setElVal(obj.uiIDs.edit_f_MHz, inputStruct.f_MHz, 0);
+obj.setElVal(obj.uiIDs.edit_f_MHz, num2str(inputStruct.f_MHz), 0);
 
-obj.setElVal(obj.uiIDs.edit_r_Tx_km, inputStruct.r_Tx_km, 0);
+obj.setElVal(obj.uiIDs.edit_r_Tx_km, num2str(inputStruct.r_Tx_km), 0);
 
-obj.setElVal(obj.uiIDs.edit_EIRP_dB, inputStruct.EIRP_dB, 0);
+obj.setElVal(obj.uiIDs.edit_EIRP_dB, num2str(inputStruct.EIRP_dB), 0);
 
 obj.init_popup_pol_Tx();
 pol_Tx_id = findElementIdInCell( Constants.polarizations, inputStruct.pol_Tx );
@@ -1081,9 +1081,9 @@ obj.setElVal(obj.uiIDs.popup_pol_Tx, pol_Tx_id, 0);
 
 
 %% RECEIVER (Rx) INPUTS
-obj.setElVal(obj.uiIDs.edit_hr_m, inputStruct.hr_m, 0);
+obj.setElVal(obj.uiIDs.edit_hr_m, num2str(inputStruct.hr_m), 0);
 
-obj.setElVal(obj.uiIDs.edit_G0r_dB, inputStruct.G0r_dB, 0);
+obj.setElVal(obj.uiIDs.edit_G0r_dB, num2str(inputStruct.G0r_dB), 0);
 
 obj.init_popup_pol_Rx();
 pol_Rx_id = findElementIdInCell( Constants.polarizations, inputStruct.pol_Rx );
@@ -1097,9 +1097,9 @@ obj.setElVal(obj.uiIDs.popup_orientation_Rx, orientation_Rx_id, 0);
 % azimuth agles
 if orientation_Rx_id == Constants.id_Rx_fixed
 
-    obj.setElVal(obj.uiIDs.edit_th0_Rx, inputStruct.th0_Rx_deg, 0);
+    obj.setElVal(obj.uiIDs.edit_th0_Rx, num2str(inputStruct.th0_Rx_deg), 0);
 
-    obj.setElVal(obj.uiIDs.edit_ph0_Rx, inputStruct.ph0_Rx_deg, 0);
+    obj.setElVal(obj.uiIDs.edit_ph0_Rx, num2str(inputStruct.ph0_Rx_deg), 0);
 
 end
 
@@ -1111,13 +1111,13 @@ obj.setElVal(obj.uiIDs.popup_ant_pat_Rx, ant_pat_Rx_id, 0);
 % load the corresponding inputs
 if ant_pat_Rx_id == Constants.id_Rx_GG
 
-    obj.setElVal(obj.uiIDs.edit_ant_pat_res_Rx, inputStruct.ant_pat_res_deg_Rx, 0);
+    obj.setElVal(obj.uiIDs.edit_ant_pat_res_Rx, num2str(inputStruct.ant_pat_res_deg_Rx), 0);
 
-    obj.setElVal(obj.uiIDs.edit_hpbw_deg, inputStruct.hpbw_deg, 0);
+    obj.setElVal(obj.uiIDs.edit_hpbw_deg, num2str(inputStruct.hpbw_deg), 0);
 
-    obj.setElVal(obj.uiIDs.edit_SLL_dB, inputStruct.SLL_dB, 0);
+    obj.setElVal(obj.uiIDs.edit_SLL_dB, num2str(inputStruct.SLL_dB), 0);
 
-    obj.setElVal(obj.uiIDs.edit_XPL_dB, inputStruct.XPL_dB, 0);
+    obj.setElVal(obj.uiIDs.edit_XPL_dB, num2str(inputStruct.XPL_dB), 0);
 
 elseif ant_pat_Rx_id == Constants.id_Rx_user_defined
 
