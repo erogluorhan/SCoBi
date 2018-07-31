@@ -64,6 +64,7 @@ dir_rot_real = SimulationFolders.getInstance.rot_real ;
 
 %% GET GLOBAL PARAMETERS
 % Receiver Parameters
+ant_pat_Rx_id = RxParams.getInstance.ant_pat_Rx_id;
 ant_pat_res_deg = RxParams.getInstance.ant_pat_res_deg;
 
 
@@ -103,6 +104,15 @@ load([dir_rot_lookup '\u_tr.mat'], 'u_tr')
 % % load([dir_rot_lookup '\U_tr.mat'], 'U_tr')
 toc
 
+
+if ant_pat_Rx_id == Constants.id_Rx_user_defined
+    
+    [~, Nth] = size(th);
+
+    % Calculate the antenna pattern resolution in degrees
+    ant_pat_res_deg = Constants.ant_pat_th_range_deg / (Nth - 1);
+
+end
 
 ant_pat_res_factor = 1 / ant_pat_res_deg;
 

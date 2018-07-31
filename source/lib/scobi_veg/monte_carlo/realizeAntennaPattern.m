@@ -67,6 +67,7 @@ dir_ant_real = SimulationFolders.getInstance.ant_real;
 
 %% GET GLOBAL PARAMETERS
 % Receiver Parameters
+ant_pat_Rx_id = RxParams.getInstance.ant_pat_Rx_id;
 ant_pat_res_deg = RxParams.getInstance.ant_pat_res_deg;
 
 
@@ -92,6 +93,15 @@ tic ;
 load([SimulationFolders.getInstance.ant_lookup '\AntPat.mat'], 'g', 'th', 'ph')
 toc
 
+
+if ant_pat_Rx_id == Constants.id_Rx_user_defined
+    
+    [~, Nth] = size(th);
+
+    % Calculate the antenna pattern resolution in degrees
+    ant_pat_res_deg = Constants.ant_pat_th_range_deg / (Nth - 1);
+
+end
 
 ant_pat_res_factor = 1 / ant_pat_res_deg;
 
