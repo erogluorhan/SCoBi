@@ -9,6 +9,7 @@ design/UML-EA/*.ldb
 
 source/input/sys/sysInput-Paulownia-PAPER_PBAND*
 
+*.asv
 source/lib/runSCoBi_*.m
 source/lib/common/SCoBi/mainSCoBi_*.m
 source/lib/scobi_veg/products/diffuseTerm_*.m

@@ -115,6 +115,10 @@ function runSCoBiML( simulator_id, inputStruct )
     SimulationFolders.getInstance.initializeStaticDirs();
     % Create but not creating simulations' directories
     SimulationFolders.getInstance.makeStaticDirs();
+
+    % To-DO: Find a more structural way
+    % Write all inputs to a text file and show it
+    writeToFile( simulator_id, inputStruct );
     
     % TO-DO: Check for multiple theta or phi values
     ParamsManager.index_Th(1);
@@ -139,6 +143,10 @@ function runSCoBiVeg( simulator_id, inputStruct )
 
     % If input is valid
     if isInputValid
+
+        % To-DO: Find a more structural way
+        % Write all inputs to a text file and show it
+        writeToFile( simulator_id, inputStruct );
 
 
         %% GET GLOBAL PARAMETERS
@@ -264,5 +272,176 @@ if (~isunix || (ismac && verLessThan('matlab', '7.14')))
     end
     
 end
+
+end
+
+function writeToFile( simulator_id, inputStruct )
+
+
+%% GET GLOBAL DIRECTORIES
+dir_simulations = SimulationFolders.getInstance.simulations;
+inputFile = strcat(dir_simulations, '\', 'input_report.txt');
+
+
+%% GET GLOBAL PARAMETERS
+% Simulation Settings
+gnd_cover_id = SimSettings.getInstance.gnd_cover_id;
+sim_mode_id = SimSettings.getInstance.sim_mode_id;
+% Simulation Parameters
+veg_method_id = SimParams.getInstance.veg_method_id;
+% Receiver Parameters
+orientation_Rx_id = RxParams.getInstance.orientation_Rx_id;
+ant_pat_Rx_id = RxParams.getInstance.ant_pat_Rx_id;
+
+
+% Open file to write inputs
+fileID = fopen(inputFile,'w');
+
+
+% Write the selected simulator name
+simulatorString = Constants.simulators{ 1, simulator_id };
+fprintf(fileID, sprintf( strcat('++++++++++++\t\t', simulatorString, '\t\t++++++++++++\n' ) ) );
+
+% Write the current date time
+t = datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss Z')
+fprintf(fileID, strcat( string(t), '\n\n' ) );
+
+
+%%SIMULATION PARAMETERS
+fprintf(fileID, strcat( 'Simulation name:\t', inputStruct.sim_name, '\n' ) );
+fprintf(fileID, strcat( 'Campaign:\t\t\t', inputStruct.campaign, '\n' ) );
+fprintf(fileID, strcat( 'Campaign Date:\t\t', inputStruct.campaign_date, '\n' ) );
+fprintf(fileID, strcat( 'Campaign Plot:\t\t', inputStruct.plot, '\n' ) );
+
+% If gnd_cover is Vegetation, then look at sim_mode
+if gnd_cover_id == Constants.id_veg_cover
+    
+    % If sim_mode is Snapshot, then write veg_method
+    if sim_mode_id == Constants.id_snapshot
+
+        fprintf(fileID, strcat( 'Vegetation method:\t', inputStruct.veg_method, '\n' ) );
+    
+    end
+    
+end  
+
+% If veg_method is 'Virtual' only, then write virtual vegetation
+% orientation
+if veg_method_id == Constants.id_veg_vir
+    fprintf(fileID, strcat( 'Virtual Vegetation orientation:\t', inputStruct.veg_vir_orientation, '\n' ) );
+end
+
+% If gnd_cover is Vegetation, then write veg_plant
+if gnd_cover_id == Constants.id_veg_cover
+    
+    fprintf(fileID, strcat( 'Vegetation plant:\t', inputStruct.veg_plant, '\n' ) );   
+    
+end
+
+if simulator_id == Constants.id_veg_agr ...
+        || simulator_id == Constants.id_veg_for
+    % Write number of realizations
+    fprintf(fileID, strcat( 'Number of realizations:\t', num2str(inputStruct.Nr), '\n' ) );
+    % Write number of Fresnel zones
+    fprintf(fileID, strcat( 'Number of Fresnel zones:\t', num2str(inputStruct.Nfz), '\n' ) );
+end
+
+
+
+%% SIMULATION SETTINGS
+% Write sim_mode
+fprintf(fileID, strcat( 'Simulation mode:\t', inputStruct.sim_mode, '\n' ) );
+% Write gnd_cover
+fprintf(fileID, strcat( 'Ground cover:\t\t', inputStruct.gnd_cover, '\n' ) );
+
+if simulator_id == Constants.id_veg_agr ...
+        || simulator_id == Constants.id_veg_for
+    
+    % Write user preferences
+    fprintf(fileID, strcat( 'Write attenuation?:\t\t', num2str(inputStruct.write_attenuation), '\n' ) );
+    fprintf(fileID, strcat( 'Calculate Direct Term?:\t\t', num2str(inputStruct.calc_direct_term), '\n' ) );
+    fprintf(fileID, strcat( 'Calculate Specular Term?:\t\t', num2str(inputStruct.calc_specular_term), '\n' ) );
+    if sim_mode_id == Constants.id_snapshot ...
+            && gnd_cover_id == Constants.id_veg_cover
+        fprintf(fileID, strcat( 'Calculate Diffuse Term?:\t\t', num2str(inputStruct.calc_diffuse_term), '\n' ) );
+    end
+    
+end
+
+%fprintf(fileID, strcat( 'Draw live plots?:\t\t', num2str(inputStruct.draw_live_plots), '\n' ) );
+
+
+%% TRANSMITTER PARAMETERS
+fprintf(fileID, strcat( '\n\nTRANSMITTER PARAMETERS\n' ) );
+fprintf(fileID, strcat( 'Operating frequency (MHz):\t', num2str(inputStruct.f_MHz), '\n' ) );
+fprintf(fileID, strcat( 'Range to Earth center (km):\t', num2str(inputStruct.r_Tx_km), '\n' ) );
+fprintf(fileID, strcat( 'EIRP (dB):\t\t\t\t\t', num2str(inputStruct.EIRP_dB), '\n' ) );
+fprintf(fileID, strcat( 'Polarization:\t\t\t\t', inputStruct.pol_Tx, '\n' ) );
+
+
+%% RECEIVER PARAMETERS
+fprintf(fileID, strcat( '\n\nRECEIVER PARAMETERS\n' ) );
+fprintf(fileID, strcat( 'Altitude (m):\t\t\t', num2str(inputStruct.hr_m), '\n' ) );
+fprintf(fileID, strcat( 'Gain (dB):\t\t\t\t', num2str(inputStruct.G0r_dB), '\n' ) );
+fprintf(fileID, strcat( 'Polarization:\t\t\t', inputStruct.pol_Rx, '\n' ) );
+fprintf(fileID, strcat( 'Orientation:\t\t\t', inputStruct.orientation_Rx, '\n' ) );
+
+if orientation_Rx_id == Constants.id_Rx_fixed
+
+    fprintf(fileID, strcat( 'Incidence angle (deg):\t', num2str(inputStruct.th0_Rx_deg), '\n' ) );
+    fprintf(fileID, strcat( 'Azimuth angle (deg):\t', num2str(inputStruct.ph0_Rx_deg), '\n' ) );
+
+end
+
+fprintf(fileID, strcat( 'Antenna Pattern:\t\t', inputStruct.ant_pat_Rx, '\n' ) );
+
+% If receiver antenna pattern is Generalized-Gaussian
+if ant_pat_Rx_id == Constants.id_Rx_GG
+    
+    fprintf(fileID, strcat( 'Antenna Pattern Resolution (deg):\t', num2str(inputStruct.ant_pat_res_deg_Rx), '\n' ) );
+    
+    fprintf(fileID, strcat( 'Half-power beamwidth (deg):\t\t\t', num2str(inputStruct.hpbw_deg), '\n' ) );
+    fprintf(fileID, strcat( 'Side-lobe level (dB):\t\t\t\t', num2str(inputStruct.SLL_dB), '\n' ) );
+    fprintf(fileID, strcat( 'Cross-polarization level (dB):\t\t', num2str(inputStruct.XPL_dB), '\n' ) );
+
+% Else if receiver antenna pattern is User-defined
+elseif ant_pat_Rx_id == Constants.id_Rx_user_defined
+    
+    filename = strrep(inputStruct.ant_pat_Rx_file, '\', '/');
+    fprintf(fileID, strcat( 'Antenna pattern file:\t', filename, '\n' ) );
+    
+end
+
+
+%% GROUND PARAMETERS
+fprintf(fileID, strcat( '\n\nGROUND PARAMETERS\n' ) );
+    fprintf(fileID, strcat( 'Dielectric model:\t', inputStruct.diel_model, '\n' ) );
+% If the simulator is SCoBi-Veg (Agriculture OR Forest)
+if simulator_id == Constants.id_veg_agr ...
+        || simulator_id == Constants.id_veg_for
+        
+    fprintf(fileID, strcat( 'Sand ratio:\t\t', num2str(inputStruct.sand_ratio), '\n' ) );
+    fprintf(fileID, strcat( 'Clay ratio:\t\t', num2str(inputStruct.clay_ratio), '\n' ) );
+    fprintf(fileID, strcat( 'Bulk density (g/cm3):\t', num2str(inputStruct.rhob_gcm3), '\n' ) );
+    
+% Else if simulator is SCoBi-ML (Multilayer)
+elseif simulator_id == Constants.id_multi_layer
+    
+    filename = strrep(inputStruct.dyn_inputs_file, '\', '/');
+    fprintf(fileID, strcat( 'Ground input file:\t', filename, '\n' ) );
+    
+end
+
+
+%% VEGETATION PARAMETERS
+fprintf(fileID, strcat( '\n\nVEGETETATION PARAMETERS\n' ) );
+filename = strrep(inputStruct.veg_inputs_file, '\', '/');
+fprintf(fileID, strcat( 'Vegetation input file:\t', filename, '\n' ) );
+
+
+
+fclose(fileID);
+
+winopen( inputFile );
 
 end
