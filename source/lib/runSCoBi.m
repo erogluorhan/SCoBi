@@ -299,7 +299,8 @@ fileID = fopen(inputFile,'w');
 
 
 % Write the selected simulator name
-simulatorString = Constants.simulators{ 1, simulator_id };
+simulators = Constants.simulators;
+simulatorString = simulators{ 1, simulator_id };
 fprintf(fileID, sprintf( strcat('++++++++++++\t\t', simulatorString, '\t\t++++++++++++\n' ) ) );
 
 % Write the current date time
