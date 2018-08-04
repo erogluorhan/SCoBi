@@ -1,8 +1,10 @@
 
-function calcFScatAmp(rr)
+function calcFScatAmp( Nr_current )
 
 
 %% GET GLOBAL PARAMETERS
+% Simulation Parameters
+Nr = SimParams.getInstance.Nr;
 % Vegetation Parameters
 veg_method_id = SimParams.getInstance.veg_method_id;
 TYPKND = VegParams.getInstance.TYPKND;
@@ -15,56 +17,60 @@ dim2_m = VegParams.getInstance.dim2_m;
 dim3_m = VegParams.getInstance.dim3_m;
 
 
-%% Read Particle Positions
-% Option #1 - Uniform Layered Vegetation. - current implementation
-% Option #2 - Virtual Vegetation
-
-
 %% Option 2
 [Nlayer, Ntype] = size(TYPKND) ;
 
-for ii = 1 : Nlayer
+
+for rr = Nr_current + 1 : Nr % Number of Realization
     
-    for jj = 1 : Ntype
-        
-        Nkind = TYPKND(ii, jj) ;
-        
-        for kk = 1 : Nkind
-            
-            filename = strcat('R', num2str(rr), '_L', num2str(ii), '_T',...
-                num2str(jj), '_K', num2str(kk)) ;
-            disp(filename)
-            
-            if scat_cal_veg(kk, jj, ii) == 1
-                
-                if veg_method_id == Constants.id_veg_hom
-                    
-                    EPS = epsr(kk, jj, ii) ;
-                    PROB = [ parm1_deg(kk, jj, ii), parm2_deg(kk, jj, ii) ] ;
-                    % TO-DO: Should be revised for the case leaves are
-                    % scatterer
-%                     RAD = dim1_m(kk, jj, ii) ;
-                    RAD = ( dim1_m(kk, jj, ii) + dim2_m(kk, jj, ii) ) / 2;
-                    LEN = dim3_m(kk, jj, ii) ; % length  % for cylinders (trunks and branches)
-                    
-                    fScatAmp(filename, PROB, RAD, LEN, EPS ) ;
-                        
-                elseif veg_method_id == Constants.id_veg_vir
-                    fScatAmp(filename);
+    %% Read Particle Positions
+    % Option #1 - Uniform Layered Vegetation. - current implementation
+    % Option #2 - Virtual Vegetation
+
+    
+    %% CALCULATIONS
+    for ii = 1 : Nlayer
+
+        for jj = 1 : Ntype
+
+            Nkind = TYPKND(ii, jj) ;
+
+            for kk = 1 : Nkind
+
+                filename = strcat('R', num2str(rr), '_L', num2str(ii), '_T',...
+                    num2str(jj), '_K', num2str(kk)) ;
+                disp(filename)
+
+                if scat_cal_veg(kk, jj, ii) == 1
+
+                    if veg_method_id == Constants.id_veg_hom
+
+                        EPS = epsr(kk, jj, ii) ;
+                        PROB = [ parm1_deg(kk, jj, ii), parm2_deg(kk, jj, ii) ] ;
+                        % TO-DO: Should be revised for the case leaves are
+                        % scatterer
+    %                     RAD = dim1_m(kk, jj, ii) ;
+                        RAD = ( dim1_m(kk, jj, ii) + dim2_m(kk, jj, ii) ) / 2;
+                        LEN = dim3_m(kk, jj, ii) ; % length  % for cylinders (trunks and branches)
+
+                        fScatAmp(filename, PROB, RAD, LEN, EPS ) ;
+
+                    elseif veg_method_id == Constants.id_veg_vir
+                        fScatAmp(filename);
+                    end
+
+                    disp('done...')
+                else
+                    disp('skipped...')
                 end
-                
-                disp('done...')
-            else
-                disp('skipped...')
-            end
 
-        end % Nkind
+            end % Nkind
 
-    end % Ntype
+        end % Ntype
 
-end % Nlayer
+    end % Nlayer
     
-% end % realization
+end % Realization
 
 end
 

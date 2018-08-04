@@ -3,7 +3,8 @@
 % modified - 11/09/2017
 
 % Diffuse (Incoherent) Term
-function diffuseTerm(ind_realization)
+function diffuseTerm
+
 
 %% GET GLOBAL DIRECTORIES
 dir_config = SimulationFolders.getInstance.config;
@@ -21,6 +22,7 @@ dir_freqdiff_P4_tuple = SimulationFolders.getInstance.freqdiff_P4_tuple;
 %% GET GLOBAL PARAMETERS
 % Simulation Parameters
 Nfz = SimParams.getInstance.Nfz;
+Nr = SimParams.getInstance.Nr;
 % Transmitter Parameters
 f_MHz = TxParams.getInstance.f_MHz;
 EIRP_dB = TxParams.getInstance.EIRP_dB;
@@ -67,372 +69,378 @@ Ki = K * exp(1i * k0 * (r_st + r_sr)) / (r_st * r_sr) ;
 NkindMax = max(max(TYPKND)) ;
 
 
-%% INITIALIZE REQUIRED VARIABLES
-% per kind
-b4_inc1_t1 = zeros(2, Nfz, NkindMax, Ntype, Nlayer) ;  % dd
-b4_inc2_t1 = b4_inc1_t1 ;                                   % rd
-b4_inc3_t1 = b4_inc1_t1 ;                                   % dr
-b4_inc4_t1 = b4_inc1_t1 ;                                   % rr
-b4_inc1_t2 = zeros(2, Nfz, NkindMax, Ntype, Nlayer) ;
-b4_inc2_t2 = b4_inc1_t2 ;
-b4_inc3_t2 = b4_inc1_t2 ;
-b4_inc4_t2 = b4_inc1_t2 ;
-
-% per type
-b3_inc1_t1 = zeros(2, Nfz, Ntype, Nlayer) ;
-b3_inc2_t1 = b3_inc1_t1 ;
-b3_inc3_t1 = b3_inc1_t1 ;
-b3_inc4_t1 = b3_inc1_t1 ;
-b3_inc1_t2 = zeros(2, Nfz, Ntype, Nlayer) ;
-b3_inc2_t2 = b3_inc1_t2 ;
-b3_inc3_t2 = b3_inc1_t2 ;
-b3_inc4_t2 = b3_inc1_t2 ;
-
-% per layer
-b2_inc1_t1 = zeros(2, Nfz, Nlayer) ;
-b2_inc2_t1 = b2_inc1_t1 ;
-b2_inc3_t1 = b2_inc1_t1 ;
-b2_inc4_t1 = b2_inc1_t1 ;
-b2_inc1_t2 = zeros(2, Nfz, Nlayer) ;
-b2_inc2_t2 = b2_inc1_t2 ;
-b2_inc3_t2 = b2_inc1_t2 ;
-b2_inc4_t2 = b2_inc1_t2 ;
-
-% medium
-b1_inc1_t1 = zeros(2, Nfz) ;
-b1_inc2_t1 = b1_inc1_t1 ;
-b1_inc3_t1 = b1_inc1_t1 ;
-b1_inc4_t1 = b1_inc1_t1 ;
-b1_inc1_t2 = zeros(2, Nfz) ;
-b1_inc2_t2 = b1_inc1_t2 ;
-b1_inc3_t2 = b1_inc1_t2 ;
-b1_inc4_t2 = b1_inc1_t2 ;
-
-%%
-% per kind
-P4_inc1_t1 = zeros(4, Nfz, NkindMax, Ntype, Nlayer) ;  % dd
-P4_inc2_t1 = P4_inc1_t1 ;                                   % rd
-P4_inc3_t1 = P4_inc1_t1 ;                                   % dr
-P4_inc4_t1 = P4_inc1_t1 ;                                   % rr
-P4_inc1_t2 = zeros(4, Nfz, NkindMax, Ntype, Nlayer) ;
-P4_inc2_t2 = P4_inc1_t2 ;
-P4_inc3_t2 = P4_inc1_t2 ;
-P4_inc4_t2 = P4_inc1_t2 ;
-
-% per type
-P3_inc1_t1 = zeros(4, Nfz, Ntype, Nlayer) ;
-P3_inc2_t1 = P3_inc1_t1 ;
-P3_inc3_t1 = P3_inc1_t1 ;
-P3_inc4_t1 = P3_inc1_t1 ;
-P3_inc1_t2 = zeros(4, Nfz, Ntype, Nlayer) ;
-P3_inc2_t2 = P3_inc1_t2 ;
-P3_inc3_t2 = P3_inc1_t2 ;
-P3_inc4_t2 = P3_inc1_t2 ;
-
-% per layer
-P2_inc1_t1 = zeros(4, Nfz, Nlayer) ;
-P2_inc2_t1 = P2_inc1_t1 ;
-P2_inc3_t1 = P2_inc1_t1 ;
-P2_inc4_t1 = P2_inc1_t1 ;
-P2_inc1_t2 = zeros(4, Nfz, Nlayer) ;
-P2_inc2_t2 = P2_inc1_t2 ;
-P2_inc3_t2 = P2_inc1_t2 ;
-P2_inc4_t2 = P2_inc1_t2 ;
-
-% medium
-P1_inc1_t1 = zeros(4, Nfz) ;
-P1_inc2_t1 = P1_inc1_t1 ;
-P1_inc3_t1 = P1_inc1_t1 ;
-P1_inc4_t1 = P1_inc1_t1 ;
-P1_inc1_t2 = zeros(4, Nfz) ;
-P1_inc2_t2 = P1_inc1_t2 ;
-P1_inc3_t2 = P1_inc1_t2 ;
-P1_inc4_t2 = P1_inc1_t2 ;
-
-%% Calculations...
-
-for ii = 1 : Nlayer
+%% REALIZATIONS
+for ind_realization = 1 : Nr   % Number of Realization
     
-    for jj = 1 : Ntype
-        
-        Nkind = TYPKND(ii, jj) ;
-        
-        if Nkind ~= 0
-            
-            for kk = 1 : Nkind
-                
-                % +++++++++++++++++++++++++
-                disp('reading...')
-                filename = strcat('R', num2str(ind_realization), '_L', num2str(ii), '_T',...
-                    num2str(jj), '_K', num2str(kk)) ;
-                disp(filename)                
-                
-                % If the particle is a scatterer
-                if scat_cal_veg(kk, jj, ii) == 1
-                    
-                    tic ;
-                    
-                    [b4_inc1_t1(:, :, kk, jj, ii), b4_inc2_t1(:, :, kk, jj, ii), ...
-                        b4_inc3_t1(:, :, kk, jj, ii), b4_inc4_t1(:, :, kk, jj, ii), ...
-                        b4_inc1_t2(:, :, kk, jj, ii), b4_inc2_t2(:, :, kk, jj, ii), ...
-                        b4_inc3_t2(:, :, kk, jj, ii), b4_inc4_t2(:, :, kk, jj, ii), ...
-                        P4_inc1_t1(:, :, kk, jj, ii), P4_inc2_t1(:, :, kk, jj, ii), ...
-                        P4_inc3_t1(:, :, kk, jj, ii), P4_inc4_t1(:, :, kk, jj, ii), ...
-                        P4_inc1_t2(:, :, kk, jj, ii), P4_inc2_t2(:, :, kk, jj, ii), ...
-                        P4_inc3_t2(:, :, kk, jj, ii), P4_inc4_t2(:, :, kk, jj, ii)] ...
-                        = ScatMech(ii, filename, r_st, r_sr) ;
-                    
-                    disp('done...')
-                    
-                    toc
-                    
-                else
-                    disp('Skipped to calculate diffuse term for the particle...')
-                end
+    
+    %% INITIALIZE REQUIRED VARIABLES
+    % per kind
+    b4_inc1_t1 = zeros(2, Nfz, NkindMax, Ntype, Nlayer) ;  % dd
+    b4_inc2_t1 = b4_inc1_t1 ;                                   % rd
+    b4_inc3_t1 = b4_inc1_t1 ;                                   % dr
+    b4_inc4_t1 = b4_inc1_t1 ;                                   % rr
+    b4_inc1_t2 = zeros(2, Nfz, NkindMax, Ntype, Nlayer) ;
+    b4_inc2_t2 = b4_inc1_t2 ;
+    b4_inc3_t2 = b4_inc1_t2 ;
+    b4_inc4_t2 = b4_inc1_t2 ;
 
-                
+    % per type
+    b3_inc1_t1 = zeros(2, Nfz, Ntype, Nlayer) ;
+    b3_inc2_t1 = b3_inc1_t1 ;
+    b3_inc3_t1 = b3_inc1_t1 ;
+    b3_inc4_t1 = b3_inc1_t1 ;
+    b3_inc1_t2 = zeros(2, Nfz, Ntype, Nlayer) ;
+    b3_inc2_t2 = b3_inc1_t2 ;
+    b3_inc3_t2 = b3_inc1_t2 ;
+    b3_inc4_t2 = b3_inc1_t2 ;
+
+    % per layer
+    b2_inc1_t1 = zeros(2, Nfz, Nlayer) ;
+    b2_inc2_t1 = b2_inc1_t1 ;
+    b2_inc3_t1 = b2_inc1_t1 ;
+    b2_inc4_t1 = b2_inc1_t1 ;
+    b2_inc1_t2 = zeros(2, Nfz, Nlayer) ;
+    b2_inc2_t2 = b2_inc1_t2 ;
+    b2_inc3_t2 = b2_inc1_t2 ;
+    b2_inc4_t2 = b2_inc1_t2 ;
+
+    % medium
+    b1_inc1_t1 = zeros(2, Nfz) ;
+    b1_inc2_t1 = b1_inc1_t1 ;
+    b1_inc3_t1 = b1_inc1_t1 ;
+    b1_inc4_t1 = b1_inc1_t1 ;
+    b1_inc1_t2 = zeros(2, Nfz) ;
+    b1_inc2_t2 = b1_inc1_t2 ;
+    b1_inc3_t2 = b1_inc1_t2 ;
+    b1_inc4_t2 = b1_inc1_t2 ;
+
+    %%
+    % per kind
+    P4_inc1_t1 = zeros(4, Nfz, NkindMax, Ntype, Nlayer) ;  % dd
+    P4_inc2_t1 = P4_inc1_t1 ;                                   % rd
+    P4_inc3_t1 = P4_inc1_t1 ;                                   % dr
+    P4_inc4_t1 = P4_inc1_t1 ;                                   % rr
+    P4_inc1_t2 = zeros(4, Nfz, NkindMax, Ntype, Nlayer) ;
+    P4_inc2_t2 = P4_inc1_t2 ;
+    P4_inc3_t2 = P4_inc1_t2 ;
+    P4_inc4_t2 = P4_inc1_t2 ;
+
+    % per type
+    P3_inc1_t1 = zeros(4, Nfz, Ntype, Nlayer) ;
+    P3_inc2_t1 = P3_inc1_t1 ;
+    P3_inc3_t1 = P3_inc1_t1 ;
+    P3_inc4_t1 = P3_inc1_t1 ;
+    P3_inc1_t2 = zeros(4, Nfz, Ntype, Nlayer) ;
+    P3_inc2_t2 = P3_inc1_t2 ;
+    P3_inc3_t2 = P3_inc1_t2 ;
+    P3_inc4_t2 = P3_inc1_t2 ;
+
+    % per layer
+    P2_inc1_t1 = zeros(4, Nfz, Nlayer) ;
+    P2_inc2_t1 = P2_inc1_t1 ;
+    P2_inc3_t1 = P2_inc1_t1 ;
+    P2_inc4_t1 = P2_inc1_t1 ;
+    P2_inc1_t2 = zeros(4, Nfz, Nlayer) ;
+    P2_inc2_t2 = P2_inc1_t2 ;
+    P2_inc3_t2 = P2_inc1_t2 ;
+    P2_inc4_t2 = P2_inc1_t2 ;
+
+    % medium
+    P1_inc1_t1 = zeros(4, Nfz) ;
+    P1_inc2_t1 = P1_inc1_t1 ;
+    P1_inc3_t1 = P1_inc1_t1 ;
+    P1_inc4_t1 = P1_inc1_t1 ;
+    P1_inc1_t2 = zeros(4, Nfz) ;
+    P1_inc2_t2 = P1_inc1_t2 ;
+    P1_inc3_t2 = P1_inc1_t2 ;
+    P1_inc4_t2 = P1_inc1_t2 ;
+
+    %% Calculations...
+
+    for ii = 1 : Nlayer
+
+        for jj = 1 : Ntype
+
+            Nkind = TYPKND(ii, jj) ;
+
+            if Nkind ~= 0
+
+                for kk = 1 : Nkind
+
+                    % +++++++++++++++++++++++++
+                    disp('reading...')
+                    filename = strcat('R', num2str(ind_realization), '_L', num2str(ii), '_T',...
+                        num2str(jj), '_K', num2str(kk)) ;
+                    disp(filename)                
+
+                    % If the particle is a scatterer
+                    if scat_cal_veg(kk, jj, ii) == 1
+
+                        tic ;
+
+                        [b4_inc1_t1(:, :, kk, jj, ii), b4_inc2_t1(:, :, kk, jj, ii), ...
+                            b4_inc3_t1(:, :, kk, jj, ii), b4_inc4_t1(:, :, kk, jj, ii), ...
+                            b4_inc1_t2(:, :, kk, jj, ii), b4_inc2_t2(:, :, kk, jj, ii), ...
+                            b4_inc3_t2(:, :, kk, jj, ii), b4_inc4_t2(:, :, kk, jj, ii), ...
+                            P4_inc1_t1(:, :, kk, jj, ii), P4_inc2_t1(:, :, kk, jj, ii), ...
+                            P4_inc3_t1(:, :, kk, jj, ii), P4_inc4_t1(:, :, kk, jj, ii), ...
+                            P4_inc1_t2(:, :, kk, jj, ii), P4_inc2_t2(:, :, kk, jj, ii), ...
+                            P4_inc3_t2(:, :, kk, jj, ii), P4_inc4_t2(:, :, kk, jj, ii)] ...
+                            = ScatMech(ii, filename, r_st, r_sr) ;
+
+                        disp('done...')
+
+                        toc
+
+                    else
+                        disp('Skipped to calculate diffuse term for the particle...')
+                    end
+
+
+                    % +++++++++++++++++++++++++
+                    % sum over all kinds of each type in each layer
+                    % 2 by ....
+                    b3_inc1_t1(:, :, jj, ii) = b3_inc1_t1(:, :, jj, ii) + b4_inc1_t1(:, :, kk, jj, ii) ;
+                    b3_inc2_t1(:, :, jj, ii) = b3_inc2_t1(:, :, jj, ii) + b4_inc2_t1(:, :, kk, jj, ii) ;
+                    b3_inc3_t1(:, :, jj, ii) = b3_inc3_t1(:, :, jj, ii) + b4_inc3_t1(:, :, kk, jj, ii) ;
+                    b3_inc4_t1(:, :, jj, ii) = b3_inc4_t1(:, :, jj, ii) + b4_inc4_t1(:, :, kk, jj, ii) ;
+
+                    b3_inc1_t2(:, :, jj, ii) = b3_inc1_t2(:, :, jj, ii) + b4_inc1_t2(:, :, kk, jj, ii) ;
+                    b3_inc2_t2(:, :, jj, ii) = b3_inc2_t2(:, :, jj, ii) + b4_inc2_t2(:, :, kk, jj, ii) ;
+                    b3_inc3_t2(:, :, jj, ii) = b3_inc3_t2(:, :, jj, ii) + b4_inc3_t2(:, :, kk, jj, ii) ;
+                    b3_inc4_t2(:, :, jj, ii) = b3_inc4_t2(:, :, jj, ii) + b4_inc4_t2(:, :, kk, jj, ii) ;
+
+                    % 4 by ....
+                    P3_inc1_t1(:, :, jj, ii) = P3_inc1_t1(:, :, jj, ii) + P4_inc1_t1(:, :, kk, jj, ii) ;
+                    P3_inc2_t1(:, :, jj, ii) = P3_inc2_t1(:, :, jj, ii) + P4_inc2_t1(:, :, kk, jj, ii) ;
+                    P3_inc3_t1(:, :, jj, ii) = P3_inc3_t1(:, :, jj, ii) + P4_inc3_t1(:, :, kk, jj, ii) ;
+                    P3_inc4_t1(:, :, jj, ii) = P3_inc4_t1(:, :, jj, ii) + P4_inc4_t1(:, :, kk, jj, ii) ;
+
+                    P3_inc1_t2(:, :, jj, ii) = P3_inc1_t2(:, :, jj, ii) + P4_inc1_t2(:, :, kk, jj, ii) ;
+                    P3_inc2_t2(:, :, jj, ii) = P3_inc2_t2(:, :, jj, ii) + P4_inc2_t2(:, :, kk, jj, ii) ;
+                    P3_inc3_t2(:, :, jj, ii) = P3_inc3_t2(:, :, jj, ii) + P4_inc3_t2(:, :, kk, jj, ii) ;
+                    P3_inc4_t2(:, :, jj, ii) = P3_inc4_t2(:, :, jj, ii) + P4_inc4_t2(:, :, kk, jj, ii) ;
+                    % +++++++++++++++++++++++++
+
+                end % Nkind -- kk
+
                 % +++++++++++++++++++++++++
-                % sum over all kinds of each type in each layer
+                % sum over all types in each layer
                 % 2 by ....
-                b3_inc1_t1(:, :, jj, ii) = b3_inc1_t1(:, :, jj, ii) + b4_inc1_t1(:, :, kk, jj, ii) ;
-                b3_inc2_t1(:, :, jj, ii) = b3_inc2_t1(:, :, jj, ii) + b4_inc2_t1(:, :, kk, jj, ii) ;
-                b3_inc3_t1(:, :, jj, ii) = b3_inc3_t1(:, :, jj, ii) + b4_inc3_t1(:, :, kk, jj, ii) ;
-                b3_inc4_t1(:, :, jj, ii) = b3_inc4_t1(:, :, jj, ii) + b4_inc4_t1(:, :, kk, jj, ii) ;
-             
-                b3_inc1_t2(:, :, jj, ii) = b3_inc1_t2(:, :, jj, ii) + b4_inc1_t2(:, :, kk, jj, ii) ;
-                b3_inc2_t2(:, :, jj, ii) = b3_inc2_t2(:, :, jj, ii) + b4_inc2_t2(:, :, kk, jj, ii) ;
-                b3_inc3_t2(:, :, jj, ii) = b3_inc3_t2(:, :, jj, ii) + b4_inc3_t2(:, :, kk, jj, ii) ;
-                b3_inc4_t2(:, :, jj, ii) = b3_inc4_t2(:, :, jj, ii) + b4_inc4_t2(:, :, kk, jj, ii) ;
-                
+                b2_inc1_t1(:, :, ii) = b2_inc1_t1(:, :, ii) + b3_inc1_t1(:, :, jj, ii) ;
+                b2_inc2_t1(:, :, ii) = b2_inc2_t1(:, :, ii) + b3_inc2_t1(:, :, jj, ii) ;
+                b2_inc3_t1(:, :, ii) = b2_inc3_t1(:, :, ii) + b3_inc3_t1(:, :, jj, ii) ;
+                b2_inc4_t1(:, :, ii) = b2_inc4_t1(:, :, ii) + b3_inc4_t1(:, :, jj, ii) ;
+
+                b2_inc1_t2(:, :, ii) = b2_inc1_t2(:, :, ii) + b3_inc1_t2(:, :, jj, ii) ;
+                b2_inc2_t2(:, :, ii) = b2_inc2_t2(:, :, ii) + b3_inc2_t2(:, :, jj, ii) ;
+                b2_inc3_t2(:, :, ii) = b2_inc3_t2(:, :, ii) + b3_inc3_t2(:, :, jj, ii) ;
+                b2_inc4_t2(:, :, ii) = b2_inc4_t2(:, :, ii) + b3_inc4_t2(:, :, jj, ii) ;
+
                 % 4 by ....
-                P3_inc1_t1(:, :, jj, ii) = P3_inc1_t1(:, :, jj, ii) + P4_inc1_t1(:, :, kk, jj, ii) ;
-                P3_inc2_t1(:, :, jj, ii) = P3_inc2_t1(:, :, jj, ii) + P4_inc2_t1(:, :, kk, jj, ii) ;
-                P3_inc3_t1(:, :, jj, ii) = P3_inc3_t1(:, :, jj, ii) + P4_inc3_t1(:, :, kk, jj, ii) ;
-                P3_inc4_t1(:, :, jj, ii) = P3_inc4_t1(:, :, jj, ii) + P4_inc4_t1(:, :, kk, jj, ii) ;
-             
-                P3_inc1_t2(:, :, jj, ii) = P3_inc1_t2(:, :, jj, ii) + P4_inc1_t2(:, :, kk, jj, ii) ;
-                P3_inc2_t2(:, :, jj, ii) = P3_inc2_t2(:, :, jj, ii) + P4_inc2_t2(:, :, kk, jj, ii) ;
-                P3_inc3_t2(:, :, jj, ii) = P3_inc3_t2(:, :, jj, ii) + P4_inc3_t2(:, :, kk, jj, ii) ;
-                P3_inc4_t2(:, :, jj, ii) = P3_inc4_t2(:, :, jj, ii) + P4_inc4_t2(:, :, kk, jj, ii) ;
+                P2_inc1_t1(:, :, ii) = P2_inc1_t1(:, :, ii) + P3_inc1_t1(:, :, jj, ii) ;
+                P2_inc2_t1(:, :, ii) = P2_inc2_t1(:, :, ii) + P3_inc2_t1(:, :, jj, ii) ;
+                P2_inc3_t1(:, :, ii) = P2_inc3_t1(:, :, ii) + P3_inc3_t1(:, :, jj, ii) ;
+                P2_inc4_t1(:, :, ii) = P2_inc4_t1(:, :, ii) + P3_inc4_t1(:, :, jj, ii) ;
+
+                P2_inc1_t2(:, :, ii) = P2_inc1_t2(:, :, ii) + P3_inc1_t2(:, :, jj, ii) ;
+                P2_inc2_t2(:, :, ii) = P2_inc2_t2(:, :, ii) + P3_inc2_t2(:, :, jj, ii) ;
+                P2_inc3_t2(:, :, ii) = P2_inc3_t2(:, :, ii) + P3_inc3_t2(:, :, jj, ii) ;
+                P2_inc4_t2(:, :, ii) = P2_inc4_t2(:, :, ii) + P3_inc4_t2(:, :, jj, ii) ;
                 % +++++++++++++++++++++++++
-                
-            end % Nkind -- kk
-            
-            % +++++++++++++++++++++++++
-            % sum over all types in each layer
-            % 2 by ....
-            b2_inc1_t1(:, :, ii) = b2_inc1_t1(:, :, ii) + b3_inc1_t1(:, :, jj, ii) ;
-            b2_inc2_t1(:, :, ii) = b2_inc2_t1(:, :, ii) + b3_inc2_t1(:, :, jj, ii) ;
-            b2_inc3_t1(:, :, ii) = b2_inc3_t1(:, :, ii) + b3_inc3_t1(:, :, jj, ii) ;
-            b2_inc4_t1(:, :, ii) = b2_inc4_t1(:, :, ii) + b3_inc4_t1(:, :, jj, ii) ;
-            
-            b2_inc1_t2(:, :, ii) = b2_inc1_t2(:, :, ii) + b3_inc1_t2(:, :, jj, ii) ;
-            b2_inc2_t2(:, :, ii) = b2_inc2_t2(:, :, ii) + b3_inc2_t2(:, :, jj, ii) ;
-            b2_inc3_t2(:, :, ii) = b2_inc3_t2(:, :, ii) + b3_inc3_t2(:, :, jj, ii) ;
-            b2_inc4_t2(:, :, ii) = b2_inc4_t2(:, :, ii) + b3_inc4_t2(:, :, jj, ii) ;
-            
-            % 4 by ....
-            P2_inc1_t1(:, :, ii) = P2_inc1_t1(:, :, ii) + P3_inc1_t1(:, :, jj, ii) ;
-            P2_inc2_t1(:, :, ii) = P2_inc2_t1(:, :, ii) + P3_inc2_t1(:, :, jj, ii) ;
-            P2_inc3_t1(:, :, ii) = P2_inc3_t1(:, :, ii) + P3_inc3_t1(:, :, jj, ii) ;
-            P2_inc4_t1(:, :, ii) = P2_inc4_t1(:, :, ii) + P3_inc4_t1(:, :, jj, ii) ;
-            
-            P2_inc1_t2(:, :, ii) = P2_inc1_t2(:, :, ii) + P3_inc1_t2(:, :, jj, ii) ;
-            P2_inc2_t2(:, :, ii) = P2_inc2_t2(:, :, ii) + P3_inc2_t2(:, :, jj, ii) ;
-            P2_inc3_t2(:, :, ii) = P2_inc3_t2(:, :, ii) + P3_inc3_t2(:, :, jj, ii) ;
-            P2_inc4_t2(:, :, ii) = P2_inc4_t2(:, :, ii) + P3_inc4_t2(:, :, jj, ii) ;
-            % +++++++++++++++++++++++++
-            
-        end % if Nkind ~= 0
-        
-    end % Ntype -- jj
-    
-    % +++++++++++++++++++++++++
-    % sum over all layers
-    % 2 by ....
-    b1_inc1_t1(:, :) = b1_inc1_t1(:, :) + b2_inc1_t1(:, :, ii) ;
-    b1_inc2_t1(:, :) = b1_inc2_t1(:, :) + b2_inc2_t1(:, :, ii) ;
-    b1_inc3_t1(:, :) = b1_inc3_t1(:, :) + b2_inc3_t1(:, :, ii) ;
-    b1_inc4_t1(:, :) = b1_inc4_t1(:, :) + b2_inc4_t1(:, :, ii) ;
-    
-    b1_inc1_t2(:, :) = b1_inc1_t2(:, :) + b2_inc1_t2(:, :, ii) ;
-    b1_inc2_t2(:, :) = b1_inc2_t2(:, :) + b2_inc2_t2(:, :, ii) ;
-    b1_inc3_t2(:, :) = b1_inc3_t2(:, :) + b2_inc3_t2(:, :, ii) ;
-    b1_inc4_t2(:, :) = b1_inc4_t2(:, :) + b2_inc4_t2(:, :, ii) ;
-    
-    % 4 by ....
-    P1_inc1_t1(:, :) = P1_inc1_t1(:, :) + P2_inc1_t1(:, :, ii) ;
-    P1_inc2_t1(:, :) = P1_inc2_t1(:, :) + P2_inc2_t1(:, :, ii) ;
-    P1_inc3_t1(:, :) = P1_inc3_t1(:, :) + P2_inc3_t1(:, :, ii) ;
-    P1_inc4_t1(:, :) = P1_inc4_t1(:, :) + P2_inc4_t1(:, :, ii) ;
-    
-    P1_inc1_t2(:, :) = P1_inc1_t2(:, :) + P2_inc1_t2(:, :, ii) ;
-    P1_inc2_t2(:, :) = P1_inc2_t2(:, :) + P2_inc2_t2(:, :, ii) ;
-    P1_inc3_t2(:, :) = P1_inc3_t2(:, :) + P2_inc3_t2(:, :, ii) ;
-    P1_inc4_t2(:, :) = P1_inc4_t2(:, :) + P2_inc4_t2(:, :, ii) ;
-    % +++++++++++++++++++++++++
-    
-end % Nlayer -- ii
 
-%% SAVE ALL
+            end % if Nkind ~= 0
+
+        end % Ntype -- jj
+
+        % +++++++++++++++++++++++++
+        % sum over all layers
+        % 2 by ....
+        b1_inc1_t1(:, :) = b1_inc1_t1(:, :) + b2_inc1_t1(:, :, ii) ;
+        b1_inc2_t1(:, :) = b1_inc2_t1(:, :) + b2_inc2_t1(:, :, ii) ;
+        b1_inc3_t1(:, :) = b1_inc3_t1(:, :) + b2_inc3_t1(:, :, ii) ;
+        b1_inc4_t1(:, :) = b1_inc4_t1(:, :) + b2_inc4_t1(:, :, ii) ;
+
+        b1_inc1_t2(:, :) = b1_inc1_t2(:, :) + b2_inc1_t2(:, :, ii) ;
+        b1_inc2_t2(:, :) = b1_inc2_t2(:, :) + b2_inc2_t2(:, :, ii) ;
+        b1_inc3_t2(:, :) = b1_inc3_t2(:, :) + b2_inc3_t2(:, :, ii) ;
+        b1_inc4_t2(:, :) = b1_inc4_t2(:, :) + b2_inc4_t2(:, :, ii) ;
+
+        % 4 by ....
+        P1_inc1_t1(:, :) = P1_inc1_t1(:, :) + P2_inc1_t1(:, :, ii) ;
+        P1_inc2_t1(:, :) = P1_inc2_t1(:, :) + P2_inc2_t1(:, :, ii) ;
+        P1_inc3_t1(:, :) = P1_inc3_t1(:, :) + P2_inc3_t1(:, :, ii) ;
+        P1_inc4_t1(:, :) = P1_inc4_t1(:, :) + P2_inc4_t1(:, :, ii) ;
+
+        P1_inc1_t2(:, :) = P1_inc1_t2(:, :) + P2_inc1_t2(:, :, ii) ;
+        P1_inc2_t2(:, :) = P1_inc2_t2(:, :) + P2_inc2_t2(:, :, ii) ;
+        P1_inc3_t2(:, :) = P1_inc3_t2(:, :) + P2_inc3_t2(:, :, ii) ;
+        P1_inc4_t2(:, :) = P1_inc4_t2(:, :) + P2_inc4_t2(:, :, ii) ;
+        % +++++++++++++++++++++++++
+
+    end % Nlayer -- ii
+
+    %% SAVE ALL
+    % b1
+    filename1 = strcat('b1_inc1_t1', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc1_t1))
+    filename1 = strcat('b1_inc2_t1', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc2_t1))
+    filename1 = strcat('b1_inc3_t1', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc3_t1))
+    filename1 = strcat('b1_inc4_t1', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc4_t1))
+
+    filename1 = strcat('b1_inc1_t2', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc1_t2))
+    filename1 = strcat('b1_inc2_t2', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc2_t2))
+    filename1 = strcat('b1_inc3_t2', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc3_t2))
+    filename1 = strcat('b1_inc4_t2', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc4_t2))
+
+    % b2
+    filename1 = strcat('b2_inc1_t1', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc1_t1))
+    filename1 = strcat('b2_inc2_t1', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc2_t1))
+    filename1 = strcat('b2_inc3_t1', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc3_t1))
+    filename1 = strcat('b2_inc4_t1', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc4_t1))
+
+    filename1 = strcat('b2_inc1_t2', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc1_t2))
+    filename1 = strcat('b2_inc2_t2', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc2_t2))
+    filename1 = strcat('b2_inc3_t2', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc3_t2))
+    filename1 = strcat('b2_inc4_t2', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc4_t2))
+
+    % b3
+    filename1 = strcat('b3_inc1_t1', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc1_t1))
+    filename1 = strcat('b3_inc2_t1', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc2_t1))
+    filename1 = strcat('b3_inc3_t1', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc3_t1))
+    filename1 = strcat('b3_inc4_t1', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc4_t1))
+
+    filename1 = strcat('b3_inc1_t2', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc1_t2))
+    filename1 = strcat('b3_inc2_t2', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc2_t2))
+    filename1 = strcat('b3_inc3_t2', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc3_t2))
+    filename1 = strcat('b3_inc4_t2', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc4_t2))
+
+    % b4
+    filename1 = strcat('b4_inc1_t1', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc1_t1))
+    filename1 = strcat('b4_inc2_t1', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc2_t1))
+    filename1 = strcat('b4_inc3_t1', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc3_t1))
+    filename1 = strcat('b4_inc4_t1', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc4_t1))
+
+    filename1 = strcat('b4_inc1_t2', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc1_t2))
+    filename1 = strcat('b4_inc2_t2', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc2_t2))
+    filename1 = strcat('b4_inc3_t2', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc3_t2))
+    filename1 = strcat('b4_inc4_t2', '_R', num2str(ind_realization)) ;
+    writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc4_t2))
+
+    % =====================================================
+    % P1
+    filename1 = strcat('P1_inc1_t1', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc1_t1))
+    filename1 = strcat('P1_inc2_t1', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc2_t1))
+    filename1 = strcat('P1_inc3_t1', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc3_t1))
+    filename1 = strcat('P1_inc4_t1', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc4_t1))
+
+    filename1 = strcat('P1_inc1_t2', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc1_t2))
+    filename1 = strcat('P1_inc2_t2', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc2_t2))
+    filename1 = strcat('P1_inc3_t2', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc3_t2))
+    filename1 = strcat('P1_inc4_t2', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc4_t2))
+
+    % P2
+    filename1 = strcat('P2_inc1_t1', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc1_t1))
+    filename1 = strcat('P2_inc2_t1', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc2_t1))
+    filename1 = strcat('P2_inc3_t1', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc3_t1))
+    filename1 = strcat('P2_inc4_t1', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc4_t1))
+
+    filename1 = strcat('P2_inc1_t2', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc1_t2))
+    filename1 = strcat('P2_inc2_t2', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc2_t2))
+    filename1 = strcat('P2_inc3_t2', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc3_t2))
+    filename1 = strcat('P2_inc4_t2', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc4_t2))
+
+    % P3
+    filename1 = strcat('P3_inc1_t1', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc1_t1))
+    filename1 = strcat('P3_inc2_t1', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc2_t1))
+    filename1 = strcat('P3_inc3_t1', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc3_t1))
+    filename1 = strcat('P3_inc4_t1', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc4_t1))
+
+    filename1 = strcat('P3_inc1_t2', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc1_t2))
+    filename1 = strcat('P3_inc2_t2', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc2_t2))
+    filename1 = strcat('P3_inc3_t2', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc3_t2))
+    filename1 = strcat('P3_inc4_t2', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc4_t2))
+
+    % P4
+    filename1 = strcat('P4_inc1_t1', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc1_t1))
+    filename1 = strcat('P4_inc2_t1', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc2_t1))
+    filename1 = strcat('P4_inc3_t1', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc3_t1))
+    filename1 = strcat('P4_inc4_t1', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc4_t1))
+
+    filename1 = strcat('P4_inc1_t2', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc1_t2))
+    filename1 = strcat('P4_inc2_t2', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc2_t2))
+    filename1 = strcat('P4_inc3_t2', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc3_t2))
+    filename1 = strcat('P4_inc4_t2', '_R', num2str(ind_realization)) ;
+    writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc4_t2))
+
+end % Realization
+
+
+%% SAVE Ki
 % Ki
-filename3 = strcat('Ki') ;
-writeComplexVar(dir_freqdiff, filename3, Ki)
-
-% ====================================================
-% b1
-filename1 = strcat('b1_inc1_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc1_t1))
-filename1 = strcat('b1_inc2_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc2_t1))
-filename1 = strcat('b1_inc3_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc3_t1))
-filename1 = strcat('b1_inc4_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc4_t1))
-
-filename1 = strcat('b1_inc1_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc1_t2))
-filename1 = strcat('b1_inc2_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc2_t2))
-filename1 = strcat('b1_inc3_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc3_t2))
-filename1 = strcat('b1_inc4_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b1_tuple, filename1, (b1_inc4_t2))
-
-% b2
-filename1 = strcat('b2_inc1_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc1_t1))
-filename1 = strcat('b2_inc2_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc2_t1))
-filename1 = strcat('b2_inc3_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc3_t1))
-filename1 = strcat('b2_inc4_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc4_t1))
-
-filename1 = strcat('b2_inc1_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc1_t2))
-filename1 = strcat('b2_inc2_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc2_t2))
-filename1 = strcat('b2_inc3_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc3_t2))
-filename1 = strcat('b2_inc4_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b2_tuple, filename1, (b2_inc4_t2))
-
-% b3
-filename1 = strcat('b3_inc1_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc1_t1))
-filename1 = strcat('b3_inc2_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc2_t1))
-filename1 = strcat('b3_inc3_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc3_t1))
-filename1 = strcat('b3_inc4_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc4_t1))
-
-filename1 = strcat('b3_inc1_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc1_t2))
-filename1 = strcat('b3_inc2_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc2_t2))
-filename1 = strcat('b3_inc3_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc3_t2))
-filename1 = strcat('b3_inc4_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b3_tuple, filename1, (b3_inc4_t2))
-
-% b4
-filename1 = strcat('b4_inc1_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc1_t1))
-filename1 = strcat('b4_inc2_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc2_t1))
-filename1 = strcat('b4_inc3_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc3_t1))
-filename1 = strcat('b4_inc4_t1', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc4_t1))
-
-filename1 = strcat('b4_inc1_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc1_t2))
-filename1 = strcat('b4_inc2_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc2_t2))
-filename1 = strcat('b4_inc3_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc3_t2))
-filename1 = strcat('b4_inc4_t2', '_R', num2str(ind_realization)) ;
-writeComplexVar(dir_freqdiff_b4_tuple, filename1, (b4_inc4_t2))
-
-% =====================================================
-% P1
-filename1 = strcat('P1_inc1_t1', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc1_t1))
-filename1 = strcat('P1_inc2_t1', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc2_t1))
-filename1 = strcat('P1_inc3_t1', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc3_t1))
-filename1 = strcat('P1_inc4_t1', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc4_t1))
-
-filename1 = strcat('P1_inc1_t2', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc1_t2))
-filename1 = strcat('P1_inc2_t2', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc2_t2))
-filename1 = strcat('P1_inc3_t2', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc3_t2))
-filename1 = strcat('P1_inc4_t2', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P1_tuple, filename1, (P1_inc4_t2))
-
-% P2
-filename1 = strcat('P2_inc1_t1', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc1_t1))
-filename1 = strcat('P2_inc2_t1', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc2_t1))
-filename1 = strcat('P2_inc3_t1', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc3_t1))
-filename1 = strcat('P2_inc4_t1', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc4_t1))
-
-filename1 = strcat('P2_inc1_t2', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc1_t2))
-filename1 = strcat('P2_inc2_t2', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc2_t2))
-filename1 = strcat('P2_inc3_t2', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc3_t2))
-filename1 = strcat('P2_inc4_t2', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P2_tuple, filename1, (P2_inc4_t2))
-
-% P3
-filename1 = strcat('P3_inc1_t1', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc1_t1))
-filename1 = strcat('P3_inc2_t1', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc2_t1))
-filename1 = strcat('P3_inc3_t1', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc3_t1))
-filename1 = strcat('P3_inc4_t1', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc4_t1))
-
-filename1 = strcat('P3_inc1_t2', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc1_t2))
-filename1 = strcat('P3_inc2_t2', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc2_t2))
-filename1 = strcat('P3_inc3_t2', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc3_t2))
-filename1 = strcat('P3_inc4_t2', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P3_tuple, filename1, (P3_inc4_t2))
-
-% P4
-filename1 = strcat('P4_inc1_t1', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc1_t1))
-filename1 = strcat('P4_inc2_t1', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc2_t1))
-filename1 = strcat('P4_inc3_t1', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc3_t1))
-filename1 = strcat('P4_inc4_t1', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc4_t1))
-
-filename1 = strcat('P4_inc1_t2', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc1_t2))
-filename1 = strcat('P4_inc2_t2', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc2_t2))
-filename1 = strcat('P4_inc3_t2', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc3_t2))
-filename1 = strcat('P4_inc4_t2', '_R', num2str(ind_realization)) ;
-writeVar(dir_freqdiff_P4_tuple, filename1, (P4_inc4_t2))
-
+filename = strcat('Ki');
+writeComplexVar(dir_freqdiff, filename, Ki);
 
 end
 

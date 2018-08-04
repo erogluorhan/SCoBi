@@ -28,6 +28,10 @@ classdef RxParams < handle
         % Recevier Antenna pattern generation method index
         ant_pat_Rx_id
         
+        % Antenna pattern struct that contains pattern lookup theta and phi
+        % angles, and antenna pattern matrices G and g
+        ant_pat_struct_Rx
+        
         % Antenna pattern resolution in degrees
         ant_pat_res_deg
     end
@@ -57,7 +61,9 @@ classdef RxParams < handle
     end
     
     methods
-        function initialize(obj, hr_m, G0r_dB, pol_Rx, ant_pat_Rx_id, ant_pat_res_deg, orientation_Rx_id, th0_Rx_deg, ph0_Rx_deg)
+        function initialize(obj, hr_m, G0r_dB, pol_Rx, ant_pat_Rx_id, ...
+                ant_pat_struct_Rx, ant_pat_res_deg, orientation_Rx_id, ...
+                th0_Rx_deg, ph0_Rx_deg)
             % INITIALIZE - Initializes all the properties
             
             obj.hr_m = hr_m;
@@ -67,6 +73,7 @@ classdef RxParams < handle
             obj.th0_Rx_deg = th0_Rx_deg;
             obj.ph0_Rx_deg = ph0_Rx_deg;            
             obj.ant_pat_Rx_id = ant_pat_Rx_id;  
+            obj.ant_pat_struct_Rx = ant_pat_struct_Rx;
             obj.ant_pat_res_deg = ant_pat_res_deg;
             
         end
@@ -107,6 +114,10 @@ classdef RxParams < handle
             out = obj.ant_pat_Rx_id;
         end
         
+        function out = get.ant_pat_struct_Rx(obj)
+            out = obj.ant_pat_struct_Rx;        
+        end
+        
         function out = get.ant_pat_res_deg(obj)
             out = obj.ant_pat_res_deg;
         end
@@ -114,6 +125,7 @@ classdef RxParams < handle
         function set_ant_pat_res_deg(obj, val)
             obj.ant_pat_res_deg = val;
         end
+        
     end
     
 end

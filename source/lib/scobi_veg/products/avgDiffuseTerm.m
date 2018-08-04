@@ -32,6 +32,8 @@ Ki = readComplexVar(dir_freqdiff, filename1) ;
 KKi = abs(Ki) ^ 2 / 4 / pi ;
 
 
+disp(strcat('Averaging over ', num2str(Nr), '-realizations'));
+    
 for rr = 1 : Nr
     
     disp(strcat('Realization: ', num2str(rr)))

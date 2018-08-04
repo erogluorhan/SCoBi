@@ -1,10 +1,12 @@
 % Mehmet Kurum
 % April 6, 2017
 
-function realizeAntennaPattern(indRealization)
+function realizeAntennaPattern( Nr_current )
 
 
 %% GET GLOBAL PARAMETERS
+% Simulation Parameters
+Nr = SimParams.getInstance.Nr;
 % Vegetation Parameters
 scat_cal_veg = VegParams.getInstance.scat_cal_veg;
 TYPKND = VegParams.getInstance.TYPKND;
@@ -13,46 +15,52 @@ TYPKND = VegParams.getInstance.TYPKND;
 % Layer parameters
 [Nlayer, Ntype] = size(TYPKND) ;
 
-%% Calculations...
 
-for ii = 1 : Nlayer
+%% REALIZATIONS
+for rr = Nr_current + 1 : Nr % Number of Realization
     
-    for jj = 1 : Ntype
-        
-        Nkind = TYPKND(ii, jj) ;
-        
-        for kk = 1 : Nkind
-            
-            filename = strcat('R', num2str(indRealization), '_L', num2str(ii), '_T',...
-                num2str(jj), '_K', num2str(kk)) ;
-            disp(filename)   
-                                
-            % If the particle is a scatterer
-            if scat_cal_veg(kk, jj, ii) == 1 
-                    
-                tic
-                
-                disp('calculating...')
-
-                % +++++++++++++
-                calc(filename)
-                % +++++++++++++
-
-                disp('done...')
-                
-                toc
-                
-            else
-                
-                disp('skiped...')
-                
-            end                      
-            
-        end % Nkind
-        
-    end % Ntype
     
-end % Nlayer
+    %% CALCULATIONS
+    for ii = 1 : Nlayer
+
+        for jj = 1 : Ntype
+
+            Nkind = TYPKND(ii, jj) ;
+
+            for kk = 1 : Nkind
+
+                filename = strcat('R', num2str(rr), '_L', num2str(ii), '_T',...
+                    num2str(jj), '_K', num2str(kk)) ;
+                disp(filename)   
+
+                % If the particle is a scatterer
+                if scat_cal_veg(kk, jj, ii) == 1 
+
+                    tic
+
+                    disp('calculating...')
+
+                    % +++++++++++++
+                    calc(filename)
+                    % +++++++++++++
+
+                    disp('done...')
+
+                    toc
+
+                else
+
+                    disp('skiped...')
+
+                end                      
+
+            end % Nkind
+
+        end % Ntype
+
+    end % Nlayer
+
+end % Realization
 
 
 
@@ -69,6 +77,7 @@ dir_ant_real = SimulationFolders.getInstance.ant_real;
 % Receiver Parameters
 ant_pat_Rx_id = RxParams.getInstance.ant_pat_Rx_id;
 ant_pat_res_deg = RxParams.getInstance.ant_pat_res_deg;
+ant_pat_struct_Rx = RxParams.getInstance.ant_pat_struct_Rx;
 
 
 %% READ OR LOAD META-DATA
@@ -90,7 +99,10 @@ Npart = length(thrd) ;
 % Antenna Pattern
 disp('loading Antenna Pattern Matrix . . .')
 tic ;
-load([SimulationFolders.getInstance.ant_lookup '\AntPat.mat'], 'g', 'th', 'ph')
+% Receiver Antenna Pattern and Look-up Angles (th and ph)
+g = ant_pat_struct_Rx.g;
+th = ant_pat_struct_Rx.th;
+ph = ant_pat_struct_Rx.ph;
 toc
 
 

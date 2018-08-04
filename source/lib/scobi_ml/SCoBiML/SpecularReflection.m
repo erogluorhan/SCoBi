@@ -6,7 +6,6 @@ function [r0_coh1b, r0_coh2b] = SpecularReflection(r_s)
 
 %% GLOBAL DIRECTORIES
 dir_config = SimulationFolders.getInstance.config;
-dir_ant_lookup = SimulationFolders.getInstance.ant_lookup;
 dir_rot_lookup = SimulationFolders.getInstance.rot_lookup;
 dir_afsa = SimulationFolders.getInstance.afsa;
 
@@ -26,6 +25,7 @@ e_t2 = TxParams.getInstance.e_t2 ;
 % Receiver Parameters
 ant_pat_Rx_id = RxParams.getInstance.ant_pat_Rx_id;
 ant_pat_res_deg = RxParams.getInstance.ant_pat_res_deg;
+ant_pat_struct_Rx = RxParams.getInstance.ant_pat_struct_Rx;
 
 
 %% INITIALIZE REQUIRED PARAMETERS
@@ -34,9 +34,6 @@ g_r0 = [1 0 ; 0 1] ; % ideal
 
 
 %% READ OR LOAD META-DATA
-% Load Real Receiver Antenna Pattern
-load([dir_ant_lookup '\AntPat.mat'], 'G', 'g', 'th', 'ph')
-
 %% Load Transmitter-Receiver Rotation Matrix
 load([dir_rot_lookup '\u_ts.mat'], 'u_ts')
 load([dir_rot_lookup '\u_sr.mat'], 'u_sr')
@@ -54,6 +51,12 @@ filename = 'dKz' ;
 dKz = readComplexVar(dir_afsa, filename) ;
 filename = 'ANGDEG' ;
 ANGDEG = readVar(dir_afsa, filename) ;
+
+
+% Receiver Antenna Pattern and Look-up Angles (th and ph)
+g = ant_pat_struct_Rx.g;
+th = ant_pat_struct_Rx.th;
+ph = ant_pat_struct_Rx.ph;
 
 
 %% CALCULATIONS

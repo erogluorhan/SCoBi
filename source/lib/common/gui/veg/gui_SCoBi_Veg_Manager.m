@@ -178,6 +178,11 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
         % Sync the internal copy of the interface with the GUI
         function syncFromGUI(obj, idEl)
             
+            
+            %% GET GLOBAL DIRECTORIES
+            dir_gui_veg = Directories.getInstance.common_gui_veg;
+            
+            
             if (nargin == 1)
                 idEl = obj.uiIDs.popup_sim_mode;
             end
@@ -307,16 +312,31 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
           end
           
           % If ant_pat_Rx popup value is changed            
-          if sum(intersect(idEl, obj.uiIDs.popup_ant_pat_Rx)) > 0                
+          if sum(intersect(idEl, obj.uiIDs.popup_ant_pat_Rx)) > 0  
+    
+              persistent last_ant_pat_res_Rx_val               
                 
               % If selected ant_pat_Rx is Generalized-Gaussian
               if obj.is_popup_ant_pat_Rx_GG()
+      
+                  if isnumeric( last_ant_pat_res_Rx_val ) && ~isempty(last_ant_pat_res_Rx_val)        
+                      obj.setElVal( obj.uiIDs.edit_ant_pat_res_Rx, num2str(last_ant_pat_res_Rx_val) );
+                  end
 
                   obj.setElStatus([obj.uiGroups.on_popup_ant_pat_Rx_GG], 1, 0); 
 
                   obj.setElStatus([obj.uiGroups.on_popup_ant_pat_Rx_user_defined], 0, 0); 
 
-                  % TO-DO: GUI window for GG                  
+                  % TO-DO: GUI window for GG .id_Rx_GG);            
+
+              % Else if selected ant_pat_Rx is User-defined
+              elseif obj.is_popup_ant_pat_Rx_user_defined()
+  
+                  last_ant_pat_res_Rx_val = str2double( obj.getElVal( obj.uiIDs.edit_ant_pat_res_Rx ) );
+
+                  obj.setElStatus([obj.uiGroups.on_popup_ant_pat_Rx_GG], 0, 0); 
+
+                  obj.setElStatus([obj.uiGroups.on_popup_ant_pat_Rx_user_defined], 1, 0);                  
 
               % Else if selected ant_pat_Rx is Cosine-to-the-power-n
               elseif obj.is_popup_ant_pat_Rx_cos_pow_n()
@@ -326,14 +346,9 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
                   waitfor(msgbox('WARNING: This method is not yet implemented!'));
 
                   % Change the popup value to default GG
-                  obj.setElVal(obj.uiIDs.popup_ant_pat_Rx, Constants.id_Rx_GG);            
-
-              % Else if selected ant_pat_Rx is User-defined
-              elseif obj.is_popup_ant_pat_Rx_user_defined()
-
-                  obj.setElStatus([obj.uiGroups.on_popup_ant_pat_Rx_GG], 0, 0); 
-
-                  obj.setElStatus([obj.uiGroups.on_popup_ant_pat_Rx_user_defined], 1, 0); 
+                  obj.setElVal(obj.uiIDs.popup_ant_pat_Rx, Constants.id_Rx_GG); 
+        
+                  obj.syncFromGUI(obj.uiIDs.popup_ant_pat_Rx);
 
               else
 
@@ -379,6 +394,10 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
                 if length(path)>1 && length(file)>1
                 
                     obj.inputStruct = obj.loadGUIFromInputFile( file, path );
+        
+                    filename = strcat( dir_gui_veg, '/', obj.lastInputFile);
+                    lastInput.lastInputFileName = strcat( path, file );
+                    save(filename, 'lastInput');
                     
                 end
                 
@@ -1030,6 +1049,7 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
         % Initialize specific GUI elements to this class
         function initSpecificGUI(obj)
             
+            
             %% GET GLOBAL DIRECTORIES
             dir_gui_veg = Directories.getInstance.common_gui_veg;
             dir_input_sys = Directories.getInstance.input_sys;
@@ -1473,9 +1493,9 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
         % assign GG params
         if ant_pat_Rx_id == Constants.id_Rx_GG
 
-            inputStruct.hpbw_deg = obj.getElVal(obj.uiIDs.edit_hpbw_deg);
-            inputStruct.SLL_dB	= obj.getElVal(obj.uiIDs.edit_SLL_dB);
-            inputStruct.XPL_dB	= obj.getElVal(obj.uiIDs.edit_XPL_dB);
+            inputStruct.hpbw_deg = str2double( obj.getElVal(obj.uiIDs.edit_hpbw_deg) );
+            inputStruct.SLL_dB	= str2double( obj.getElVal(obj.uiIDs.edit_SLL_dB) );
+            inputStruct.XPL_dB	= str2double( obj.getElVal(obj.uiIDs.edit_XPL_dB) );
 
         elseif ant_pat_Rx_id == Constants.id_Rx_user_defined
 

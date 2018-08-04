@@ -7,7 +7,6 @@ function directTerm
 
 %% GET GLOBAL DIRECTORIES
 dir_config = SimulationFolders.getInstance.config;
-dir_ant_lookup = SimulationFolders.getInstance.ant_lookup;
 dir_rot_lookup = SimulationFolders.getInstance.rot_lookup;
 dir_out_direct = SimulationFolders.getInstance.out_direct;
 
@@ -25,6 +24,7 @@ pol_Tx = TxParams.getInstance.pol_Tx;
 pol_Rx = RxParams.getInstance.pol_Rx;
 G0r_dB = RxParams.getInstance.G0r_dB;
 G0r = convertDecibelToNatural( G0r_dB );
+ant_pat_struct_Rx = RxParams.getInstance.ant_pat_struct_Rx;
 
 
 %% READ OR LOAD META-DATA
@@ -38,14 +38,18 @@ pos_Rx_m = AllPoints_m(:, 4) ;         % Receiver
 filename = 'AngT2R_rf' ;
 AngT2R_rf = readVar( dir_config, filename) ;
 
-% Receiver Antenna Pattern
-load([dir_ant_lookup '\AntPat.mat'], 'g', 'th', 'ph')
-
 % Transmitter-Receiver Rotation Matrix
 load([dir_rot_lookup '\u_tr.mat'], 'u_tr')
 
 
+% Receiver Antenna Pattern and Look-up Angles (th and ph)
+g = ant_pat_struct_Rx.g;
+th = ant_pat_struct_Rx.th;
+ph = ant_pat_struct_Rx.ph;
+
+
 %% CALCULATIONS
+
 % Slant range
 RT_m = pos_Rx_m - pos_Tx_m ;          % Transmitter to Receiver
 rd_m = vectorMagnitude(RT_m) ;    % slant range

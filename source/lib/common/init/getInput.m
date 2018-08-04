@@ -265,7 +265,7 @@ if ant_pat_Rx_id == Constants.id_Rx_GG
     ant_pat_res_deg_Rx = inputStruct.ant_pat_res_deg_Rx;   % Antenna pattern resolution in degrees
     
     % Set GG pattern parameters
-    setRxGGParams( inputStruct );
+    ant_pat_struct_Rx = setRxGGParams( inputStruct, ant_pat_res_deg_Rx );
     
 elseif ant_pat_Rx_id == Constants.id_Rx_user_defined
     
@@ -277,23 +277,26 @@ elseif ant_pat_Rx_id == Constants.id_Rx_user_defined
     ant_pat_res_deg_Rx = [];
     
     % Set GG pattern parameters
-    setRxUserDefinedParams( inputStruct );
+    [ant_pat_struct_Rx, ant_pat_res_deg_Rx] = setRxUserDefinedParams( inputStruct );
   
 % Else if Antenna pattern is Cosine to the power n
 elseif ant_pat_Rx_id == Constants.id_Rx_cos_pow_n 
     
     % Should be implemented when this pattern added
+    ant_pat_struct_Rx = [];
 end
 
 
 %% INITIALIZE
 % Initialize Receiver Parameters
-RxParams.getInstance.initialize( hr_m, G0r_dB, pol_Rx, ant_pat_Rx_id, ant_pat_res_deg_Rx, orientation_Rx_id, th0_Rx_deg, ph0_Rx_deg );
+RxParams.getInstance.initialize( hr_m, G0r_dB, pol_Rx, ant_pat_Rx_id, ...
+                               ant_pat_struct_Rx, ant_pat_res_deg_Rx, ...
+                               orientation_Rx_id, th0_Rx_deg, ph0_Rx_deg );
 
 end
 
 
-function setRxGGParams( inputStruct )
+function ant_pat_struct_Rx = setRxGGParams( inputStruct, ant_pat_res_deg )
     
 % Beamwidth (degrees)
 hpbw_deg = inputStruct.hpbw_deg;      
@@ -307,16 +310,22 @@ XPL_dB = inputStruct.XPL_dB;
 % Initialize Generalized-Gaussian Receiver Parameters
 RxGGParams.getInstance.initialize( hpbw_deg, SLL_dB, XPL_dB );
 
+% Generate the antenna pattern struct
+ant_pat_struct_Rx = RxGGParams.getInstance.calcRxAntPatMatrix( ant_pat_res_deg );
+
 end
 
 
-function setRxUserDefinedParams( inputStruct )
+function [ant_pat_struct_Rx, ant_pat_res_deg] = setRxUserDefinedParams( inputStruct )
 
 % Filename with the full path
 ant_pat_Rx_file = inputStruct.ant_pat_Rx_file;    
 
 % Initialize Generalized-Gaussian Receiver Parameters
 RxUserDefinedParams.getInstance.initialize( ant_pat_Rx_file );
+
+% Generate the antenna pattern struct
+[ant_pat_struct_Rx, ant_pat_res_deg] = RxUserDefinedParams.getInstance.calcRxAntPatMatrix()
 
 end
 
