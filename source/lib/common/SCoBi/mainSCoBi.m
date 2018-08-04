@@ -9,11 +9,6 @@ disp('++++++++++++++++   START: SCoBi MAIN PROGRAM   ++++++++++++++++++++')
 tstart = datetime('now') %#ok<NOPRT,*NASGU>
 
 
-%% GET GLOBAL PARAMETERS
-% Simulation Parameters
-Nr = SimParams.getInstance.Nr;
-
-
 %% INITIALIZE BISTATIC CONFIGURATION AND GROUND
 disp('++++++++   INITIALIZE BISTATIC CONFIGURATION AND GROUND   +++++++++')
 t = datetime('now') %#ok<NOPRT>
@@ -34,9 +29,9 @@ t = datetime('now') %#ok<NOPRT>
 disp( dispMsg );
     
 if ~needForScatPos == Constants.need_for_run.NO
-    for ii = Nr_current + 1 : Nr % Number of Realization
-        generateScatPos(ii, Nr_current) ;
-    end
+    
+        generateScatPos( Nr_current );
+        
 end
 
 %% CALCULATE SCATTERING AMPLITUDES
@@ -48,9 +43,9 @@ t = datetime('now') %#ok<NOPRT,*NASGU>
 disp( dispMsg );
 
 if needForFScatAmp ~= Constants.need_for_run.NO
-    for ii = Nr_current + 1 : Nr % Number of Realization
-        calcFScatAmp(ii) ;
-    end
+
+    calcFScatAmp( Nr_current );
+
 end
 
 
@@ -74,19 +69,6 @@ if needForPropagation == Constants.need_for_run.FULL
 end
 
 
-%% CALCULATE RECEIVER ANTENNA PATTERN MATRIX
-disp('++++++++++   CALCULATE RECEIVER ANTENNA PATTERN MATRIX   ++++++++++') 
-t = datetime('now') %#ok<NOPRT>
-
-[needForRxAntPatMatrix, dispMsg] = ParamsManager.isToCalcRxAntPatMatrix();
-
-disp( dispMsg );
-
-if needForRxAntPatMatrix == Constants.need_for_run.FULL
-    calcRxAntPatMatrix;
-end
-
-
 %% CALCULATE RECEIVER ANTENNA PATTERN REALIZATIONS
 disp('+++++++   CALCULATE RECEIVER ANTENNA PATTERN REALIZATIONS   +++++++') 
 t = datetime('now') %#ok<NOPRT>
@@ -96,9 +78,9 @@ t = datetime('now') %#ok<NOPRT>
 disp( dispMsg );
 
 if needForRealizeAntennaPattern ~= Constants.need_for_run.NO
-    for ii = Nr_current + 1 : Nr % Number of Realization
-        realizeAntennaPattern(ii) ;
-    end
+
+    realizeAntennaPattern( Nr_current );
+
 end
 
 
@@ -112,7 +94,9 @@ disp( dispMsg );
 
 % TO-DO: may be shrinked more if diffuse & specular will not be calculated
 if needForCalcRotationMatrices == Constants.need_for_run.FULL
+    
     calcRotationMatrices ;
+    
 end
 
 
@@ -125,9 +109,9 @@ t = datetime('now') %#ok<NOPRT>
 disp( dispMsg );
 
 if needForRealizeRotations ~= Constants.need_for_run.NO
-    for ii = Nr_current + 1 : Nr % Number of Realization
-        realizeRotation(ii) ;
-    end
+
+    realizeRotation( Nr_current );
+
 end
 
 
@@ -140,8 +124,11 @@ t = datetime('now') %#ok<NOPRT,*NASGU>
 disp( dispMsg );
 
 if needForDirectTerm == Constants.need_for_run.FULL
+    
     directTerm ;
+    
 end
+
 
 
 %% CALCULATE SPECULAR CONTRIBUTION
@@ -153,7 +140,9 @@ t = datetime('now') %#ok<NOPRT,*NASGU>
 disp( dispMsg );
 
 if needForSpecularTerm == Constants.need_for_run.FULL
+    
     specularTerm ;
+    
 end
 
 
@@ -167,13 +156,11 @@ disp( dispMsg );
 
 if needForDiffuseTerm == Constants.need_for_run.FULL
 
-    for ii = 1 : Nr   % Number of Realization
-        diffuseTerm(ii) ;
-    end
+    diffuseTerm();
 
     % Averaging over realizations
-    disp(strcat('Averaging over ', num2str(Nr), '-realizations'))
     avgDiffuseTerm ;
+    
 end
 
 %% end of the program

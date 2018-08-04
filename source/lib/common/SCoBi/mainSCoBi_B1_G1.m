@@ -79,19 +79,6 @@ if needForPropagation == Constants.need_for_run.FULL
 end
 
 
-%% CALCULATE RECEIVER ANTENNA PATTERN MATRIX
-disp('++++++++++   CALCULATE RECEIVER ANTENNA PATTERN MATRIX   ++++++++++') 
-t = datetime('now') %#ok<NOPRT>
-
-[needForRxAntPatMatrix, dispMsg] = ParamsManager.isToCalcRxAntPatMatrix();
-
-disp( dispMsg );
-
-if needForRxAntPatMatrix == Constants.need_for_run.FULL
-    calcRxAntPatMatrix ;
-end
-
-
 %% CALCULATE RECEIVER ANTENNA PATTERN REALIZATIONS
 disp('+++++++   CALCULATE RECEIVER ANTENNA PATTERN REALIZATIONS   +++++++') 
 t = datetime('now') %#ok<NOPRT>

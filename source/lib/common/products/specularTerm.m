@@ -8,7 +8,6 @@ function specularTerm
 
 %% GET GLOBAL DIRECTORIES
 dir_config = SimulationFolders.getInstance.config;
-dir_ant_lookup = SimulationFolders.getInstance.ant_lookup ;
 dir_rot_lookup = SimulationFolders.getInstance.rot_lookup ;
 dir_out_specular = SimulationFolders.getInstance.out_specular;
 dir_out_specular_tuple = SimulationFolders.getInstance.out_specular_tuple;
@@ -21,6 +20,7 @@ G0r = convertDecibelToNatural( G0r_dB );
 pol_Rx = RxParams.getInstance.pol_Rx;
 ant_pat_Rx_id = RxParams.getInstance.ant_pat_Rx_id;
 ant_pat_res_deg = RxParams.getInstance.ant_pat_res_deg;
+ant_pat_struct_Rx = RxParams.getInstance.ant_pat_struct_Rx;
 % Transmitter Parameters
 EIRP_dB = TxParams.getInstance.EIRP_dB;
 EIRP = convertDecibelToNatural( EIRP_dB );
@@ -32,9 +32,6 @@ pol_Tx = TxParams.getInstance.pol_Tx;
 
 
 %% READ OR LOAD META-DATA
-% Load Receiver Antenna Pattern
-load([dir_ant_lookup '\AntPat.mat'], 'G', 'g', 'th', 'ph')
-
 % Read All Positions
 % AllPoints_m = [pos_Tx_m, pos_TxI_m, pos_SP_m, pos_Rx_m, pos_RxI_m, pos_Gnd_m, pos_B_Rx_m, pos_FP_Rx_m, pos_FZ_m] ;
 filenamex = 'AllPoints_m' ;
@@ -56,6 +53,11 @@ load([dir_rot_lookup '\u_sr.mat'], 'u_sr')
 
 
 %% INITIALIZE REQUIRED PARAMETERS
+% Receiver Antenna Pattern and Look-up Angles (th and ph)
+g = ant_pat_struct_Rx.g;
+th = ant_pat_struct_Rx.th;
+ph = ant_pat_struct_Rx.ph;
+
 % Transmitter Pol State
 E_t1 = [1; 0; 0; 0] ;
 E_t2 = [0; 0; 0; 1] ;

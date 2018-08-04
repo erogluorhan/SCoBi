@@ -29,7 +29,6 @@ observation
 pol
 config
 ant
-ant_lookup
 ant_real
 
 rot
@@ -305,8 +304,7 @@ elseif ant_pat_Rx_id == Constants.id_Rx_user_defined
 
 end
 
-obj.ant = strcat(obj.th0_deg, '\', 'ANT\', FolderNameAnt) ;            
-obj.ant_lookup = strcat(obj.ant, '\', 'LOOK-UP') ;            
+obj.ant = strcat(obj.th0_deg, '\', 'ANT\', FolderNameAnt) ;     
 obj.ant_real = strcat(obj.ant, '\', 'REALIZATION') ;
 
 
@@ -489,10 +487,6 @@ end
             %% Antenna
             if ~exist(obj.ant, 'dir')
                 mkdir(obj.ant)
-            end
-
-            if ~exist(obj.ant_lookup, 'dir')
-                mkdir(obj.ant_lookup)
             end
 
             if ~exist(obj.ant_real, 'dir')
@@ -719,10 +713,6 @@ end
         
         function out = get.ant(obj)
             out = obj.ant;
-        end 
-        
-        function out = get.ant_lookup(obj)
-            out = obj.ant_lookup;
         end 
         
         function out = get.ant_real(obj)

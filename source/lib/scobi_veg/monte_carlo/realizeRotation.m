@@ -1,55 +1,65 @@
 % Mehmet Kurum
 % April 6, 2017
 
-function realizeRotation(indRealization)
+function realizeRotation( Nr_current )
+
 
 %% GET GLOBAL PARAMETERS
+% Simulation Parameters
+Nr = SimParams.getInstance.Nr;
 % Vegetation Parameters
 scat_cal_veg = VegParams.getInstance.scat_cal_veg;
 TYPKND = VegParams.getInstance.TYPKND;
 
 
-%% CALCULATIONS
 % Layer parameters
 [Nlayer, Ntype] = size(TYPKND) ;
 
-for ii = 1 : Nlayer
-    
-    for jj = 1 : Ntype
-        
-        Nkind = TYPKND(ii, jj) ;
-        
-        for kk = 1 : Nkind
-            
-            filename = strcat('R', num2str(indRealization), '_L', num2str(ii), '_T',...
-                num2str(jj), '_K', num2str(kk)) ;
-            disp(filename)           
-                      
-            % If the particle is a scatterer
-            if scat_cal_veg(kk, jj, ii) == 1
-                
-                tic ;
-                
-                disp('calculating...')
 
-                calc(filename)
-
-                disp('done...')
-                
-                toc
-                
-            else
-                
-                % do not calculate
-                disp('skiped...')
-                
-            end              
-            
-        end % Nkind
-        
-    end % Ntype
+%% REALIZATIONS
+for rr = Nr_current + 1 : Nr   % Number of Realization
     
-end % Nlayer
+    
+    %% CALCULATIONS
+    for ii = 1 : Nlayer
+
+        for jj = 1 : Ntype
+
+            Nkind = TYPKND(ii, jj) ;
+
+            for kk = 1 : Nkind
+
+                filename = strcat('R', num2str(rr), '_L', num2str(ii), '_T',...
+                    num2str(jj), '_K', num2str(kk)) ;
+                disp(filename)           
+
+                % If the particle is a scatterer
+                if scat_cal_veg(kk, jj, ii) == 1
+
+                    tic ;
+
+                    disp('calculating...')
+
+                    calc(filename)
+
+                    disp('done...')
+
+                    toc
+
+                else
+
+                    % do not calculate
+                    disp('skiped...')
+
+                end              
+
+            end % Nkind
+
+        end % Ntype
+
+    end % Nlayer
+
+end % Realization
 
 
 end
@@ -66,6 +76,7 @@ dir_rot_real = SimulationFolders.getInstance.rot_real ;
 % Receiver Parameters
 ant_pat_Rx_id = RxParams.getInstance.ant_pat_Rx_id;
 ant_pat_res_deg = RxParams.getInstance.ant_pat_res_deg;
+ant_pat_struct_Rx = RxParams.getInstance.ant_pat_struct_Rx;
 
 
 %% READ OR LOAD META-DATA
@@ -84,9 +95,6 @@ toc
 
 Npart = length(thrd) ;
 
-% Antenna Pattern and Lookup Angles (th and ph)
-load([SimulationFolders.getInstance.ant_lookup '\AntPat.mat'], 'th', 'ph')
-
 % Realization of Rotation matrices
 disp('loading Rotation Matrices . . .')
 tic ;
@@ -103,6 +111,11 @@ load([dir_rot_lookup '\u_tr.mat'], 'u_tr')
 % % load([dir_rot_lookup '\U_ts.mat'], 'U_ts')
 % % load([dir_rot_lookup '\U_tr.mat'], 'U_tr')
 toc
+
+
+% Receiver Antenna Pattern and Look-up Angles (th and ph)
+th = ant_pat_struct_Rx.th;
+ph = ant_pat_struct_Rx.ph;
 
 
 if ant_pat_Rx_id == Constants.id_Rx_user_defined
