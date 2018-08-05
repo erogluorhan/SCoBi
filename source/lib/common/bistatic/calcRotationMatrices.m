@@ -18,39 +18,17 @@ pol_Rx = RxParams.getInstance.pol_Rx;
 ant_pat_struct_Rx = RxParams.getInstance.ant_pat_struct_Rx;
 % Ground Parameters
 polG = GndParams.getInstance.polG;
-
-
-%% READ AND LOAD META-DATA
-% Propagation Vectors
-% idn -  propagation vector (i_d^-)
-% isn - propagation vector (i_s^-)
-% isp - propagation vector (i_s^+)
-% osp - propagation vector (o_s^+)
-% osn - propagation vector (o_s^-)
-filenamex = 'idn' ;
-idn = readVar(dir_config, filenamex) ;
-filenamex = 'isn' ;
-isn = readVar(dir_config, filenamex) ;
-filenamex = 'osp' ;
-osp = readVar(dir_config, filenamex) ;
-isp = osp ;
-
+% Bistatic Parameters
+idn = BistaticParams.getInstance.idn;  % propagation vector (i_d^-)
+isn = BistaticParams.getInstance.isn;  % propagation vector (i_s^-)
+osp = BistaticParams.getInstance.osp;  % propagation vector (o_s^+)
+isp = osp;                             % propagation vector (i_s^+)
 % Transformations
-filenamex = 'Tgs' ;
-Tgs = readVar(dir_config, filenamex) ;
-filenamex = 'Tgr' ;
-Tgr = readVar(dir_config, filenamex) ;
-filenamex = 'TgrI' ;
-TgrI = readVar(dir_config, filenamex) ;
-filenamex = 'Tgt' ;
-Tgt = readVar(dir_config, filenamex) ;
-filenamex = 'TgtI' ;
-TgtI = readVar(dir_config, filenamex) ;
-
-
-% Polarization Definitions
-% antenna polarizations = Y, X, R, L
-% ground polarizations = H (phi), V (theta)
+Tgs = BistaticParams.getInstance.Tgs;
+Tgr = BistaticParams.getInstance.Tgr;
+TgrI = BistaticParams.getInstance.TgrI;
+Tgt = BistaticParams.getInstance.Tgt;
+TgtI = BistaticParams.getInstance.TgtI;
 
 
 %% CALCULATIONS

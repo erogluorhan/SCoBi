@@ -29,24 +29,13 @@ g_t = TxParams.getInstance.g_t ; % ideal
 e_t1 = TxParams.getInstance.e_t1 ; 
 e_t2 = TxParams.getInstance.e_t2 ;
 pol_Tx = TxParams.getInstance.pol_Tx;
+% Bistatic Parameters
+AllPoints_m = BistaticParams.getInstance.AllPoints_m;
+AngS2R_rf = BistaticParams.getInstance.AngS2R_rf; % SP->Rx Rotation Angle
+AngT2S_sf = BistaticParams.getInstance.AngT2S_sf; % Tx->SP Rotation Angle
 
 
 %% READ OR LOAD META-DATA
-% Read All Positions
-% AllPoints_m = [pos_Tx_m, pos_TxI_m, pos_SP_m, pos_Rx_m, pos_RxI_m, pos_Gnd_m, pos_B_Rx_m, pos_FP_Rx_m, pos_FZ_m] ;
-filenamex = 'AllPoints_m' ;
-AllPoints_m = readVar(dir_config, filenamex) ;
-pos_Tx_m = AllPoints_m(:, 1) ;        % Transmitter position
-pos_SP_m = AllPoints_m(:, 3) ;       % Specular point
-pos_Rx_m = AllPoints_m(:, 4) ;        % Receiver position
-
-% Read SP-to-Rec Rotation Angle
-filename = 'AngS2R_rf' ;
-AngS2R_rf = readVar(dir_config, filename) ;
-% Read Sat-to-SP Rotation Angle
-filename = 'AngT2S_sf' ;
-AngT2S_sf = readVar(dir_config, filename) ;
-
 % Transmitter-Receiver Rotation Matrix
 load([dir_rot_lookup '\u_ts.mat'], 'u_ts')
 load([dir_rot_lookup '\u_sr.mat'], 'u_sr')
@@ -69,6 +58,11 @@ g_r0 = [1 0 ; 0 1] ; % ideal
 
 
 %% CALCULATIONS
+% AllPoints_m = [pos_Tx_m, pos_TxI_m, pos_SP_m, pos_Rx_m, pos_RxI_m, pos_Gnd_m, pos_B_Rx_m, pos_FP_Rx_m, pos_FZ_m] ;
+pos_Tx_m = AllPoints_m(:, 1) ;        % Transmitter position
+pos_SP_m = AllPoints_m(:, 3) ;       % Specular point
+pos_Rx_m = AllPoints_m(:, 4) ;        % Receiver position
+
 % Slant Range
 ST = pos_SP_m - pos_Tx_m ;         % Transmitter to Specular
 r_st = vectorMagnitude(ST) ;  % slant range

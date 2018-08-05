@@ -25,22 +25,19 @@ pol_Rx = RxParams.getInstance.pol_Rx;
 G0r_dB = RxParams.getInstance.G0r_dB;
 G0r = convertDecibelToNatural( G0r_dB );
 ant_pat_struct_Rx = RxParams.getInstance.ant_pat_struct_Rx;
+% Bistatic Parameters
+AllPoints_m = BistaticParams.getInstance.AllPoints_m;
+AngT2R_rf = BistaticParams.getInstance.AngT2R_rf;
 
 
 %% READ OR LOAD META-DATA
-% pos_FP_Rx_m: center of footprint, pos_FZ_m: center of fresnel zone
-% AllPoints_m = [pos_Tx_m, pos_TxI_m, pos_SP_m, pos_Rx_m, pos_RxI_m, pos_Gnd_m, pos_B_Rx_m, pos_FP_Rx_m, pos_FZ_m] ;
-filenamex = 'AllPoints_m' ;
-AllPoints_m = readVar( dir_config, filenamex );
-pos_Tx_m = AllPoints_m(:, 1) ;        % Transmitter
-pos_Rx_m = AllPoints_m(:, 4) ;         % Receiver
-
-filename = 'AngT2R_rf' ;
-AngT2R_rf = readVar( dir_config, filename) ;
-
 % Transmitter-Receiver Rotation Matrix
 load([dir_rot_lookup '\u_tr.mat'], 'u_tr')
 
+
+% AllPoints_m = [pos_Tx_m, pos_TxI_m, pos_SP_m, pos_Rx_m, pos_RxI_m, pos_Gnd_m, pos_B_Rx_m, pos_FP_Rx_m, pos_FZ_m] ;
+pos_Tx_m = AllPoints_m(:, 1) ;        % Transmitter
+pos_Rx_m = AllPoints_m(:, 4) ;         % Receiver
 
 % Receiver Antenna Pattern and Look-up Angles (th and ph)
 g = ant_pat_struct_Rx.g;

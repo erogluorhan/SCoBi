@@ -11,12 +11,11 @@ scat_cal_veg = VegParams.getInstance.scat_cal_veg;
 TYPKND = VegParams.getInstance.TYPKND;
 dsty = VegParams.getInstance.dsty;
 dim3_m = VegParams.getInstance.dim3_m;
+% Bistatic Parameters
+AllPoints_m = BistaticParams.getInstance.AllPoints_m;
 
 
-%% READ META-DATA
-% All Positions
 % AllPoints_m = [pos_Tx_m, pos_TxI_m, pos_SP_m, pos_Rx_m, pos_RxI_m, pos_Gnd_m, pos_B_Rx_m, pos_FP_Rx_m, pos_FZ_m] ;
-AllPoints_m = readVar(dir_config, 'AllPoints_m') ;
 pos_Tx_m = AllPoints_m(:, 1) ;          % Transmitter position
 ht = pos_Tx_m(3) ;                    % Transmitter height
 
@@ -92,10 +91,8 @@ hr_m = RxParams.getInstance.hr_m ;     % Receiver height
 % Vegetation Parameters
 TYPES = VegParams.getInstance.TYPES;
 dim_layers_m = VegParams.getInstance.dim_layers_m;
-
-
-%% READ META-DATA
-Tgs = readVar( dir_config, 'Tgs' ) ;   % G -> SP
+% Bistatic Parameters
+Tgs = BistaticParams.getInstance.Tgs;   % Transformation Gnd -> Specular
 
 
 %% CALCULATIONS

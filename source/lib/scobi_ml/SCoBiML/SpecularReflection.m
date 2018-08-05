@@ -26,6 +26,9 @@ e_t2 = TxParams.getInstance.e_t2 ;
 ant_pat_Rx_id = RxParams.getInstance.ant_pat_Rx_id;
 ant_pat_res_deg = RxParams.getInstance.ant_pat_res_deg;
 ant_pat_struct_Rx = RxParams.getInstance.ant_pat_struct_Rx;
+% Bistatic Parameters
+AngS2R_rf = BistaticParams.getInstance.AngS2R_rf; % SP->Rx Rotation Angle
+AngT2S_sf = BistaticParams.getInstance.AngT2S_sf; % Tx->SP Rotation Angle
 
 
 %% INITIALIZE REQUIRED PARAMETERS
@@ -37,14 +40,8 @@ g_r0 = [1 0 ; 0 1] ; % ideal
 %% Load Transmitter-Receiver Rotation Matrix
 load([dir_rot_lookup '\u_ts.mat'], 'u_ts')
 load([dir_rot_lookup '\u_sr.mat'], 'u_sr')
+ 
 
-% Read SP-to-Rec Rotation Angle
-filename = 'AngS2R_rf' ;
-AngS2R_rf = readVar(dir_config, filename) ;
-
-% Read Sat-to-SP Rotation Angle
-filename = 'AngT2S_sf' ;
-AngT2S_sf = readVar(dir_config, filename) ;
 
 % Read Incremental Propagation Constant
 filename = 'dKz' ;

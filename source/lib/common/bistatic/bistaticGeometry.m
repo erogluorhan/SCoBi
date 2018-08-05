@@ -1,7 +1,10 @@
 %% Mehmet Kurum
 % Feb 25, 2017 
 
-function bistaticGeometry( rd_m )
+function [rd_m, idn, isn, osp, osn, Tgs, Tgr, TgrI, AntRotZ_Rx, ...
+          AntRotY_Rx, AntRot_Rx, AntRotZ_Tx, ellipse_FP_Rx_m, ...
+          AllPoints_m, AngT2R_rf, AngS2R_rf, AngT2S_sf] = bistaticGeometry
+
 
 %% GET GLOBAL DIRECTORIES
 dir_config = SimulationFolders.getInstance.config;
@@ -10,16 +13,18 @@ dir_config = SimulationFolders.getInstance.config;
 %% GET GLOBAL PARAMETERS
 % Simulation Parameters
 Nfz = SimParams.getInstance.Nfz;
-
+% Transmitter Parameters
+r_Tx_m = TxParams.getInstance.r_Tx_m;
 % Dynamic Parameters
 th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
 th0_Tx_deg = th0_Tx_list_deg( ParamsManager.index_Th );   % Currrent theta ( Incidence Angle )
 th0_Tx_rad = degtorad(th0_Tx_deg) ;
+el0_Tx_list_deg = DynParams.getInstance.el0_Tx_list_deg;
+el0_Tx_deg = el0_Tx_list_deg( ParamsManager.index_Th );
 ph0_Tx_list_deg = DynParams.getInstance.ph0_Tx_list_deg;
 ph0_Tx_deg = ph0_Tx_list_deg( ParamsManager.index_Ph );   % Current phi (Azimuth Angle (standard spherical coords) of transmitter's position)
 ph0_Tx_deg = 90 - ph0_Tx_deg ;                            % If it was the incoming signal's azimuth, we would add 180 degrees
 ph0_Tx_rad = degtorad(ph0_Tx_deg) ;
-
 % Receiver Parameters
 hr_m = RxParams.getInstance.hr_m;                   % Receiver altitude
 ant_pat_Rx_id = RxParams.getInstance.ant_pat_Rx_id; % Receiver antenna pattern generation method (Look at Constants.Rx_ant_pats)
@@ -83,6 +88,8 @@ AntRotZ_Tx = [ cos(ph0_Tx_rad), -sin(ph0_Tx_rad), 0 ;
 
 
 % Transmitter position
+% Slant range (Approximated)
+rd_m = sqrt( r_Tx_m ^ 2 - (Constants.re * cos( deg2rad( el0_Tx_deg ) )) ^ 2) - Constants.re * sin( deg2rad( el0_Tx_deg ) ) ;
 % T : Transmitter Antenna position
 pos_Tx_m = rd_m * [sin(th0_Tx_rad) * cos(ph0_Tx_rad); sin(th0_Tx_rad) * sin(ph0_Tx_rad); cos(th0_Tx_rad)] ;
 ht_m = pos_Tx_m(3) ;
@@ -263,77 +270,11 @@ AngT2S_sf = [th0; convertAngleTo360Range( ph0 ) ]  ;
 
 
 %% SAVE ALL
-% idn -  propagation vector (i_d^-)
-filename = 'idn' ;
-writeVar(dir_config, filename, idn) ;
-
-% isn - propagation vector (i_s^-)
-filename = 'isn' ;
-writeVar(dir_config, filename, isn) ;
-
-% osp - propagation vector (o_s^+)
-filename = 'osp' ;
-writeVar(dir_config, filename, osp) ;
-
-% osn - propagation vector (o_s^-)
-filename = 'osn' ;
-writeVar(dir_config, filename, osn) ;
-
-% Tgs - Transformation G -> S
-filename = 'Tgs' ;
-writeVar(dir_config, filename, Tgs) ;
-
-% Tgr - Transformation G -> R
-filename = 'Tgr' ;
-writeVar(dir_config, filename, Tgr) ;
-
-% TgrI - Transformation G -> RI
-filename = 'TgrI' ;
-writeVar(dir_config, filename, TgrI) ;
-
-% AntRotZ_Rx - Receiver Rotation about z-axis (Azimuth rotation)
-filename = 'AntRotZ_Rx' ;
-writeVar(dir_config, filename, AntRotZ_Rx) ;
-
-% AntRotY_Rx - Receiver Rotation about y-axis (Elevation rotation)
-filename = 'AntRotY_Rx' ;
-writeVar(dir_config, filename, AntRotY_Rx) ;
-
-% AntRot_Rx  - Receiver Rotation in both azimuth and elevation
-filename = 'AntRot_Rx' ;
-writeVar(dir_config, filename, AntRot_Rx) ;
-
-% AntRotZ_Tx -  Rotation matrix that describes azimuth direction of transmitted signal.
-filename = 'AntRotZ_Tx' ;
-writeVar(dir_config, filename, AntRotZ_Tx) ;
-
 % ellipses_FZ_m - specular point Fresnel zone [major and minor axes]
 filename = 'ellipses_FZ_m' ;
 writeVar(dir_config, filename, ellipses_FZ_m) ;
 
 filename = 'ellipse_centers_FZ_m' ;
 writeVar(dir_config, filename, ellipse_centers_FZ_m) ;
-
-% ellipse_FP_Rx_m - receiver footprint ellipse [major and minor axes]
-filename = 'ellipse_FP_Rx_m' ;
-writeVar(dir_config, filename, ellipse_FP_Rx_m) ;
-
-% AllPoints_m - pos_Tx_m, pos_SP_m, pos_Rx_m, pos_Gnd_m, pos_B_Rx_m, pos_FP_Rx_m, pos_FZ_m in ground (refrence) frame (G)
-filename = 'AllPoints_m' ;
-writeVar(dir_config, filename, AllPoints_m) ;
-
-% AngT2R_rf - Incidence angle (T -> R) in receiver frame (R)
-filename = 'AngT2R_rf' ;
-writeVar(dir_config, filename, AngT2R_rf) ;
-
-% AngS2R_rf - Incidence angle (S -> R) in receiver frame (R)
-filename = 'AngS2R_rf' ;
-writeVar(dir_config, filename, AngS2R_rf) ;
-
-% AngT2S_sf - Incidence angle (T -> S) in specular frame (S)
-filename = 'AngT2S_sf' ;
-writeVar(dir_config, filename, AngT2S_sf) ;
-
-
     
 end

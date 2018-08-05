@@ -2,7 +2,7 @@
 % April 6, 2017
 
 
-function satGeometryManuel(rd_m)
+function [Tgt, TgtI] = satGeometryManuel
 
 %%GET GLOBAL DIRECTORIES
 dir_config = SimulationFolders.getInstance.config;
@@ -72,20 +72,5 @@ Tgt = [uxt ; uyt ; uzt] ; % G -> T
 % Transformation matrix for transforming a vector from the ground frame
 % to Image transmitter system
 TgtI = [uxtI ; uytI ; uztI] ; % G -> TI
-
-
-%% SAVE ALL
-% Tgt - Transformation G -> T
-filename = 'Tgt' ;
-writeVar(dir_config, filename, Tgt) ;
-
-% TgtI - Transformation G -> TI
-filename = 'TgtI' ;
-writeVar(dir_config, filename, TgtI) ;
-
-% rd_m : slant range - distance between ground and Transmitter
-filename = 'rd_m' ;
-writeVar(dir_config, filename, rd_m) ;
-
 
 end
