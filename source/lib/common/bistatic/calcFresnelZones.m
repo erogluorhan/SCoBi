@@ -23,10 +23,7 @@ lambda_m = Constants.c / f_Hz ;     % Wavelength
 % TxParams.getInstance.el0_Tx_deg = 36.3287 ;        % Elevation angle
 th0_Tx_rad = degtorad(th0_Tx_deg) ;
 
-% Transmitter Height with respect to local planar ground plane
-% ht_m = rd * cos(th0_Tx_rad) ;
 % Transmitter/Reciever ground range
-% Dist_m = rd * sin(th0_Tx_rad) ;
 Dist_m = ht_m * tan(th0_Tx_rad) ;
 
 % Distance of specular point away from the receiver ground projection.

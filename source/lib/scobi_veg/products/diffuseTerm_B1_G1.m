@@ -31,14 +31,11 @@ G0r = convertDecibelToNatural( G0r_dB );
 % Vegetation Parameters
 scat_cal_veg = VegParams.getInstance.scat_cal_veg ;
 TYPKND = VegParams.getInstance.TYPKND;
+% Bistatic Parameters
+AllPoints_m = BistaticParams.getInstance.AllPoints_m;
 
 
-%% READ OR LOAD META-DATA
-% Positions relative to ground
-% pos_FP_Rx_m: center of footprint, pos_FZ_m: center of fresnel zone
 % AllPoints_m = [pos_Tx_m, pos_TxI_m, pos_SP_m, pos_Rx_m, pos_RxI_m, pos_Gnd_m, pos_B_Rx_m, pos_FP_Rx_m, pos_FZ_m] ;
-filenamex = 'AllPoints_m' ;
-AllPoints_m = readVar(dir_config, filenamex) ;
 pos_Tx_m = AllPoints_m(:, 1) ; % - d_layer_m ;        % Transmitter with respect to veg top
 pos_SP_m = AllPoints_m(:, 3) ;       % Specular point  (at top of vegetation)
 pos_Rx_m = AllPoints_m(:, 4) ; % - d_layer_m ;        % Receiver with respect to veg top

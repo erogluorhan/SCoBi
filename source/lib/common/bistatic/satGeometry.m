@@ -2,7 +2,7 @@
 % Feb 25, 2017
 
 
-function [rd, PH0_deg, EL0_deg] ...
+function [rd, PH0_deg, EL0_deg, Tgt, TgtI] ...
     = satGeometry( LatSd, LonSd, LatBd, LonBd, LatGd, LonGd)
 
 %% GET GLOBAL DIRECTORIES

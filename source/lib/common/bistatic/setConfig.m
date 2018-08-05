@@ -5,22 +5,20 @@
 
 function setConfig
 
-%% GET GLOBAL PARAMETERS
-% Transmitter Parameters
-r_Tx_m = TxParams.getInstance.r_Tx_m;
-% Dynamic Parameters
-el0_Tx_list_deg = DynParams.getInstance.el0_Tx_list_deg;
-el0_Tx_deg = el0_Tx_list_deg( ParamsManager.index_Th );
-
-% Transmitter Geometry
-rd_m = sqrt( r_Tx_m ^ 2 - (Constants.re * cos( deg2rad( el0_Tx_deg ) )) ^ 2) - Constants.re * sin( deg2rad( el0_Tx_deg ) ) ; % ~ Slant range
 
 %% TO-DO: Work on the realistic SatGeo
 %% TRANSMITTER GEOMETRY
-satGeometryManuel(rd_m) ;
+[Tgt, TgtI] = satGeometryManuel();
+
 
 %% BISTATIC GEOMETRY
-bistaticGeometry( rd_m ) ;
+[rd_m, idn, isn, osp, osn, Tgs, Tgr, TgrI, AntRotZ_Rx, AntRotY_Rx, ...
+    AntRot_Rx, AntRotZ_Tx, ellipse_FP_Rx_m, AllPoints_m, AngT2R_rf, ...
+    AngS2R_rf, AngT2S_sf] = bistaticGeometry();
 
+
+BistaticParams.getInstance.initialize(rd_m, idn, isn, osp, osn, Tgt, ...
+    TgtI, Tgs, Tgr, TgrI, AntRotZ_Rx, AntRotY_Rx, AntRot_Rx, AntRotZ_Tx, ...
+    ellipse_FP_Rx_m, AllPoints_m, AngT2R_rf, AngS2R_rf, AngT2S_sf);
 
 end

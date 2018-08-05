@@ -56,7 +56,11 @@ dir_config = SimulationFolders.getInstance.config;
 
 
 %% GET GLOBAL PARAMETERS
+% Simulation Parameters
 Nfz = SimParams.getInstance.Nfz;
+% Bistatic Parameters
+Tgs = BistaticParams.getInstance.Tgs;   % Transformation Gnd -> Specular
+AntRotZ_Tx = BistaticParams.getInstance.AntRotZ_Tx;   % Transmitter Rotation along Z-Axis
 
 
 %% READ META-DATA
@@ -69,12 +73,6 @@ fileName = 'ellipses_FZ_m' ;
 ellipses_FZ_m = readVar(dir_config, fileName) ;
 fileName = 'ellipse_centers_FZ_m' ;
 ellipse_centers_FZ_m = readVar(dir_config, fileName) ;
-% Transmitter Rotation along Z-Axis
-fileName = 'AntRotZ_Tx' ;
-AntRotZ_Tx = readVar(dir_config, fileName) ;
-% Ground to Specular Frame Transformation
-fileName = 'Tgs' ;
-Tgs = readVar(dir_config, fileName) ;
 
 
 %% FIGURE

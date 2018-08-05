@@ -13,12 +13,17 @@ dir_observation = SimulationFolders.getInstance.observation ;
 dir_distance = SimulationFolders.getInstance.distance ;
 
 
-%% READ META-DATA (TRANSFORMATIONS AND CONFIGURATION)
-% All Positions
-% AllPoints_m = [pos_Tx_m, pos_TxI_m, pos_SP_m, pos_Rx_m, pos_RxI_m, pos_Gnd_m, pos_B_Rx_m, pos_FP_Rx_m, pos_FZ_m] ;
-filenamex = 'AllPoints_m' ;
-AllPoints_m = readVar(dir_config, filenamex) ;
+%% GET GLOBAL PARAMETERS
+% Bistatic Parameters
+isn = BistaticParams.getInstance.isn;   % propagation vector (i_s^-)
+osp = BistaticParams.getInstance.osp;   % propagation vector (i_s^+=o_s^+)
+Tgs = BistaticParams.getInstance.Tgs;   % Transformation Gnd -> Specular
+Tgr = BistaticParams.getInstance.Tgr;   % Transformation Gnd -> Rx
+TgrI = BistaticParams.getInstance.TgrI; % Transformation Gnd -> Rx Image
+AllPoints_m = BistaticParams.getInstance.AllPoints_m;
 
+
+% AllPoints_m = [pos_Tx_m, pos_TxI_m, pos_SP_m, pos_Rx_m, pos_RxI_m, pos_Gnd_m, pos_B_Rx_m, pos_FP_Rx_m, pos_FZ_m]
 pos_Tx_m = AllPoints_m(:, 1);        % Transmitter
 pos_TxI_m = AllPoints_m(:, 2);        % Transmitter Image
 
@@ -26,18 +31,7 @@ pos_Rx_m = AllPoints_m(:, 4);        % Receiver
 pos_RxI_m = AllPoints_m(:, 5);       % Receiver Image
 
 % Incident unit vectors (only in one direction - transmitter is far away)
-filenamex = 'isn' ;
-isn = readVar(dir_config, filenamex) ;   % propagation vector (i_s^-)
-filenamex = 'osp' ;
-isp = readVar(dir_config, filenamex) ;   % propagation vector (i_s^+=o_s^+)
-
-% Transformations
-filenamex = 'Tgs' ;
-Tgs = readVar(dir_config, filenamex) ;   % G -> S
-filenamex = 'Tgr' ;
-Tgr = readVar(dir_config, filenamex) ;   % G -> R
-filenamex = 'TgrI' ;
-TgrI = readVar(dir_config, filenamex) ;  % G -> RI
+isp = osp;
 
 
 %% CALCULATIONS
