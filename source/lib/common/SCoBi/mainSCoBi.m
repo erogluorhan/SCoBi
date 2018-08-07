@@ -20,6 +20,20 @@ setConfig;
 setGround;
 
 
+
+%% GENERATE DIELECTRIC PROFILES
+% TO-DO: Test ParamsManager controls
+[needForDielProfiles, dispMsg] = ParamsManager.isToGenerateDielProfiles();
+
+disp( dispMsg );
+    
+if ~needForDielProfiles == Constants.need_for_run.NO
+
+    generateDielProfiles; 
+    
+end
+
+
 %% GENERATE SCATTERING POSITIONS
 disp('+++++++++++++++   GENERATE SCATTERING POSITIONS   +++++++++++++++++')
 t = datetime('now') %#ok<NOPRT>
@@ -143,6 +157,20 @@ if needForSpecularTerm == Constants.need_for_run.FULL
     
     specularTerm ;
     
+end
+
+
+
+%% CALCULATE DIELECTRIC REFLECTIVITIES
+% TO-DO: Test ParamsManager controls
+[needForMLReflectivities, dispMsg] = ParamsManager.isToCalculateMLReflectivities();
+
+disp( dispMsg );
+    
+if ~needForMLReflectivities == Constants.need_for_run.NO
+
+    generateMLReflectivities();
+
 end
 
 

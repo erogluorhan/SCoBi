@@ -5,6 +5,18 @@ classdef ParamsManager < handle
     
     methods (Static)
                 
+        function result = index_DoY( value )
+           
+            persistent index_DoY
+            
+            if nargin ~= 0
+                index_DoY = value;
+            end
+            
+            result = index_DoY;
+            
+        end
+                
         function result = index_Th( value )
            
             persistent index_Th
@@ -199,7 +211,7 @@ classdef ParamsManager < handle
             % Simulation mode is Time-series
             if sim_mode_id == Constants.id_time_series
                 
-                % Add a control for timestamps as well
+                % TO-DO: Add a control for timestamps as well
                 if (num_Th == maxnum || num_Th == 1) && ...
                    (num_Ph == maxnum || num_Ph == 1) && ...
                    (num_VSM == maxnum || num_VSM == 1 ) && ...
@@ -381,6 +393,54 @@ classdef ParamsManager < handle
             end
             
         end
+        
+        
+        function [result, dispMsg] = isToCalculateMLReflectivities()
+            
+            %% GET GLOBAL DIRECTORIES
+            % TO-DO: Add folder and file existence controls
+            %dir_rot_real = SimulationFolders.getInstance.rot_real;
+            
+            %% GET GLOBAL PARAMETERS
+            % Simulation Settings
+            simulator_id = SimSettings.getInstance.simulator_id;
+            
+                        
+            % First check the simulator 
+            % If, it is not SCoBi-ML, skip
+            if simulator_id ~= Constants.id_multi_layer
+                
+                dispMsg = '';
+                result = Constants.need_for_run.NO;
+                return
+            
+                % Else, it is SCoBi-ML
+            else
+            
+% %                 % If passes simulator selection, check existence of files
+% %                 all_files = dir(dir_rot_real);
+% %                 num_files = numel(all_files) - 2;
+% %                 Nr_current = num_files / num_scat_cal / Constants.factor_rot_real ;
+% % 
+% %                 if isnan(Nr_current), Nr_current = 0; end
+% % 
+% %                 if Nr_current >= Nr
+% %                     dispMsg = 'Rotation Realizations - SKIPPED - Already exists!';
+% %                     result = Constants.need_for_run.NO;
+% %                 else
+% %                     if Nr_current > 0
+% %                         dispMsg = 'Rotation Realizations - Partially exists!';
+% %                         result = Constants.need_for_run.PARTIAL;
+% %                     else
+                        dispMsg = 'Multilayer Reflectivities';
+                        result = Constants.need_for_run.FULL;
+%                     end
+%                 end
+            
+            end            
+            
+        end
+        
         
         function [result, Nr_current, dispMsg] = isToGenerateScatPos()
             
@@ -604,6 +664,7 @@ classdef ParamsManager < handle
             
         end
         
+        
         function [result, dispMsg] = isToCalcRotationMatrices()
             
             %% GET GLOBAL DIRECTORIES
@@ -622,6 +683,161 @@ classdef ParamsManager < handle
             end
             
         end
+        
+        
+        function [result, dispMsg] = isToGenerateDielProfiles()
+            
+            %% GET GLOBAL DIRECTORIES
+            % TO-DO: Add folder and file existence controls
+            %dir_rot_real = SimulationFolders.getInstance.rot_real;
+            
+            %% GET GLOBAL PARAMETERS
+            % Simulation Settings
+            simulator_id = SimSettings.getInstance.simulator_id;
+            
+                        
+            % First check the simulator 
+            % If, it is not SCoBi-ML, skip
+            if simulator_id ~= Constants.id_multi_layer
+                
+                dispMsg = '';
+                result = Constants.need_for_run.NO;
+                return
+            
+                % Else, it is SCoBi-ML
+            else
+            
+% %                 % If passes simulator selection, check existence of files
+% %                 all_files = dir(dir_rot_real);
+% %                 num_files = numel(all_files) - 2;
+% %                 Nr_current = num_files / num_scat_cal / Constants.factor_rot_real ;
+% % 
+% %                 if isnan(Nr_current), Nr_current = 0; end
+% % 
+% %                 if Nr_current >= Nr
+% %                     dispMsg = 'Rotation Realizations - SKIPPED - Already exists!';
+% %                     result = Constants.need_for_run.NO;
+% %                 else
+% %                     if Nr_current > 0
+% %                         dispMsg = 'Rotation Realizations - Partially exists!';
+% %                         result = Constants.need_for_run.PARTIAL;
+% %                     else
+                        dispMsg = 'Dielectric Profiles';
+                        result = Constants.need_for_run.FULL;
+%                     end
+%                 end
+            
+            end            
+            
+        end
+
+        function [result, dispMsg] = isToCalculateDirectTerm()
+
+            %% GET GLOBAL PARAMETERS    
+            % Simulation Settings
+            simulator_id = SimSettings.getInstance.simulator_id;
+
+
+            % If the simulator is SCoBi-Veg, then Direct term is calculated
+            if simulator_id == Constants.id_veg_agr ...
+                || simulator_id == Constants.id_veg_for
+
+                dispMsg = 'Direct Term';
+                result = Constants.need_for_run.FULL;
+
+            elseif simulator_id == Constants.id_multi_layer
+
+                dispMsg = '';
+                result = Constants.need_for_run.NO;
+
+            end
+
+        end
+        
+
+        function [result, dispMsg] = isToCalculateSpecularTerm()
+
+        %% GET GLOBAL DIRECTORIES
+        dir_out_specular_tuple = SimulationFolders.getInstance.out_specular_tuple;
+
+        %% GET GLOBAL PARAMETERS
+        % Simulation Settings
+        simulator_id = SimSettings.getInstance.simulator_id;
+        calc_specular_term = SimSettings.getInstance.calc_specular_term;
+
+
+        if simulator_id == Constants.id_veg_agr ...
+            || simulator_id == Constants.id_veg_for
+
+            % First check the user preferences
+            if ~calc_specular_term
+                dispMsg = 'Specular Term - SKIPPED (User Preferences - No Specular Term)';
+                result = Constants.need_for_run.NO;
+                return
+            end            
+
+            % If passes user preferences, check the existence of files           
+            num_files = 0;
+
+            if ( exist(dir_out_specular_tuple,'dir') == 7 )
+                all_files = dir(dir_out_specular_tuple);
+                num_files = numel(all_files) - 2;
+            end
+
+            if num_files == Constants.num_out_specular
+                dispMsg = 'Specular Term - SKIPPED - Already exists!';
+                result = Constants.need_for_run.NO;
+            else
+                dispMsg = 'Specular Term';
+                result = Constants.need_for_run.FULL;
+            end
+
+        elseif simulator_id == Constants.id_multi_layer
+
+            dispMsg = '';
+            result = Constants.need_for_run.NO;
+
+        end
+
+        end
+        
+        function [result, dispMsg] = isToCalculateDiffuseTerm()
+            
+            %% GET GLOBAL DIRECTORIES
+            dir_freqdiff_b1_tuple = SimulationFolders.getInstance.freqdiff_b1_tuple;
+            
+            %% GET GLOBAL PARAMETERS
+            % Simulation Settings
+            calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
+            % Simulation Parameters
+            Nr = SimParams.getInstance.Nr;
+                        
+            % First check the user preferences
+            if ~calc_diffuse_term
+                dispMsg = 'Diffuse Term - SKIPPED (User Preferences - No Diffuse Term)';
+                result = Constants.need_for_run.NO;
+                return
+            end            
+            
+            % If passes user preferences, check the existence of files            
+            Nr_current = 0;
+            
+            if ( exist(dir_freqdiff_b1_tuple,'dir') == 7 )
+                all_files = dir(dir_freqdiff_b1_tuple);
+                num_files = numel(all_files) - 2;
+                Nr_current = num_files / Constants.factor_frediff_b1;
+            end
+            
+            if Nr_current >= Nr
+                dispMsg = 'Diffuse Term - SKIPPED - Already exists!';
+                result = Constants.need_for_run.NO;
+            else
+                dispMsg = 'Diffuse Term';
+                result = Constants.need_for_run.FULL;
+            end
+            
+        end
+        
         
         function [result, Nr_current, dispMsg] = isToRealizeRotations()
             
@@ -666,112 +882,7 @@ classdef ParamsManager < handle
             end
             
         end
-
-function [result, dispMsg] = isToCalculateDirectTerm()
-
-%% GET GLOBAL PARAMETERS    
-% Simulation Settings
-simulator_id = SimSettings.getInstance.simulator_id;
-
-
-% If the simulator is SCoBi-Veg, then Direct term is calculated
-if simulator_id == Constants.id_veg_agr ...
-    || simulator_id == Constants.id_veg_for
-
-    dispMsg = 'Direct Term';
-    result = Constants.need_for_run.FULL;
-
-elseif simulator_id == Constants.id_multi_layer
-
-    dispMsg = '';
-    result = Constants.need_for_run.NO;
-
-end
-
-end
         
-function [result, dispMsg] = isToCalculateSpecularTerm()
-
-%% GET GLOBAL DIRECTORIES
-dir_out_specular_tuple = SimulationFolders.getInstance.out_specular_tuple;
-
-%% GET GLOBAL PARAMETERS
-% Simulation Settings
-simulator_id = SimSettings.getInstance.simulator_id;
-calc_specular_term = SimSettings.getInstance.calc_specular_term;
-
-
-if simulator_id == Constants.id_veg_agr ...
-    || simulator_id == Constants.id_veg_for
-
-    % First check the user preferences
-    if ~calc_specular_term
-        dispMsg = 'Specular Term - SKIPPED (User Preferences - No Specular Term)';
-        result = Constants.need_for_run.NO;
-        return
-    end            
-
-    % If passes user preferences, check the existence of files           
-    num_files = 0;
-
-    if ( exist(dir_out_specular_tuple,'dir') == 7 )
-        all_files = dir(dir_out_specular_tuple);
-        num_files = numel(all_files) - 2;
-    end
-
-    if num_files == Constants.num_out_specular
-        dispMsg = 'Specular Term - SKIPPED - Already exists!';
-        result = Constants.need_for_run.NO;
-    else
-        dispMsg = 'Specular Term';
-        result = Constants.need_for_run.FULL;
-    end
-
-elseif simulator_id == Constants.id_multi_layer
-
-    dispMsg = '';
-    result = Constants.need_for_run.NO;
-
-end
-
-end
-        
-        function [result, dispMsg] = isToCalculateDiffuseTerm()
-            
-            %% GET GLOBAL DIRECTORIES
-            dir_freqdiff_b1_tuple = SimulationFolders.getInstance.freqdiff_b1_tuple;
-            
-            %% GET GLOBAL PARAMETERS
-            % Simulation Settings
-            calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
-            % Simulation Parameters
-            Nr = SimParams.getInstance.Nr;
-                        
-            % First check the user preferences
-            if ~calc_diffuse_term
-                dispMsg = 'Diffuse Term - SKIPPED (User Preferences - No Diffuse Term)';
-                result = Constants.need_for_run.NO;
-                return
-            end            
-            
-            % If passes user preferences, check the existence of files            
-            Nr_current = 0;
-            
-            if ( exist(dir_freqdiff_b1_tuple,'dir') == 7 )
-                all_files = dir(dir_freqdiff_b1_tuple);
-                num_files = numel(all_files) - 2;
-                Nr_current = num_files / Constants.factor_frediff_b1;
-            end
-            
-            if Nr_current >= Nr
-                dispMsg = 'Diffuse Term - SKIPPED - Already exists!';
-                result = Constants.need_for_run.NO;
-            else
-                dispMsg = 'Diffuse Term';
-                result = Constants.need_for_run.FULL;
-            end
-            
-        end
         
         function saveSimParams()
             

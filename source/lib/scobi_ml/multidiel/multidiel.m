@@ -62,7 +62,7 @@ if M == 0, L = []; end                                    % single interface, no
 
 theta = theta * pi / 180;
 
-if strcmp(pol, 'te'),
+if strcmp(pol, 'te')
     Nsin2 = (n(2,1) * sin(theta)) ^ 2 ;                      % (Na*sin(tha))^2              
     %c = conj(sqrt(conj(1 - Nsin2 ./ n(2,:).^2)));      % old version
     c = sqrte(1 - Nsin2 ./ n(2, :) .^ 2) ;                  % coefficient ci, or cos(th(i)) in isotropic case
@@ -76,7 +76,7 @@ else
     r = -n2r(nTinv) ;                                    % minus sign because n2r(n) = -n2r(1./n)
 end
 
-if M > 0,
+if M > 0
     if strcmp(pol, 'te') % modifed 10/20/09 by MK
     L = L .* n(2, 2 : M + 1) .* c(2 : M + 1) ;                                  % polarization-dependent optical lengths
     else
@@ -86,7 +86,7 @@ end
 
 Gamma = r(M + 1) * ones(1, length(lambda)) ;                % initialize Gamma at right-most interface
 
-for i = M : -1 : 1,                                         % forward layer recursion 
+for i = M : -1 : 1                                       % forward layer recursion 
     delta = 2 * pi * L(i) ./ lambda ;                          % phase thickness in i-th layer
     z = exp(-2 * 1i * delta) ;                          
     Gamma = (r(i) + Gamma .* z) ./ (1 + r(i) * Gamma .* z) ;

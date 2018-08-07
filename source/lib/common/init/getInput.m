@@ -56,14 +56,14 @@ dynInputFullFile = inputStruct.dyn_inputs_file;
 ind = 0;
 
 % Timestamp - Day-of-year
-DOYs = [];
+DoYs = [];
 
 % If sim_mode is Time-series, then input contains timestamps
 if simulator_id == Constants.id_multi_layer ...
     || sim_mode_id == Constants.id_time_series
     
     ind = ind + 1;
-    DOYs = num(:, ind);
+    DoYs = num(:, ind);
     
 end
 
@@ -103,15 +103,15 @@ if simulator_id == Constants.id_multi_layer
     DoY1 = date2doy(startDate) ;
     DoY2 = date2doy(endDate) ;
 
-    % DOYs and SM of interval of interest
-    VSM_list_cm3cm3 = VSM_list_cm3cm3(DoY1<DOYs & DOYs<DoY2, :);
-    DOYs = DOYs(DoY1<DOYs & DOYs<DoY2);
+    % DoYs and SM of interval of interest
+    VSM_list_cm3cm3 = VSM_list_cm3cm3(DoY1<DoYs & DoYs<DoY2, :);
+    DoYs = DoYs(DoY1<DoYs & DoYs<DoY2);
     
 end
 
 
 % Initialize Dynamic Parameters
-DynParams.getInstance.initialize( DOYs, th0_Tx_list_deg, ph0_Tx_list_deg, VSM_list_cm3cm3, RMSH_list_cm );
+DynParams.getInstance.initialize( DoYs, th0_Tx_list_deg, ph0_Tx_list_deg, VSM_list_cm3cm3, RMSH_list_cm );
 
 end
 
@@ -218,7 +218,7 @@ zB_m = num(1, ind);
 zB_m( isnan(zB_m) ) = []; 
 
 % Initialize Ground Parameters
-GndMLParams.getInstance.initialize( delZ_m, zA_m, zB_m );
+GndMLParams.getInstance.initialize( layer_depth_m, delZ_m, zA_m, zB_m );
 
 end
 

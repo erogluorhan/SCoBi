@@ -19,8 +19,8 @@ r_Tx_m = TxParams.getInstance.r_Tx_m;
 th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
 th0_Tx_deg = th0_Tx_list_deg( ParamsManager.index_Th );   % Currrent theta ( Incidence Angle )
 th0_Tx_rad = degtorad(th0_Tx_deg) ;
-el0_Tx_list_deg = DynParams.getInstance.el0_Tx_list_deg;
-el0_Tx_deg = el0_Tx_list_deg( ParamsManager.index_Th );
+el0_Tx_deg = 90 - th0_Tx_deg;
+el0_Tx_rad = degtorad(el0_Tx_deg) ;
 ph0_Tx_list_deg = DynParams.getInstance.ph0_Tx_list_deg;
 ph0_Tx_deg = ph0_Tx_list_deg( ParamsManager.index_Ph );   % Current phi (Azimuth Angle (standard spherical coords) of transmitter's position)
 ph0_Tx_deg = 90 - ph0_Tx_deg ;                            % If it was the incoming signal's azimuth, we would add 180 degrees
@@ -89,7 +89,7 @@ AntRotZ_Tx = [ cos(ph0_Tx_rad), -sin(ph0_Tx_rad), 0 ;
 
 % Transmitter position
 % Slant range (Approximated)
-rd_m = sqrt( r_Tx_m ^ 2 - (Constants.re * cos( deg2rad( el0_Tx_deg ) )) ^ 2) - Constants.re * sin( deg2rad( el0_Tx_deg ) ) ;
+rd_m = sqrt( r_Tx_m ^ 2 - (Constants.re * cos( el0_Tx_rad ) ) ^ 2) - Constants.re * sin( el0_Tx_rad ) ;
 % T : Transmitter Antenna position
 pos_Tx_m = rd_m * [sin(th0_Tx_rad) * cos(ph0_Tx_rad); sin(th0_Tx_rad) * sin(ph0_Tx_rad); cos(th0_Tx_rad)] ;
 ht_m = pos_Tx_m(3) ;
