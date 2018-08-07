@@ -110,26 +110,126 @@ function runSCoBiML( simulator_id, inputStruct )
     getInput(simulator_id, inputStruct);
 
     % TO-DO: Input Validity check
-%     isInputValid = initWithInputs();
+    isInputValid = initWithInputs();
     % Initialize but not create simulations' directories
     SimulationFolders.getInstance.initializeStaticDirs();
-    % Create but not creating simulations' directories
+    % Create simulations' directories
     SimulationFolders.getInstance.makeStaticDirs();
+    isInputValid = 1;
+        
+    
+    % If input is valid
+    if isInputValid
 
-    % To-DO: Find a more structural way
-    % Write all inputs to a text file and show it
-    writeToFile( simulator_id, inputStruct );
-    
-    % TO-DO: Check for multiple theta or phi values
-    ParamsManager.index_Th(1);
-    ParamsManager.index_Ph(1);
-    ParamsManager.index_VSM(1);
-    ParamsManager.index_RMSH(1);
-    % Initialize the directories depending on theta,
-    % phi, VSM, and RMSH
-    SimulationFolders.getInstance.initializeDynamicDirs();
-    
-    mainSCoBiML();
+        % To-DO: Find a more structural way
+        % Write all inputs to a text file and show it
+        writeToFile( simulator_id, inputStruct );
+
+
+        %% GET GLOBAL PARAMETERS
+        % Simulation Settings
+        sim_mode_id = SimSettings.getInstance.sim_mode_id;
+        % Dynamic Parameters
+        DoYs = DynParams.getInstance.DoYs;
+        th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
+        ph0_Tx_list_deg = DynParams.getInstance.ph0_Tx_list_deg;
+        VSM_list_cm3cm3 = DynParams.getInstance.VSM_list_cm3cm3;
+        RMSH_list_cm = DynParams.getInstance.RMSH_list_cm;
+
+        
+        num_DoYs = length( DoYs );
+        num_Th = length( th0_Tx_list_deg );
+        num_Ph = length( ph0_Tx_list_deg );
+        num_VSM = length( VSM_list_cm3cm3 );
+        num_RMSH = length( RMSH_list_cm );
+
+        % Snapshot simulation
+        if sim_mode_id == Constants.id_snapshot
+
+            % For each theta (looking angle)
+            for tt = 1 : num_Th
+
+                % Set theta index
+                ParamsManager.index_Th( tt );
+
+                % For each phi (azimuth angle)
+                for pp = 1 : num_Ph
+
+                    % Set phi index
+                    ParamsManager.index_Ph( pp );
+
+                    % For each VSM (volumetric soil moisture)
+                    for vv = 1 : num_VSM
+
+                        % Set VSM index
+                        ParamsManager.index_VSM( vv );
+
+                        % For each RMSH (root mean square height - roughness)
+                        for rr = 1 : num_RMSH
+
+                            % Set RMSH index
+                            ParamsManager.index_RMSH( rr );
+
+                            % Initialize the directories depending on theta,
+                            % phi, VSM, and RMSH
+                            SimulationFolders.getInstance.initializeDynamicDirs();
+
+                            % Call SCoBi main flow
+                            mainSCoBi();
+
+                        end
+
+                    end
+
+                end
+
+            end
+
+
+        % Time-series simulation
+        else
+
+            % For each corresponding tuple of theta (looking angle), 
+            % phi (azimuth angle), VSM (volumetric soil moisture), and 
+            % RMSH (root mean square height - roughness)
+            for ii = 1 : 10 : num_DoYs  % The length of each is equal
+
+                % Set theta, phi, VSM, ad RMSH index the same
+                ParamsManager.index_DoY( ii );
+                ParamsManager.index_Th( ii );
+                ParamsManager.index_Ph( ii );
+                ParamsManager.index_VSM( ii );
+                ParamsManager.index_RMSH( ii );
+
+                % Initialize the directories depending on theta, phi, VSM, and 
+                % RMSH
+                SimulationFolders.getInstance.initializeDynamicDirs();
+
+                % Call SCoBi main flow
+                mainSCoBi();
+
+            end
+
+        end
+        
+
+%         % TO-DO: Check for multiple theta or phi values
+%         ParamsManager.index_Th(1);
+%         ParamsManager.index_Ph(1);
+%         ParamsManager.index_VSM(1);
+%         ParamsManager.index_RMSH(1);
+%         % Initialize the directories depending on theta,
+%         % phi, VSM, and RMSH
+%         SimulationFolders.getInstance.initializeDynamicDirs();
+% 
+%         multiLayerModel();
+
+    % Else if input is NOT valid
+    else
+
+        return
+
+    end
     
 end
 
@@ -153,11 +253,14 @@ function runSCoBiVeg( simulator_id, inputStruct )
         % Simulation Settings
         sim_mode_id = SimSettings.getInstance.sim_mode_id;
         % Dynamic Parameters
+        DoYs = DynParams.getInstance.DoYs;
         th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
         ph0_Tx_list_deg = DynParams.getInstance.ph0_Tx_list_deg;
         VSM_list_cm3cm3 = DynParams.getInstance.VSM_list_cm3cm3;
         RMSH_list_cm = DynParams.getInstance.RMSH_list_cm;
 
+        
+        num_DoYs = length( DoYs );
         num_Th = length( th0_Tx_list_deg );
         num_Ph = length( ph0_Tx_list_deg );
         num_VSM = length( VSM_list_cm3cm3 );
@@ -212,9 +315,10 @@ function runSCoBiVeg( simulator_id, inputStruct )
             % For each corresponding tuple of theta (looking angle), 
             % phi (azimuth angle), VSM (volumetric soil moisture), and 
             % RMSH (root mean square height - roughness)
-            for ii = 1 : num_Th  % The length of each is equal
+            for ii = 1 : num_DoYs  % The length of each is equal
 
                 % Set theta, phi, VSM, ad RMSH index the same
+                ParamsManager.index_DoY( ii );
                 ParamsManager.index_Th( ii );
                 ParamsManager.index_Ph( ii );
                 ParamsManager.index_VSM( ii );

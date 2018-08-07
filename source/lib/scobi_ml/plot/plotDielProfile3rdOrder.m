@@ -1,4 +1,4 @@
-function plotDielProfile3rdOrder( fig, eps_diel_z3, eps_diel_soil, z )
+function plotDielProfile3rdOrder( fig, eps_diel_z3rd, eps_diel_soil, z )
 
 
 %% GET GLOBAL PARAMETER
@@ -16,7 +16,7 @@ if draw_live_plots
     if FigON == 1
         figure(fig);
         subplot(3,4,2)
-        plot(real(eps_diel_z3), (z-zA_m)*Constants.m2cm, 'c', 'linewidth', 2)
+        plot(real(eps_diel_z3rd), (z-zA_m)*Constants.m2cm, 'c', 'linewidth', 2)
         hold on
         plot(real(eps_diel_soil), gnd_layer_depth_m*Constants.m2cm, 'o')
         grid
@@ -43,7 +43,7 @@ if draw_live_plots
     if FigON == 1
         figure(10)
         subplot(2,2,2)
-        plot(real(eps_diel_z3), (z-zA_m)*Constants.m2cm, 'c', 'linewidth', 2)
+        plot(real(eps_diel_z3rd), (z-zA_m)*Constants.m2cm, 'c', 'linewidth', 2)
         hold on
         plot(real(eps_diel_soil), gnd_layer_depth_m*Constants.m2cm, 'o')
         grid

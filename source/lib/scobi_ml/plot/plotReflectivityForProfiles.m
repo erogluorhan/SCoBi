@@ -1,12 +1,15 @@
-function plotReflectivityForProfiles( fig1, fig2, DoY, Rp1, Rp2, Rp1_L, Rp2_L, Rp1_2, Rp2_2, Rp1_3, Rp2_3 )
+function plotReflectivityForProfiles( DoY, Rp1, Rp2, Rp1_L, Rp2_L, Rp1_2, Rp2_2, Rp1_3, Rp2_3 )
 
 
-%% GET GLOBAL PARAMETER
+%% GET GLOBAL PARAMETERS
 % Simulation Settings
 draw_live_plots = SimSettings.getInstance.draw_live_plots;
 % Transmitter Parameters
 pol_Tx = TxParams.getInstance.pol_Tx;
 pol_Rx = RxParams.getInstance.pol_Rx;
+% Dielectric Parameters
+fig1 = DielParams.getInstance.fig1;
+fig2 = DielParams.getInstance.fig2;
 
 
 if draw_live_plots

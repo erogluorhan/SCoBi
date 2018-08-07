@@ -12,7 +12,7 @@ draw_live_plots = SimSettings.getInstance.draw_live_plots;
 layer_depth_m = GndParams.getInstance.layer_depth_m;
 layer_depth_cm = layer_depth_m * Constants.m2cm;
 % Dynamic Parameters
-DOYs = DynParams.getInstance.DOYs;
+DoYs = DynParams.getInstance.DoYs;
 VSM_list_cm3cm3 = DynParams.getInstance.VSM_list_cm3cm3;
 
 
@@ -21,8 +21,8 @@ fig2 = [];
 
 if draw_live_plots
     
-    DoY1 = DOYs(1);
-    DoY2 = DOYs(end);
+    DoY1 = DoYs(1);
+    DoY2 = DoYs(end);
 
     [~, num_gnd_layers] = size(VSM_list_cm3cm3);
 
@@ -52,7 +52,7 @@ if draw_live_plots
         figure(1)
         hold
         for ii = 1 : num_gnd_layers
-            plot( DOYs, VSM_list_cm3cm3(:,ii), colors{1,ii}, 'MarkerSize', 6, 'MarkerFaceColor', 'blue', 'linewidth', 0.5);
+            plot( DoYs, VSM_list_cm3cm3(:,ii), colors{1,ii}, 'MarkerSize', 6, 'MarkerFaceColor', 'blue', 'linewidth', 0.5);
         end
 
         set(gcf, 'Position', get(0, 'Screensize'));
@@ -81,7 +81,7 @@ if draw_live_plots
 
         hold
         for ii = 1 : num_gnd_layers
-            plot( DOYs, VSM_list_cm3cm3(:,ii), '.k', 'MarkerSize', 3, 'MarkerFaceColor', 'black', 'linewidth', 0.25)
+            plot( DoYs, VSM_list_cm3cm3(:,ii), '.k', 'MarkerSize', 3, 'MarkerFaceColor', 'black', 'linewidth', 0.25)
         end
 
         set(gca,'YLim',[0 0.50], 'FontSize', 12)
