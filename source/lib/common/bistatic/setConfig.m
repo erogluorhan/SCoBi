@@ -17,6 +17,7 @@ function setConfig
     AngS2R_rf, AngT2S_sf] = bistaticGeometry();
 
 
+% Initialize Bistatic Parameters
 BistaticParams.getInstance.initialize(rd_m, idn, isn, osp, osn, Tgt, ...
     TgtI, Tgs, Tgr, TgrI, AntRotZ_Rx, AntRotY_Rx, AntRot_Rx, AntRotZ_Tx, ...
     ellipse_FP_Rx_m, AllPoints_m, AngT2R_rf, AngS2R_rf, AngT2S_sf);
