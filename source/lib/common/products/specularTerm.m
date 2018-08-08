@@ -211,6 +211,9 @@ dir_gnd = SimulationFolders.getInstance.gnd;
 % Vegetation Parameters
 dim_layers_m = VegParams.getInstance.dim_layers_m;
 num_layers = VegParams.getInstance.num_layers;
+% Surface Dynamic Paramaters
+h = SurfaceDynParams.getInstance.h;   % Effective roughness parameters
+eps_g = SurfaceDynParams.getInstance.eps_g;   % Dielectric permittivity
 
 
 %% READ META-DATA
@@ -219,9 +222,6 @@ filename = 'dKz' ;
 dKz = readComplexVar(dir_afsa, filename) ;
 filename = 'ANGDEG' ;
 ANGDEG = readVar(dir_afsa, filename) ;
-% Ground Data
-filename = 'G' ;
-grnd_par = readComplexVar(dir_gnd, filename) ;
 % Layer Thickness
 % filename = 'D' ;
 % D = readVar(dir_veg, filename) ;
@@ -249,14 +249,8 @@ t_sb = [1 0; 0 1] ;
 
 
 %% GROUND REFLECTION MATRIX
-h = real(grnd_par(1, 1)) ;
-
-% TO-DO: Solve for multilayered ground
-% epsg = grnd_par(1, 2) + 1i * grnd_par(1, 3) ;
-epsg = grnd_par(2, 1);
-
 ths = degtorad(thsd) ;
-[RGHIF, RGVIF, ~, ~] = reflectionCoeff(ths, ths, epsg, h) ;
+[RGHIF, RGVIF, ~, ~] = reflectionCoeff(ths, ths, eps_g, h) ;
 
 r_g = [RGVIF 0; 0 RGHIF] ;
 

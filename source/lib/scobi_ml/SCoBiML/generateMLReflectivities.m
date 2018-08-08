@@ -2,6 +2,7 @@ function generateMLReflectivities
 
 
 %% GET GLOBAL PARAMETERS
+sim_counter = ParamsManager.sim_counter;
 % Transmitter Parameters
 f_MHz = TxParams.getInstance.f_MHz;
 f_Hz = f_MHz * Constants.MHz2Hz;
@@ -10,11 +11,11 @@ pol_Tx = TxParams.getInstance.pol_Tx;
 pol_Rx = RxParams.getInstance.pol_Rx;
 % Dynamic Parameters
 DoYs = DynParams.getInstance.DoYs;
-DoY = DoYs( ParamsManager.index_DoY );
+DoY = DoYs( sim_counter );
 th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
-th0_Tx_deg = th0_Tx_list_deg( ParamsManager.index_Th );
+th0_Tx_deg = th0_Tx_list_deg( sim_counter );
 VSM_list_cm3cm3 = DynParams.getInstance.VSM_list_cm3cm3;   
-VSM_cm3cm3 = VSM_list_cm3cm3(ParamsManager.index_VSM,:)';
+VSM_cm3cm3 = VSM_list_cm3cm3(sim_counter,:)';
 % Dielectric Parameters
 eps_diel_z2nd = DielParams.getInstance.eps_diel_z2nd;
 eps_diel_z3rd = DielParams.getInstance.eps_diel_z3rd;

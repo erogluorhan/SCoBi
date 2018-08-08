@@ -443,7 +443,6 @@ function [b_dd_t1, b_rd_t1, b_dr_t1, b_rr_t1,...
 
 %% GET GLOBAL DIRECTORIES
 dir_afsa = SimulationFolders.getInstance.afsa;
-dir_gnd = SimulationFolders.getInstance.gnd;
 dir_position = SimulationFolders.getInstance.position;
 dir_fzones = SimulationFolders.getInstance.fzones;
 dir_incidence = SimulationFolders.getInstance.incidence;
@@ -466,18 +465,12 @@ e_t1 = TxParams.getInstance.e_t1 ;
 e_t2 = TxParams.getInstance.e_t2 ;
 % Vegetation Parameters
 dim_layers_m = VegParams.getInstance.dim_layers_m;
+% Surface Dynamic Paramaters
+h = SurfaceDynParams.getInstance.h;   % Effective roughness parameters
+eps_g = SurfaceDynParams.getInstance.eps_g;   % Dielectric permittivity
 
 
 %% READ META-DATA
-% Ground Parameters
-disp('Reading ground parameters...')
-filenamex = 'G' ;
-grnd_par = readComplexVar( dir_gnd, filenamex );
-h = real(grnd_par(1, 1)) ;
-% TO-DO: Solve for multilayered ground
-% epsg = grnd_par(1, 2) + 1i * grnd_par(1, 3) ;
-epsg = grnd_par(2, 1);
-
 % Incremental Propagation Constant
 disp('Reading Incremental propagation constants...')
 filenamex = 'dKz' ;
@@ -660,7 +653,7 @@ for fz = 1 : Nfz    % Fresnel Zones
         % Calculate Reflection Coefficient
         thiI = degtorad(180 - thidI) ;        % incident angle
         thsI = degtorad(180 - thsdI(pp)) ;    % scattered angle
-        [RGH_iI, RGV_iI, RGH_oI, RGV_oI] = reflectionCoeff(thiI, thsI, epsg, h) ;
+        [RGH_iI, RGV_iI, RGH_oI, RGV_oI] = reflectionCoeff(thiI, thsI, eps_g, h) ;
 
         % Antenna Pattern Matrix
         % 2 X 2

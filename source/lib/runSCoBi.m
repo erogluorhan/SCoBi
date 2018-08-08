@@ -27,7 +27,7 @@
 %    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %--------------------------------------------------------------------------
 
-%To-DO: Ensure about Copyright and GNU
+%TO-DO: Ensure about Copyright and GNU
 
 function runSCoBi
 
@@ -40,7 +40,7 @@ resetWS();
 addpath( genpath( strcat(pwd, '/common') ) );
 
 
-%% MAIN SCOBI WINDOW (SIMULATOR SELECTION)
+%% GUI: MAIN SCOBI WINDOW (SIMULATOR SELECTION)
 % Open the main SCoBi GUI for simulator selection
 simulator_id = gui_SCoBiMain();
 
@@ -56,7 +56,7 @@ end
 initSCoBiWS( simulator_id );
 
 
-%% START GUI FOR THE SELECTED SIMULATOR
+%% GUI: START THE SELECTED SIMULATOR'S GUI
 inputStruct = startSelectedGUI( simulator_id );
 
 % If no output from GUI, terminate program
@@ -67,17 +67,45 @@ if (isempty(inputStruct))
     return
 end
 
-if simulator_id == Constants.id_multi_layer
-    
-    runSCoBiML( simulator_id, inputStruct );
-    
-elseif simulator_id == Constants.id_veg_agr || ...
-       simulator_id == Constants.id_veg_for
-   
-   runSCoBiVeg( simulator_id, inputStruct );
-   
-end
+% Initialize all input parameters by using the inputs from GUI
+initAllInputParams(simulator_id, inputStruct);
 
+% Check input validity
+isInputValid = initWithInputs();
+
+
+%% SIMULATIONS
+% If input is valid
+if isInputValid
+    
+    
+    %% GET GLOBAL PARAMETERS
+    num_sims = ParamsManager.num_sims;
+    
+
+    % TO-DO: Find a more structural way
+    % Write all inputs to a text file and show it
+    writeToFile( simulator_id, inputStruct );
+    
+    % Run the simulations
+    for ii = 1 : num_sims
+
+        ParamsManager.sim_counter( ii );
+
+        % Initialize the directories depending on dynamic parameters
+        SimulationFolders.getInstance.initializeDynamicDirs();
+
+        % Call SCoBi main flow
+        mainSCoBi;
+
+    end
+
+% Else if input is NOT valid
+else
+
+    return
+
+end
 
 end 
 
@@ -101,247 +129,6 @@ if ( exist('myBreakpoints.mat','file') )
     delete('myBreakpoints.mat'); 
 end
 
-end
-
-
-function runSCoBiML( simulator_id, inputStruct )
-    
-    % Get input and check validity
-    getInput(simulator_id, inputStruct);
-
-    % TO-DO: Input Validity check
-    isInputValid = initWithInputs();
-    % Initialize but not create simulations' directories
-    SimulationFolders.getInstance.initializeStaticDirs();
-    % Create simulations' directories
-    SimulationFolders.getInstance.makeStaticDirs();
-    isInputValid = 1;
-        
-    
-    % If input is valid
-    if isInputValid
-
-        % To-DO: Find a more structural way
-        % Write all inputs to a text file and show it
-        writeToFile( simulator_id, inputStruct );
-
-
-        %% GET GLOBAL PARAMETERS
-        % Simulation Settings
-        sim_mode_id = SimSettings.getInstance.sim_mode_id;
-        % Dynamic Parameters
-        DoYs = DynParams.getInstance.DoYs;
-        th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
-        ph0_Tx_list_deg = DynParams.getInstance.ph0_Tx_list_deg;
-        VSM_list_cm3cm3 = DynParams.getInstance.VSM_list_cm3cm3;
-        RMSH_list_cm = DynParams.getInstance.RMSH_list_cm;
-
-        
-        num_DoYs = length( DoYs );
-        num_Th = length( th0_Tx_list_deg );
-        num_Ph = length( ph0_Tx_list_deg );
-        num_VSM = length( VSM_list_cm3cm3 );
-        num_RMSH = length( RMSH_list_cm );
-
-        % Snapshot simulation
-        if sim_mode_id == Constants.id_snapshot
-
-            % For each theta (looking angle)
-            for tt = 1 : num_Th
-
-                % Set theta index
-                ParamsManager.index_Th( tt );
-
-                % For each phi (azimuth angle)
-                for pp = 1 : num_Ph
-
-                    % Set phi index
-                    ParamsManager.index_Ph( pp );
-
-                    % For each VSM (volumetric soil moisture)
-                    for vv = 1 : num_VSM
-
-                        % Set VSM index
-                        ParamsManager.index_VSM( vv );
-
-                        % For each RMSH (root mean square height - roughness)
-                        for rr = 1 : num_RMSH
-
-                            % Set RMSH index
-                            ParamsManager.index_RMSH( rr );
-
-                            % Initialize the directories depending on theta,
-                            % phi, VSM, and RMSH
-                            SimulationFolders.getInstance.initializeDynamicDirs();
-
-                            % Call SCoBi main flow
-                            mainSCoBi();
-
-                        end
-
-                    end
-
-                end
-
-            end
-
-
-        % Time-series simulation
-        else
-
-            % For each corresponding tuple of theta (looking angle), 
-            % phi (azimuth angle), VSM (volumetric soil moisture), and 
-            % RMSH (root mean square height - roughness)
-            for ii = 1 : 10 : num_DoYs  % The length of each is equal
-
-                % Set theta, phi, VSM, ad RMSH index the same
-                ParamsManager.index_DoY( ii );
-                ParamsManager.index_Th( ii );
-                ParamsManager.index_Ph( ii );
-                ParamsManager.index_VSM( ii );
-                ParamsManager.index_RMSH( ii );
-
-                % Initialize the directories depending on theta, phi, VSM, and 
-                % RMSH
-                SimulationFolders.getInstance.initializeDynamicDirs();
-
-                % Call SCoBi main flow
-                mainSCoBi();
-
-            end
-
-        end
-        
-
-%         % TO-DO: Check for multiple theta or phi values
-%         ParamsManager.index_Th(1);
-%         ParamsManager.index_Ph(1);
-%         ParamsManager.index_VSM(1);
-%         ParamsManager.index_RMSH(1);
-%         % Initialize the directories depending on theta,
-%         % phi, VSM, and RMSH
-%         SimulationFolders.getInstance.initializeDynamicDirs();
-% 
-%         multiLayerModel();
-
-    % Else if input is NOT valid
-    else
-
-        return
-
-    end
-    
-end
-
-
-function runSCoBiVeg( simulator_id, inputStruct )
-
-    % Get input and check validity
-    getInput(simulator_id, inputStruct);
-
-    isInputValid = initWithInputs();
-
-    % If input is valid
-    if isInputValid
-
-        % To-DO: Find a more structural way
-        % Write all inputs to a text file and show it
-        writeToFile( simulator_id, inputStruct );
-
-
-        %% GET GLOBAL PARAMETERS
-        % Simulation Settings
-        sim_mode_id = SimSettings.getInstance.sim_mode_id;
-        % Dynamic Parameters
-        DoYs = DynParams.getInstance.DoYs;
-        th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
-        ph0_Tx_list_deg = DynParams.getInstance.ph0_Tx_list_deg;
-        VSM_list_cm3cm3 = DynParams.getInstance.VSM_list_cm3cm3;
-        RMSH_list_cm = DynParams.getInstance.RMSH_list_cm;
-
-        
-        num_DoYs = length( DoYs );
-        num_Th = length( th0_Tx_list_deg );
-        num_Ph = length( ph0_Tx_list_deg );
-        num_VSM = length( VSM_list_cm3cm3 );
-        num_RMSH = length( RMSH_list_cm );
-
-        % Snapshot simulation
-        if sim_mode_id == Constants.id_snapshot
-
-            % For each theta (looking angle)
-            for tt = 1 : num_Th
-
-                % Set theta index
-                ParamsManager.index_Th( tt );
-
-                % For each phi (azimuth angle)
-                for pp = 1 : num_Ph
-
-                    % Set phi index
-                    ParamsManager.index_Ph( pp );
-
-                    % For each VSM (volumetric soil moisture)
-                    for vv = 1 : num_VSM
-
-                        % Set VSM index
-                        ParamsManager.index_VSM( vv );
-
-                        % For each RMSH (root mean square height - roughness)
-                        for rr = 1 : num_RMSH
-
-                            % Set RMSH index
-                            ParamsManager.index_RMSH( rr );
-
-                            % Initialize the directories depending on theta,
-                            % phi, VSM, and RMSH
-                            SimulationFolders.getInstance.initializeDynamicDirs();
-
-                            % Call SCoBi main flow
-                            mainSCoBi;
-
-                        end
-
-                    end
-
-                end
-
-            end
-
-
-        % Time-series simulation
-        else
-
-            % For each corresponding tuple of theta (looking angle), 
-            % phi (azimuth angle), VSM (volumetric soil moisture), and 
-            % RMSH (root mean square height - roughness)
-            for ii = 1 : num_DoYs  % The length of each is equal
-
-                % Set theta, phi, VSM, ad RMSH index the same
-                ParamsManager.index_DoY( ii );
-                ParamsManager.index_Th( ii );
-                ParamsManager.index_Ph( ii );
-                ParamsManager.index_VSM( ii );
-                ParamsManager.index_RMSH( ii );
-
-                % Initialize the directories depending on theta, phi, VSM, and 
-                % RMSH
-                SimulationFolders.getInstance.initializeDynamicDirs();
-
-                % Call SCoBi main flow
-                mainSCoBi;
-
-            end
-
-        end
-
-    % Else if input is NOT valid
-    else
-
-        return
-
-    end
-    
 end
 
 
@@ -418,17 +205,25 @@ fprintf(fileID, strcat( 'Campaign:\t\t\t', inputStruct.campaign, '\n' ) );
 fprintf(fileID, strcat( 'Campaign Date:\t\t', inputStruct.campaign_date, '\n' ) );
 fprintf(fileID, strcat( 'Campaign Plot:\t\t', inputStruct.plot, '\n' ) );
 
-% If gnd_cover is Vegetation, then look at sim_mode
-if gnd_cover_id == Constants.id_veg_cover
-    
-    % If sim_mode is Snapshot, then write veg_method
-    if sim_mode_id == Constants.id_snapshot
 
-        fprintf(fileID, strcat( 'Vegetation method:\t', inputStruct.veg_method, '\n' ) );
+
     
-    end
+if simulator_id == Constants.id_veg_agr ...
+        || simulator_id == Constants.id_veg_for
     
-end  
+    % If gnd_cover is Vegetation, then look at sim_mode
+    if gnd_cover_id == Constants.id_veg_cover
+
+        % If sim_mode is Snapshot, then write veg_method
+        if sim_mode_id == Constants.id_snapshot
+
+            fprintf(fileID, strcat( 'Vegetation method:\t', inputStruct.veg_method, '\n' ) );
+
+        end
+
+    end  
+
+end
 
 % If veg_method is 'Virtual' only, then write virtual vegetation
 % orientation
@@ -539,9 +334,15 @@ end
 
 
 %% VEGETATION PARAMETERS
-fprintf(fileID, strcat( '\n\nVEGETETATION PARAMETERS\n' ) );
+fprintf(fileID, strcat( '\n\nVEGETATION PARAMETERS\n' ) );
 filename = strrep(inputStruct.veg_inputs_file, '\', '/');
 fprintf(fileID, strcat( 'Vegetation input file:\t', filename, '\n' ) );
+
+
+%% DYNAMIC PARAMETERS
+fprintf(fileID, strcat( '\n\nDYNAMIC PARAMETERS\n' ) );
+filename = strrep(inputStruct.dyn_inputs_file, '\', '/');
+fprintf(fileID, strcat( 'Dynamic input file:\t', filename, '\n' ) );
 
 
 

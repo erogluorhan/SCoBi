@@ -14,10 +14,10 @@ disp('++++++++   INITIALIZE BISTATIC CONFIGURATION AND GROUND   +++++++++')
 t = datetime('now') %#ok<NOPRT>
 
 % Setting Configuration parameters
-setConfig;
+initConfiguration;
 
-% Ground Parameters
-setGround;
+% Initialize Surface Dynamics (Diel)
+initSurfaceDynamics;
 
 
 

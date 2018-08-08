@@ -2,12 +2,13 @@ function generateDielProfiles
 
 
 %% GET GLOBAL PARAMETER
+sim_counter = ParamsManager.sim_counter;
 % Transmitter Parameters
 f_MHz = TxParams.getInstance.f_MHz;
 f_Hz = f_MHz * Constants.MHz2Hz;
 % Dynamic Parameters
 VSM_list_cm3cm3 = DynParams.getInstance.VSM_list_cm3cm3;   
-VSM_cm3cm3 = VSM_list_cm3cm3(ParamsManager.index_VSM,:)';
+VSM_cm3cm3 = VSM_list_cm3cm3(sim_counter,:)';
 % Ground Parameters
 gnd_layer_depth_m = GndParams.getInstance.layer_depth_m;
 % Ground Parameters

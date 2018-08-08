@@ -5,6 +5,19 @@ classdef ParamsManager < handle
     
     methods (Static)
                 
+        function result = num_sims( value )
+           
+            persistent num_sims
+            
+            if nargin ~= 0
+                num_sims = value;
+            end
+            
+            result = num_sims;
+            
+        end
+        
+                
         function result = index_DoY( value )
            
             persistent index_DoY
@@ -16,10 +29,11 @@ classdef ParamsManager < handle
             result = index_DoY;
             
         end
+        
                 
-        function result = index_Th( value )
+        function result = sim_counter( value )
            
-            persistent index_Th
+            persistent sim_counter
             
             % Set function
             if nargin ~= 0
@@ -27,79 +41,31 @@ classdef ParamsManager < handle
                 %% GET GLOBAL PARAMETERS
                 % Dynamic Parameters
                 th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
-                % Receiver Parameters
-                orientation_Rx_id = RxParams.getInstance.orientation_Rx_id;
-                
-                index_Th = value;
-                
-                th0_Tx_deg = th0_Tx_list_deg( index_Th );
-                
-                % If receiver orientation is Specular-facing, then set
-                % receiver th0_Rx_deg equal to transmitter th0_Tx_deg
-                if orientation_Rx_id == Constants.id_Rx_specular_facing
-                    RxParams.getInstance.set_th0_Rx_deg( th0_Tx_deg );
-                end
-            
-            end
-            % Get function
-            
-            result = index_Th;
-            
-        end
-                
-        function result = index_Ph( value )
-           
-            persistent index_Ph
-            
-            % Set function
-            if nargin ~= 0
-                
-                %% GET GLOBAL PARAMETERS
-                % Dynamic Parameters
                 ph0_Tx_list_deg = DynParams.getInstance.ph0_Tx_list_deg;
                 % Receiver Parameters
                 orientation_Rx_id = RxParams.getInstance.orientation_Rx_id;
                 
-                index_Ph = value;
+                sim_counter = value;
                 
-                ph0_Tx_deg = ph0_Tx_list_deg( index_Ph );
+                th0_Tx_deg = th0_Tx_list_deg( sim_counter );
+                ph0_Tx_deg = ph0_Tx_list_deg( sim_counter );
                 
                 % If receiver orientation is Specular-facing, then set
-                % receiver ph0_Rx_deg equal to transmitter ph0_Tx_deg
+                % receiver th0_Rx_deg equal to transmitter th0_Tx_deg
                 if orientation_Rx_id == Constants.id_Rx_specular_facing
+                    
+                    RxParams.getInstance.set_th0_Rx_deg( th0_Tx_deg );
                     RxParams.getInstance.set_ph0_Rx_deg( ph0_Tx_deg );
-                end
                 
+                end
+            
             end
             % Get function
             
-            result = index_Ph;
+            result = sim_counter;
             
         end
-                
-        function result = index_VSM( value )
-           
-            persistent index_VSM
-            
-            if nargin ~= 0
-                index_VSM = value;
-            end
-            
-            result = index_VSM;
-            
-        end
-                
-        function result = index_RMSH( value )
-           
-            persistent index_RMSH
-            
-            if nargin ~= 0
-                index_RMSH = value;
-            end
-            
-            result = index_RMSH;
-            
-        end
+        
         
         function [validityResult, terminateResult, terminateMsg] = isInputValid()
                         
@@ -124,18 +90,18 @@ classdef ParamsManager < handle
                         
                 isSysInputEqual = ParamsManager.isSysInputEqual();
                 isVegInputEqual = ParamsManager.isVegInputEqual();
-                isInputValidForSimMode = ParamsManager.isInputValidForSimMode();
+                isDynInputsValid = ParamsManager.isDynInputsValid();
                 
-                isValid = isSysInputEqual & isVegInputEqual & isInputValidForSimMode;
+                isValid = isSysInputEqual & isVegInputEqual & isDynInputsValid;
 
                 if ~isValid
                     
-                    % If the reason for invalidity is the simulation mode
-                    % (Cross simulation OR Time-series)
-                    if ~isInputValidForSimMode
+                    % If the reason for invalidity is the number of Dynamic
+                    % Parameters
+                    if ~isDynInputsValid
                         
                         isTerminate = 1;
-                        msg = 'Input for dynamic system parameters are not valid for simulation mode. SCoBi simulator will be terminated for user check!';
+                        msg = 'Dynamic inputs are not valid for simulation mode. SCoBi simulator will be terminated for user check!';
                         
                     % Else if the reason is input inequality with the
                     % existing simulation folders
@@ -169,7 +135,7 @@ classdef ParamsManager < handle
                 % The first time this simulation is being created
                 if ~exist( dir_hr)
                 
-                    isValid = ParamsManager.isInputValidForSimMode();
+                    isValid = ParamsManager.isDynInputsValid();
                 
                 % Simulation exists, but input_params_filename looks 
                 % to be deleted. That is an error. User should check!
@@ -188,12 +154,14 @@ classdef ParamsManager < handle
         end
         
         
-        function isValid = isInputValidForSimMode
+        function isValid = isDynInputsValid
             
             %% GET GLOBAL PARAMETERS
-            % Simulation Parameters
+            % Simulation 
             sim_mode_id = SimSettings.getInstance.sim_mode_id;
             % Dynamic Parameters
+            DoYs = DynParams.getInstance.DoYs;
+            num_DoY = length( DoYs );
             th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
             num_Th = length( th0_Tx_list_deg );
             ph0_Tx_list_deg = DynParams.getInstance.ph0_Tx_list_deg;
@@ -205,46 +173,23 @@ classdef ParamsManager < handle
             
             
             isValid = 0;
-                            
-            maxnum = max( [num_Th, num_Ph, num_VSM, num_RMSH] );
-            
-            % Simulation mode is Time-series
-            if sim_mode_id == Constants.id_time_series
                 
-                % TO-DO: Add a control for timestamps as well
-                if (num_Th == maxnum || num_Th == 1) && ...
-                   (num_Ph == maxnum || num_Ph == 1) && ...
-                   (num_VSM == maxnum || num_VSM == 1 ) && ...
-                   (num_RMSH == maxnum || num_RMSH == 1)
-                    
-                    isValid = 1;
-                    
-                    if num_Th == 1
-                        DynParams.getInstance.rep_Th(maxnum);
-                    end
-                    
-                    if num_Ph == 1
-                        DynParams.getInstance.rep_Ph(maxnum);
-                    end
-                    
-                    if num_VSM == 1
-                        DynParams.getInstance.rep_VSM(maxnum);
-                    end                    
-                    
-                    if num_RMSH == 1
-                        DynParams.getInstance.rep_RMSH(maxnum);
-                    end
-
-                end
-                
-            % Simulation mode is Snapshot
-            elseif sim_mode_id == Constants.id_snapshot
+            if sim_mode_id == Constants.id_snapshot
                 
                 if ~( num_Th == 0 || num_Ph == 0 || num_VSM == 0 || ...
                         num_RMSH == 0 )
-                
+
                     isValid = 1;
+                    
+                end
                 
+            elseif sim_mode_id == Constants.id_time_series
+
+                if ~( num_DoY == 0 || num_Th == 0 || num_Ph == 0 || num_VSM == 0 || ...
+                        num_RMSH == 0 )
+
+                    isValid = 1;
+                    
                 end
                 
             end

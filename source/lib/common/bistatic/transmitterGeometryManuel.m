@@ -2,19 +2,20 @@
 % April 6, 2017
 
 
-function [Tgt, TgtI] = satGeometryManuel
+function [Tgt, TgtI] = transmitterGeometryManuel
 
 %%GET GLOBAL DIRECTORIES
 dir_config = SimulationFolders.getInstance.config;
 
 
 %% GET GLOBAL PARAMETERS
+sim_counter = ParamsManager.sim_counter;
 % Dynamic Parameters
 th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
-th0_Tx_deg = th0_Tx_list_deg( ParamsManager.index_Th );
+th0_Tx_deg = th0_Tx_list_deg( sim_counter );
 th0_Tx_rad = degtorad(th0_Tx_deg) ;
 ph0_Tx_list_deg = DynParams.getInstance.ph0_Tx_list_deg;
-ph0_Tx_deg = ph0_Tx_list_deg( ParamsManager.index_Ph );
+ph0_Tx_deg = ph0_Tx_list_deg( sim_counter );
 
 %% Incoming Signal
 % Azimuth Angle (in standard spherical coords) of incoming signal
