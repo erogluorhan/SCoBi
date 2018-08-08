@@ -5,13 +5,14 @@ function [S0x_m, x1_m, ax1_m, by1_m] = calcFresnelZones(ht_m, hr_m)
 
 
 %% GET GLOBAL PARAMETERS
+sim_counter = ParamsManager.sim_counter;
 % Simulation Parameters
 Nfz = SimParams.getInstance.Nfz;
 % Transmitter Parameters
 f_Hz = TxParams.getInstance.f_MHz * Constants.MHz2Hz ;
 % Dynamic Parameters
 th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
-th0_Tx_deg = th0_Tx_list_deg( ParamsManager.index_Th );
+th0_Tx_deg = th0_Tx_list_deg( sim_counter );
 el0_Tx_deg = 90 - th0_Tx_deg;
 
 

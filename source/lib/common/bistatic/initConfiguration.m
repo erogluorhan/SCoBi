@@ -3,12 +3,12 @@
 % Mehmet Kurum
 % April 6, 2017
 
-function setConfig
+function initConfiguration
 
 
 %% TO-DO: Work on the realistic SatGeo
 %% TRANSMITTER GEOMETRY
-[Tgt, TgtI] = satGeometryManuel();
+[Tgt, TgtI] = transmitterGeometryManuel();
 
 
 %% BISTATIC GEOMETRY

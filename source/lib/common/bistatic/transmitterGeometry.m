@@ -3,7 +3,7 @@
 
 
 function [rd, PH0_deg, EL0_deg, Tgt, TgtI] ...
-    = satGeometry( LatSd, LonSd, LatBd, LonBd, LatGd, LonGd)
+    = transmitterGeometry( LatSd, LonSd, LatBd, LonBd, LatGd, LonGd)
 
 %% GET GLOBAL DIRECTORIES
 dir_config = SimulationFolders.getInstance.config;

@@ -11,18 +11,19 @@ dir_config = SimulationFolders.getInstance.config;
 
 
 %% GET GLOBAL PARAMETERS
+sim_counter = ParamsManager.sim_counter;
 % Simulation Parameters
 Nfz = SimParams.getInstance.Nfz;
 % Transmitter Parameters
 r_Tx_m = TxParams.getInstance.r_Tx_m;
 % Dynamic Parameters
 th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
-th0_Tx_deg = th0_Tx_list_deg( ParamsManager.index_Th );   % Currrent theta ( Incidence Angle )
+th0_Tx_deg = th0_Tx_list_deg( sim_counter );   % Currrent theta ( Incidence Angle )
 th0_Tx_rad = degtorad(th0_Tx_deg) ;
 el0_Tx_deg = 90 - th0_Tx_deg;
 el0_Tx_rad = degtorad(el0_Tx_deg) ;
 ph0_Tx_list_deg = DynParams.getInstance.ph0_Tx_list_deg;
-ph0_Tx_deg = ph0_Tx_list_deg( ParamsManager.index_Ph );   % Current phi (Azimuth Angle (standard spherical coords) of transmitter's position)
+ph0_Tx_deg = ph0_Tx_list_deg( ParamsManager.sim_counter );   % Current phi (Azimuth Angle (standard spherical coords) of transmitter's position)
 ph0_Tx_deg = 90 - ph0_Tx_deg ;                            % If it was the incoming signal's azimuth, we would add 180 degrees
 ph0_Tx_rad = degtorad(ph0_Tx_deg) ;
 % Receiver Parameters

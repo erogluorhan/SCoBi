@@ -67,7 +67,7 @@ classdef DynParams < handle
             obj.th0_Tx_list_deg = th0_Tx_list_deg;
             obj.ph0_Tx_list_deg = ph0_Tx_list_deg;
             obj.VSM_list_cm3cm3 = VSM_list_cm3cm3;
-            obj.RMSH_list_cm = RMSH_list_cm; 
+            obj.RMSH_list_cm = RMSH_list_cm;             
         end
         
         function out = get.DoYs(obj)
@@ -88,22 +88,6 @@ classdef DynParams < handle
         
         function out = get.VSM_list_cm3cm3(obj)
             out = obj.VSM_list_cm3cm3;        
-        end
-        
-        function rep_Ph( obj, factor )
-            obj.ph0_Tx_list_deg = repmat(obj.ph0_Tx_list_deg, 1, factor);
-        end
-        
-        function rep_Th( obj, factor )
-            obj.th0_Tx_list_deg = repmat(obj.th0_Tx_list_deg, 1, factor);
-        end
-        
-        function rep_RMSH( obj, factor )
-            obj.RMSH_list_cm = repmat(obj.RMSH_list_cm, 1, factor);
-        end
-        
-        function rep_VSM( obj, factor )
-            obj.VSM_list_cm3cm3 = repmat(obj.VSM_list_cm3cm3, 1, factor);
         end
     end
     

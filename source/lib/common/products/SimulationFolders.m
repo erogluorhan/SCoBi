@@ -219,13 +219,14 @@ function initializeDynamicDirs(obj)
 
 
 %% GET GLOBAL PARAMETERS
+sim_counter = ParamsManager.sim_counter;
 % Simulation Settings
 simulator_id = SimSettings.getInstance.simulator_id;
 % Dynamic Parameters
 VSM_list_cm3cm3 = DynParams.getInstance.VSM_list_cm3cm3;
-VSM_cm3cm3 = VSM_list_cm3cm3( ParamsManager.index_VSM );
+VSM_cm3cm3 = VSM_list_cm3cm3( sim_counter );
 RMSH_list_cm = DynParams.getInstance.RMSH_list_cm;
-RMSH_cm = RMSH_list_cm( ParamsManager.index_RMSH );
+RMSH_cm = RMSH_list_cm( sim_counter );
 th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
 ph0_Tx_list_deg = DynParams.getInstance.ph0_Tx_list_deg;
 % Transmitter Parameters
@@ -258,8 +259,8 @@ obj.gnd = strcat(obj.hr, '\', 'GND', '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', n
 
 
 %% Angle of incidence
-th0d_folder = strcat('th0d_', num2str( th0_Tx_list_deg( ParamsManager.index_Th ) ), ...
-                     '-ph0d_', num2str( ph0_Tx_list_deg( ParamsManager.index_Ph ) ) ) ;
+th0d_folder = strcat('th0d_', num2str( th0_Tx_list_deg( sim_counter ) ), ...
+                     '-ph0d_', num2str( ph0_Tx_list_deg( sim_counter ) ) ) ;
 obj.th0_deg = strcat(obj.sim_mode, '\', th0d_folder) ;
 
 
