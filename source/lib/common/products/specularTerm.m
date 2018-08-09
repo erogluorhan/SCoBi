@@ -7,7 +7,6 @@
 function specularTerm
 
 %% GET GLOBAL DIRECTORIES
-dir_config = SimulationFolders.getInstance.config;
 dir_rot_lookup = SimulationFolders.getInstance.rot_lookup ;
 dir_out_specular = SimulationFolders.getInstance.out_specular;
 dir_out_specular_tuple = SimulationFolders.getInstance.out_specular_tuple;
@@ -29,10 +28,11 @@ g_t = TxParams.getInstance.g_t ; % ideal
 e_t1 = TxParams.getInstance.e_t1 ; 
 e_t2 = TxParams.getInstance.e_t2 ;
 pol_Tx = TxParams.getInstance.pol_Tx;
+% Ground Parameters
+num_gnd_layers = GndParams.getInstance.num_layers;
 % Bistatic Parameters
 AllPoints_m = BistaticParams.getInstance.AllPoints_m;
 AngS2R_rf = BistaticParams.getInstance.AngS2R_rf; % SP->Rx Rotation Angle
-AngT2S_sf = BistaticParams.getInstance.AngT2S_sf; % Tx->SP Rotation Angle
 
 
 %% READ OR LOAD META-DATA
@@ -120,35 +120,54 @@ U_ts = calc_Muller(u_ts) ;
 % 4 X 4
 U_sr = calc_Muller(u_sr) ;
 
-% Specular Reflection Matrix
-thsd = AngT2S_sf(1, 1) ;
-
-[R_sv, R_sb, r_sv, r_sb] = CalcSRM(thsd) ; % r_sv for vegetation, r_sb for bare soil
+[R_sv, R_sb, r_sv, r_sb] = CalcSRM() ; % r_sv for vegetation, r_sb for bare soil
 
 
 %% SPECULAR TERM
+% Number of dielectric profiles depends on whether simulator is SCoBi-Veg
+% or SCoBi-ML. SCoBi-ML has several diel profiles.
+num_diel_profiles = length(r_sb);
 % P = 4 x 1
 % b = 2 x 1
 
-b_coh1v = g_r * u_sr * r_sv * u_ts * g_t * e_t1 ;   % field 
-b_coh2v = g_r * u_sr * r_sv * u_ts * g_t * e_t2 ;   % field
-b0_coh1v = g_r0 * u_sr * r_sv * u_ts * g_t * e_t1 ;  % field
-b0_coh2v = g_r0 * u_sr * r_sv * u_ts * g_t * e_t2 ;  % field
+for ii = 1 : num_diel_profiles
+    
+    b_coh1v(:,ii) = g_r * u_sr * r_sv{ii,1} * u_ts * g_t * e_t1 ;   % field 
+    b_coh2v(:,ii) = g_r * u_sr * r_sv{ii,1} * u_ts * g_t * e_t2 ;   % field
+    b0_coh1v(:,ii) = g_r0 * u_sr * r_sv{ii,1} * u_ts * g_t * e_t1 ;  % field
+    b0_coh2v(:,ii) = g_r0 * u_sr * r_sv{ii,1} * u_ts * g_t * e_t2 ;  % field
 
-b_coh1b = g_r * u_sr * r_sb * u_ts * g_t * e_t1 ;   % field
-b_coh2b = g_r * u_sr * r_sb * u_ts * g_t * e_t2 ;   % field
-b0_coh1b = g_r0 * u_sr * r_sb * u_ts * g_t * e_t1 ;  % field
-b0_coh2b = g_r0 * u_sr * r_sb * u_ts * g_t * e_t2 ;  % field
+    b_coh1b(:,ii) = g_r * u_sr * r_sb{ii,1} * u_ts * g_t * e_t1 ;   % field
+    b_coh2b(:,ii) = g_r * u_sr * r_sb{ii,1} * u_ts * g_t * e_t2 ;   % field
+    b0_coh1b(:,ii) = g_r0 * u_sr * r_sb{ii,1} * u_ts * g_t * e_t1 ;  % field
+    b0_coh2b(:,ii) = g_r0 * u_sr * r_sb{ii,1} * u_ts * g_t * e_t2 ;  % field
 
-P_coh1v = G_r * U_sr * R_sv * U_ts * G_t * E_t1 ;   % POWER
-P_coh2v = G_r * U_sr * R_sv * U_ts * G_t * E_t2 ;   % POWER
-P0_coh1v = G_r0 * U_sr * R_sv * U_ts * G_t * E_t1 ;  % POWER
-P0_coh2v = G_r0 * U_sr * R_sv * U_ts * G_t * E_t2 ;  % POWER
+    P_coh1v(:,ii) = G_r * U_sr * R_sv{ii,1} * U_ts * G_t * E_t1 ;   % POWER
+    P_coh2v(:,ii) = G_r * U_sr * R_sv{ii,1} * U_ts * G_t * E_t2 ;   % POWER
+    P0_coh1v(:,ii) = G_r0 * U_sr * R_sv{ii,1} * U_ts * G_t * E_t1 ;  % POWER
+    P0_coh2v(:,ii) = G_r0 * U_sr * R_sv{ii,1} * U_ts * G_t * E_t2 ;  % POWER
 
-P_coh1b = G_r * U_sr * R_sb * U_ts * G_t * E_t1 ;   % POWER
-P_coh2b = G_r * U_sr * R_sb * U_ts * G_t * E_t2 ;   % POWER
-P0_coh1b = G_r0 * U_sr * R_sb * U_ts * G_t * E_t1 ;  % POWER
-P0_coh2b = G_r0 * U_sr * R_sb * U_ts * G_t * E_t2 ;  % POWER
+    P_coh1b(:,ii) = G_r * U_sr * R_sb{ii,1} * U_ts * G_t * E_t1 ;   % POWER
+    P_coh2b(:,ii) = G_r * U_sr * R_sb{ii,1} * U_ts * G_t * E_t2 ;   % POWER
+    P0_coh1b(:,ii) = G_r0 * U_sr * R_sb{ii,1} * U_ts * G_t * E_t1 ;  % POWER
+    P0_coh2b(:,ii) = G_r0 * U_sr * R_sb{ii,1} * U_ts * G_t * E_t2 ;  % POWER
+    
+    if pol_Tx == 'X' && pol_Rx == 'X'
+        % Reflectivity
+        Rp1{ii,1} = abs(b0_coh1b(1,ii)) .^ 2 ; % at ?/?0 = 1
+        Rp2{ii,1} = abs(b0_coh2b(2,ii)) .^ 2 ; % at ?/?0 = 1
+    else
+        % Reflectivity
+        Rp1{ii,1} = abs(b0_coh1b(1,ii)) .^ 2 ; % at ?/?0 = 1
+        Rp2{ii,1} = abs(b0_coh1b(2,ii)) .^ 2 ; % at ?/?0 = 1
+    end
+
+end
+
+% TO-DO: Remove these plotting lines
+plotReflectivityForProfiles( Rp1, Rp2 );
+plotReflectivityVsTh( Rp1, Rp2 );
+[M1, M2] = plotAddSMpoint();
 
 
 %% SAVE OUTPUTS
@@ -200,20 +219,23 @@ end
 
 
 %% Calculate Specular Reflection Matrix(SRM)
-function  [R_sv, R_sb, r_sv, r_sb] = CalcSRM(thsd)
+function  [R_sv, R_sb, r_sv, r_sb] = CalcSRM()
 
 %% GET GLOBAL DIRECTORIES
 dir_afsa = SimulationFolders.getInstance.afsa;
-dir_gnd = SimulationFolders.getInstance.gnd;
 
 
 %% GET GLOBAL PARAMETERS
 % Vegetation Parameters
 dim_layers_m = VegParams.getInstance.dim_layers_m;
-num_layers = VegParams.getInstance.num_layers;
+num_veg_layers = VegParams.getInstance.num_layers;
+% Ground Parameters
+num_gnd_layers = GndParams.getInstance.num_layers;
 % Surface Dynamic Paramaters
 h = SurfaceDynParams.getInstance.h;   % Effective roughness parameters
 eps_g = SurfaceDynParams.getInstance.eps_g;   % Dielectric permittivity
+% Bistatic Parameters
+AngT2S_sf = BistaticParams.getInstance.AngT2S_sf; % Tx->SP Rotation Angle
 
 
 %% READ META-DATA
@@ -229,13 +251,16 @@ ANGDEG = readVar(dir_afsa, filename) ;
 
 
 %% CALCULATIONS
+% Specular Reflection Matrix
+thsd = AngT2S_sf(1, 1) ;
+
 dKz_s = squeeze(dKz(:, ANGDEG == round(thsd), :)) ;
 
 %% Transmissivity Matrix
 ArgH = 0 ;
 ArgV = 0 ;
 
-for ii = 1 : num_layers
+for ii = 1 : num_veg_layers
     
     ArgH = ArgH + dKz_s(1, ii) * dim_layers_m(ii, 1) ;
     ArgV = ArgV + dKz_s(2, ii) * dim_layers_m(ii, 1) ;
@@ -249,19 +274,41 @@ t_sb = [1 0; 0 1] ;
 
 
 %% GROUND REFLECTION MATRIX
-ths = degtorad(thsd) ;
-[RGHIF, RGVIF, ~, ~] = reflectionCoeff(ths, ths, eps_g, h) ;
+% If single-layered ground
+if num_gnd_layers == 1
+    
+    ths = degtorad(thsd) ;
+    [RGHIF, RGVIF, ~, ~] = reflectionCoeffSingle(ths, ths, eps_g, h) ;
 
-r_g = [RGVIF 0; 0 RGHIF] ;
+    r_g = [RGVIF 0; 0 RGHIF] ;
 
 
-%% SPECULAR REFLECTION MATRIX
-% 2 X 2
-r_sv = t_sv * r_g * t_sv ;
-r_sb = t_sb * r_g * t_sb ;
-% 4 X 4
-R_sv = calc_Muller(r_sv) ;
-R_sb = calc_Muller(r_sb) ;
+    %% SPECULAR REFLECTION MATRIX
+    % 2 X 2
+    r_sv = t_sv * r_g * t_sv ;
+    r_sb = t_sb * r_g * t_sb ;
+    % 4 X 4
+    R_sv = calc_Muller(r_sv) ;
+    R_sb = calc_Muller(r_sb) ;
+
+% Else if multi-layered ground
+else
+    
+    [r_g_cell] = reflectionCoeffsML();
+    
+    num_diel_profiles = length(r_g_cell);
+    
+    for ii = 1 : num_diel_profiles
+        
+        r_sv{ii,1} = t_sv * r_g_cell{ii,1} * t_sv ;
+        r_sb{ii,1} = t_sb * r_g_cell{ii,1} * t_sb ;
+        % 4 X 4
+        R_sv{ii,1} = calc_Muller(r_sv{ii,1});
+        R_sb{ii,1} = calc_Muller(r_sb{ii,1});
+        
+    end
+
+end
 
 
 end

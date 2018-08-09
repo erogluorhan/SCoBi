@@ -710,38 +710,29 @@ classdef ParamsManager < handle
         simulator_id = SimSettings.getInstance.simulator_id;
         calc_specular_term = SimSettings.getInstance.calc_specular_term;
 
-
-        if simulator_id == Constants.id_veg_agr ...
-            || simulator_id == Constants.id_veg_for
-
-            % First check the user preferences
-            if ~calc_specular_term
-                dispMsg = 'Specular Term - SKIPPED (User Preferences - No Specular Term)';
-                result = Constants.need_for_run.NO;
-                return
-            end            
-
-            % If passes user preferences, check the existence of files           
-            num_files = 0;
-
-            if ( exist(dir_out_specular_tuple,'dir') == 7 )
-                all_files = dir(dir_out_specular_tuple);
-                num_files = numel(all_files) - 2;
-            end
-
-            if num_files == Constants.num_out_specular
-                dispMsg = 'Specular Term - SKIPPED - Already exists!';
-                result = Constants.need_for_run.NO;
-            else
-                dispMsg = 'Specular Term';
-                result = Constants.need_for_run.FULL;
-            end
-
-        elseif simulator_id == Constants.id_multi_layer
-
-            dispMsg = '';
+        
+        %% DECISION
+        % First check the user preferences
+        if ~calc_specular_term
+            dispMsg = 'Specular Term - SKIPPED (User Preferences - No Specular Term)';
             result = Constants.need_for_run.NO;
+            return
+        end            
 
+        % If passes user preferences, check the existence of files           
+        num_files = 0;
+
+        if ( exist(dir_out_specular_tuple,'dir') == 7 )
+            all_files = dir(dir_out_specular_tuple);
+            num_files = numel(all_files) - 2;
+        end
+
+        if num_files == Constants.num_out_specular
+            dispMsg = 'Specular Term - SKIPPED - Already exists!';
+            result = Constants.need_for_run.NO;
+        else
+            dispMsg = 'Specular Term';
+            result = Constants.need_for_run.FULL;
         end
 
         end

@@ -74,8 +74,6 @@ out_diffuse_P4_tuple
 out_diffuse_NBRCS
 out_diffuse_NBRCS_tuple
 
-out_ml_ref
-
 fig
 fig_direct
 fig_specular
@@ -317,17 +315,26 @@ obj.rot_real = strcat(obj.rot, '\', 'REALIZATION') ;
 
 %% Output
 obj.out = strcat(obj.pol, '\OUTPUT\', FolderNameAnt) ;
+obj.out_direct = strcat(obj.out, '\', 'DIRECT') ;
+obj.out_specular = strcat(obj.out, '\', 'SPECULAR') ;
+obj.out_specular_tuple = strcat(obj.out_specular, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ; 
 
 
 %% Figure
 obj.fig = strcat(obj.sim_mode, '\', 'FIGURE\', pol_Tx, pol_Rx, '\', FolderNameAnt ) ;
+obj.fig_direct = strcat(obj.fig, '\', 'DIRECT') ;
+obj.fig_specular = strcat(obj.fig, '\', 'SPECULAR') ;
+obj.fig_specular_P = strcat(obj.fig_specular, '\', 'P') ;
+obj.fig_specular_P_vsTH = strcat(obj.fig_specular_P, '\', 'vs_TH') ;
 
+
+%% SIMULATOR-SPECIFIC FOLDERS
 % SCoBi-Veg specific folders
 if simulator_id == Constants.id_veg_agr ...
     || simulator_id == Constants.id_veg_for
 
 
-    %% Frequency Response
+    %% FREQUENCY RESPONSE
     obj.freq = strcat(obj.pol, '\FREQ\', FolderNameAnt) ;            
     obj.freqdiff = strcat(obj.freq, '\', 'DIFFUSE') ;            
     obj.freqdiff_b1 = strcat(obj.freqdiff, '\', 'b1') ;          
@@ -345,11 +352,10 @@ if simulator_id == Constants.id_veg_agr ...
     obj.freqdiff_P3 = strcat(obj.freqdiff, '\', 'P3') ; 
     obj.freqdiff_P3_tuple = strcat(obj.freqdiff_P3, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;             
     obj.freqdiff_P4 = strcat(obj.freqdiff, '\', 'P4') ;
-    obj.freqdiff_P4_tuple = strcat(obj.freqdiff_P4, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ; 
-
-    obj.out_direct = strcat(obj.out, '\', 'DIRECT') ;
-    obj.out_specular = strcat(obj.out, '\', 'SPECULAR') ;
-    obj.out_specular_tuple = strcat(obj.out_specular, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ; 
+    obj.freqdiff_P4_tuple = strcat(obj.freqdiff_P4, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ;
+   
+    
+    %% DIFFUSE OUTPUT
     obj.out_diffuse = strcat(obj.out, '\', 'DIFFUSE') ;
     obj.out_diffuse_b1 = strcat(obj.out_diffuse, '\', 'b1') ;
     obj.out_diffuse_b2 = strcat(obj.out_diffuse, '\', 'b2') ;
@@ -366,10 +372,8 @@ if simulator_id == Constants.id_veg_agr ...
     obj.out_diffuse_NBRCS = strcat(obj.out_diffuse, '\', 'NBRCS') ;
     obj.out_diffuse_NBRCS_tuple = strcat(obj.out_diffuse_NBRCS, '\VSM_', num2str( VSM_cm3cm3 ), '-RMSH_', num2str(RMSH_cm)) ; 
 
-    obj.fig_direct = strcat(obj.fig, '\', 'DIRECT') ;
-    obj.fig_specular = strcat(obj.fig, '\', 'SPECULAR') ;
-    obj.fig_specular_P = strcat(obj.fig_specular, '\', 'P') ;
-    obj.fig_specular_P_vsTH = strcat(obj.fig_specular_P, '\', 'vs_TH') ;
+    
+    %% PLOT FIGURES
     obj.fig_diffuse = strcat(obj.fig, '\', 'DIFFUSE') ;
     obj.fig_diffuse_P1_vsTH = strcat(obj.fig_diffuse, '\', 'P1', '\', 'vs_TH');
     obj.fig_diffuse_P1_vsFZ = strcat(obj.fig_diffuse, '\', 'P1', '\', 'vs_FZ');
@@ -379,7 +383,7 @@ if simulator_id == Constants.id_veg_agr ...
 % SCoBi-ML specific folders
 elseif simulator_id == Constants.id_multi_layer
 
-    obj.out_ml_ref = strcat(obj.out, '\', 'Reflectivity') ;
+    % None
 
 end
 
@@ -598,11 +602,6 @@ end
 
             if ~exist(obj.out_diffuse_NBRCS, 'dir')
                 mkdir(obj.out_diffuse_NBRCS)
-            end
-
-            % Multilayer Reflectivity Output
-            if ~exist(obj.out_ml_ref, 'dir')
-                mkdir(obj.out_ml_ref)
             end
 
             % Figure
@@ -874,10 +873,6 @@ end
         
         function out = get.out_diffuse_NBRCS_tuple(obj)
             out = obj.out_diffuse_NBRCS_tuple;
-        end
-        
-        function out = get.out_ml_ref(obj)
-            out = obj.out_ml_ref;
         end
         
         function out = get.fig(obj)

@@ -653,7 +653,7 @@ for fz = 1 : Nfz    % Fresnel Zones
         % Calculate Reflection Coefficient
         thiI = degtorad(180 - thidI) ;        % incident angle
         thsI = degtorad(180 - thsdI(pp)) ;    % scattered angle
-        [RGH_iI, RGV_iI, RGH_oI, RGV_oI] = reflectionCoeff(thiI, thsI, eps_g, h) ;
+        [RGH_iI, RGV_iI, RGH_oI, RGV_oI] = reflectionCoeffSingle(thiI, thsI, eps_g, h) ;
 
         % Antenna Pattern Matrix
         % 2 X 2

@@ -6,6 +6,8 @@ function initSurfaceDynamics
 
 %% GET GLOBAL PARAMETERS
 sim_counter = ParamsManager.sim_counter;
+% Simulation Settings
+simulator_id = SimSettings.getInstance.simulator_id;
 % Transmitter Parameters
 f_MHz = TxParams.getInstance.f_MHz;
 f_Hz = f_MHz * Constants.MHz2Hz ;
@@ -29,7 +31,15 @@ h = (2 * RMSH_cm * ko) ^ 2 ;        % effective roughness parameter
 
 % Soil Dielectric Constant
 eps_g = dielg( VSM_cm3cm3, f_Hz, sand_ratio, clay_ratio, rhob_gcm3) ; % eps_g = eps_gp - j * eps_gpp
-eps_g = conj(eps_g) ; % eps_g = eps_gp + i * eps_gpp
+
+% TO-DO: Justify the conjugate operation for SCoBi-Veg
+if simulator_id == Constants.id_veg_agr ...
+        || simulator_id == Constants.id_veg_for
+
+    eps_g = conj(eps_g) ; % eps_g = eps_gp + i * eps_gpp
+    
+end
+
 eps_g = round(eps_g * 10) / 10 ;
 
 
