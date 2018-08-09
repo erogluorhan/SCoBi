@@ -1,4 +1,4 @@
-function generateMLReflectivities
+function [r_g] = reflectionCoeffsML()
 
 
 %% GET GLOBAL PARAMETERS
@@ -6,9 +6,6 @@ sim_counter = ParamsManager.sim_counter;
 % Transmitter Parameters
 f_MHz = TxParams.getInstance.f_MHz;
 f_Hz = f_MHz * Constants.MHz2Hz;
-pol_Tx = TxParams.getInstance.pol_Tx;
-% Receiver Parameters
-pol_Rx = RxParams.getInstance.pol_Rx;
 % Dynamic Parameters
 th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
 th0_Tx_deg = th0_Tx_list_deg( sim_counter );
@@ -29,6 +26,8 @@ z_m = GndMLParams.getInstance.z_m;    % Layer profile
 % Wavelength
 lambda_m = Constants.c / f_Hz ;
 
+
+% Reflection Coefficient for Discrete Slab
 zzb = (zA_m + layer_bottom_m) ;
 Lzb = diff(zzb)' ; % / lambda_m ; % complex optical length in units of lambda_m
 nA = sqrte(Constants.eps_diel_air) ;
@@ -41,64 +40,24 @@ ns = [nS; nS; nS] ;
 % input to multidiel
 n = [na, ns] ;
 
-% Reflection Coefficient for Discrete Slab
 rh = multidiel(n, Lzb, 1, th0_Tx_deg, 'te') ;
 rv = multidiel(n, Lzb, 1, th0_Tx_deg, 'th') ;
-r_s = [rv 0; 0 rh] ;
-
-[r0_coh1b, r0_coh2b] = SpecularReflection(r_s) ;
+r_g{Constants.id_diel_slab, 1} = [rv 0; 0 rh];
 
 
 % Reflection Coefficient for Logistic Profile
 [rh_L, rv_L] = calcSpecularReflectionCoeffML(lambda_m, th0_Tx_deg, z_m, eps_diel_zL) ;
-r_s_L = [rv_L 0; 0 rh_L] ;
-
-[r0_coh1b_L, r0_coh2b_L] = SpecularReflection(r_s_L) ;
+r_g{Constants.id_diel_logistic, 1} = [rv_L 0; 0 rh_L] ;
 
 
 % Reflection Coefficient for 2nd Order Profile
 [rh_2nd, rv_2nd] = calcSpecularReflectionCoeffML(lambda_m, th0_Tx_deg, z_m, eps_diel_z2nd ) ;
-r_s_2nd = [rv_2nd 0; 0 rh_2nd] ;
-
-[r0_coh1b_2nd, r0_coh2b_2nd] = SpecularReflection(r_s_2nd) ;
+r_g{Constants.id_diel_2nd_order, 1} = [rv_2nd 0; 0 rh_2nd] ;
 
 
 % Reflection Coefficient for 3rd Order Profile
 [rh_3rd, rv_3rd] = calcSpecularReflectionCoeffML(lambda_m, th0_Tx_deg, z_m, eps_diel_z3rd ) ;
-r_s_3rd = [rv_3rd 0; 0 rh_3rd] ;
-
-[r0_coh1b_3rd, r0_coh2b_3rd] = SpecularReflection(r_s_3rd) ;
-
-
-if pol_Tx == 'X' && pol_Rx == 'X'
-    % Reflectivity
-    Rp1 = abs(r0_coh1b(1)) .^ 2 ; % at ?/?0 = 1
-    Rp2 = abs(r0_coh2b(2)) .^ 2 ; % at ?/?0 = 1
-    Rp1_L = abs(r0_coh1b_L(1)) .^ 2 ; % at ?/?0 = 1
-    Rp2_L = abs(r0_coh2b_L(2)) .^ 2 ; % at ?/?0 = 1
-    Rp1_2nd = abs(r0_coh1b_2nd(1)) .^ 2 ; % at ?/?0 = 1
-    Rp2_2nd = abs(r0_coh2b_2nd(2)) .^ 2 ; % at ?/?0 = 1
-    Rp1_3rd = abs(r0_coh1b_3rd(1)) .^ 2 ; % at ?/?0 = 1
-    Rp2_3rd = abs(r0_coh2b_3rd(2)) .^ 2 ; % at ?/?0 = 1
-else
-    % Reflectivity
-    Rp1 = abs(r0_coh1b(1)) .^ 2 ; % at ?/?0 = 1
-    Rp2 = abs(r0_coh1b(2)) .^ 2 ; % at ?/?0 = 1
-    Rp1_L = abs(r0_coh1b_L(1)) .^ 2 ; % at ?/?0 = 1
-    Rp2_L = abs(r0_coh1b_L(2)) .^ 2 ; % at ?/?0 = 1
-    Rp1_2nd = abs(r0_coh1b_2nd(1)) .^ 2 ; % at ?/?0 = 1
-    Rp2_2nd = abs(r0_coh1b_2nd(2)) .^ 2 ; % at ?/?0 = 1
-    Rp1_3rd = abs(r0_coh1b_3rd(1)) .^ 2 ; % at ?/?0 = 1
-    Rp2_3rd = abs(r0_coh1b_3rd(2)) .^ 2 ; % at ?/?0 = 1
-end
-
-plotReflectivityForProfiles( Rp1, Rp2, Rp1_L, Rp2_L, Rp1_2nd, Rp2_2nd, Rp1_3rd, Rp2_3rd );
-
-plotReflectivityVsTh( Rp1, Rp2, Rp1_L, Rp2_L, Rp1_2nd, Rp2_2nd, Rp1_3rd, Rp2_3rd );
-
-[M1, M2] = plotAddSMpoint();
-
-% plotMovie( M1 );
+r_g{Constants.id_diel_3rd_order, 1} = [rv_3rd 0; 0 rh_3rd] ;
 
 end
 
@@ -123,7 +82,7 @@ nb = [nSz(:, 1); nSz(:, 1); nSz(:, 1)] ;
 %% input to multidiel
 n = [na, nm, nb] ;
 
-%% Reflection Coeffficeint
+%% Reflection Coeffficient
 rh = multidiel(n, Lz, 1, th0_Tx_deg, 'te') ;
 rv = multidiel(n, Lz, 1, th0_Tx_deg, 'th') ;
 

@@ -1,4 +1,4 @@
-function plotReflectivityVsTh( Rp1, Rp2, Rp1_L, Rp2_L, Rp1_2, Rp2_2, Rp1_3, Rp2_3 )
+function plotReflectivityVsTh( Rp1, Rp2 )
 
 
 %% GET GLOBAL PARAMETER

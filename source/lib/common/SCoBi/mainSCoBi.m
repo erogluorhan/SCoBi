@@ -160,20 +160,6 @@ if needForSpecularTerm == Constants.need_for_run.FULL
 end
 
 
-
-%% CALCULATE DIELECTRIC REFLECTIVITIES
-% TO-DO: Test ParamsManager controls
-[needForMLReflectivities, dispMsg] = ParamsManager.isToCalculateMLReflectivities();
-
-disp( dispMsg );
-    
-if ~needForMLReflectivities == Constants.need_for_run.NO
-
-    generateMLReflectivities();
-
-end
-
-
 %% CALCULATE DIFFUSE CONTRIBUTION
 disp('+++++++++++++++   CALCULATE DIFFUSE CONTRIBUTION   ++++++++++++++++')
 t = datetime('now') %#ok<NOPRT,*NASGU>

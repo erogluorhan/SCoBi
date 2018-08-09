@@ -1,5 +1,5 @@
 
-function [RGHI, RGVI, RGHS, RGVS] = reflectionCoeff(TIN, TS, EPSG, h)
+function [RGHI, RGVI, RGHS, RGVS] = reflectionCoeffSingle(TIN, TS, EPSG, h)
 
 % ************************************************************************
 %

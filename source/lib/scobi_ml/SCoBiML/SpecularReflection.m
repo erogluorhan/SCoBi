@@ -5,7 +5,6 @@ function [r0_coh1b, r0_coh2b] = SpecularReflection(r_s)
 
 
 %% GLOBAL DIRECTORIES
-dir_config = SimulationFolders.getInstance.config;
 dir_rot_lookup = SimulationFolders.getInstance.rot_lookup;
 dir_afsa = SimulationFolders.getInstance.afsa;
 

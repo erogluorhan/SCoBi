@@ -80,6 +80,12 @@ classdef Constants
         id_mironov = 2;
         diel_models = {'Dobson', 'Mironov'};
         
+        id_diel_slab = 1;
+        id_diel_logistic = 2;
+        id_diel_2nd_order = 3;
+        id_diel_3rd_order = 4;
+        diel_profiles = {'Discrete-slab', 'Logistic', '2nd-order', '3rd-order'};
+        
         
         %% STRUCTS
         % To determine the need for a function run in mainSCoBi

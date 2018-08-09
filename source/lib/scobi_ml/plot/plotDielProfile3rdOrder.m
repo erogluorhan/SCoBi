@@ -1,4 +1,4 @@
-function plotDielProfile3rdOrder( fig, eps_diel_z3rd, eps_diel_soil, z )
+function plotDielProfile3rdOrder( fig, eps_diel_z3rd, z )
 
 
 %% GET GLOBAL PARAMETER
@@ -6,6 +6,8 @@ function plotDielProfile3rdOrder( fig, eps_diel_z3rd, eps_diel_soil, z )
 draw_live_plots = SimSettings.getInstance.draw_live_plots;
 % Ground Parameters
 gnd_layer_depth_m = GndParams.getInstance.layer_depth_m;
+% Surface Dynamic Params
+eps_g = SurfaceDynParams.getInstance.eps_g;
 % Ground-ML Parameters
 zA_m = GndMLParams.getInstance.zA_m;
 
@@ -18,7 +20,7 @@ if draw_live_plots
         subplot(3,4,2)
         plot(real(eps_diel_z3rd), (z-zA_m)*Constants.m2cm, 'c', 'linewidth', 2)
         hold on
-        plot(real(eps_diel_soil), gnd_layer_depth_m*Constants.m2cm, 'o')
+        plot(real(eps_g), gnd_layer_depth_m*Constants.m2cm, 'o')
         grid
         axis([0 30 0 z(end)])
         set(gca,'YDir','reverse')
@@ -27,7 +29,7 @@ if draw_live_plots
         % aa = sort([zz, z(end), zA_m + gnd_layer_depth_m]) - zA_m ;
         aa = [0; gnd_layer_depth_m] ;
         set(gca,'YTick',aa * Constants.m2cm)
-        bb = real([Constants.eps_diel_air; eps_diel_soil]) ;
+        bb = real([Constants.eps_diel_air; eps_g]) ;
         bb = sort(unique(bb)) ;
         set(gca,'XTick',bb)
         xlabel('\epsilon\prime - real part')
@@ -45,7 +47,7 @@ if draw_live_plots
         subplot(2,2,2)
         plot(real(eps_diel_z3rd), (z-zA_m)*Constants.m2cm, 'c', 'linewidth', 2)
         hold on
-        plot(real(eps_diel_soil), gnd_layer_depth_m*Constants.m2cm, 'o')
+        plot(real(eps_g), gnd_layer_depth_m*Constants.m2cm, 'o')
         grid
         axis([0 30 0 z(end)])
         set(gca,'YDir','reverse')
@@ -54,7 +56,7 @@ if draw_live_plots
         % aa = sort([zz, z(end), zA_m + gnd_layer_depth_m]) - zA_m ;
         aa = [0, gnd_layer_depth_m] ;
         set(gca,'YTick',aa * Constants.m2cm, 'FontSize', 6)
-        bb = real([Constants.eps_diel_air, eps_diel_soil]) ;
+        bb = real([Constants.eps_diel_air, eps_g]) ;
         bb = sort(unique(bb)) ;
         set(gca,'XTick',bb)
     %     xlabel('\epsilon\prime - real part')
