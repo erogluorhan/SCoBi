@@ -18,6 +18,7 @@ RMSH_list_cm = DynParams.getInstance.RMSH_list_cm;
 RMSH_cm = RMSH_list_cm( sim_counter );
 % Ground Parameters
 % TO-DO: Implement for different ground layers
+diel_model_id = GndParams.getInstance.diel_model_id;
 sand_ratio = GndParams.getInstance.sand_ratio;
 clay_ratio = GndParams.getInstance.clay_ratio;
 rhob_gcm3 = GndParams.getInstance.rhob_gcm3;
@@ -30,13 +31,17 @@ ko = 2 * pi / lambda_cm ;
 h = (2 * RMSH_cm * ko) ^ 2 ;        % effective roughness parameter
 
 % Soil Dielectric Constant
-eps_g = dielg( VSM_cm3cm3, f_Hz, sand_ratio, clay_ratio, rhob_gcm3) ; % eps_g = eps_gp - j * eps_gpp
-
-% TO-DO: Justify the conjugate operation for SCoBi-Veg
-if simulator_id == Constants.id_veg_agr ...
-        || simulator_id == Constants.id_veg_for
-
-    eps_g = conj(eps_g) ; % eps_g = eps_gp + i * eps_gpp
+if diel_model_id == Constants.id_diel_dobson
+    
+    eps_g = dielDobson( f_Hz, VSM_cm3cm3, sand_ratio, clay_ratio, rhob_gcm3) ;
+    
+elseif diel_model_id == Constants.id_diel_mironov
+    
+    eps_g = dielMironov(f_Hz, VSM_cm3cm3, clay_ratio);
+    
+elseif diel_model_id == Constants.id_diel_wang
+        
+    eps_g = dielWang(VSM_cm3cm3, sand_ratio, clay_ratio, rhob_gcm3);
     
 end
 

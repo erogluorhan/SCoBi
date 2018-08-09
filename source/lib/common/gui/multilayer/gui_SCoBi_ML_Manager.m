@@ -62,7 +62,7 @@ end
 function result = is_popup_diel_model_dobson(obj)
 
 isOn = obj.isEnabled( obj.uiIDs.popup_diel_model );
-result = isOn && (obj.getElVal(obj.uiIDs.popup_diel_model) == Constants.id_dobson );
+result = isOn && (obj.getElVal(obj.uiIDs.popup_diel_model) == Constants.id_diel_dobson );
 
 end
 
@@ -71,7 +71,16 @@ end
 function result = is_popup_diel_model_mironov(obj)
 
 isOn = obj.isEnabled( obj.uiIDs.popup_diel_model );
-result = isOn && (obj.getElVal(obj.uiIDs.popup_diel_model) == Constants.id_mironov );
+result = isOn && (obj.getElVal(obj.uiIDs.popup_diel_model) == Constants.id_diel_mironov );
+
+end
+
+
+% Check if diel_model value is Wang
+function result = is_popup_diel_model_wang(obj)
+
+    isOn = obj.isEnabled( obj.uiIDs.popup_diel_model );
+    result = isOn && (obj.getElVal(obj.uiIDs.popup_diel_model) == Constants.id_diel_wang );
 
 end
 
@@ -283,19 +292,7 @@ end
 
 %% GROUND INPUTS
 % If diel_model popup value is changed            
-if sum(intersect(idEl, obj.uiIDs.popup_diel_model)) > 0                
-
-  % If selected diel_model is Dobson
-  if obj.is_popup_diel_model_mironov()
-
-      % Display a warning that the method is not
-      % implemented yet
-      waitfor(msgbox('WARNING: This method is not yet implemented!'));
-
-      % Change the popup value to default Dobson model
-      obj.setElVal(obj.uiIDs.popup_diel_model, Constants.id_dobson);  
-
-  end
+if sum(intersect(idEl, obj.uiIDs.popup_diel_model)) > 0    
 
   obj.updateGUI();
 
@@ -978,7 +975,7 @@ obj.setElVal(obj.uiIDs.edit_XPL_dB, [], 0);
 
 %% GROUND INPUTS            
 obj.init_popup_diel_model();
-obj.setElVal(obj.uiIDs.popup_diel_model, Constants.id_dobson, 0);
+obj.setElVal(obj.uiIDs.popup_diel_model, Constants.id_diel_dobson, 0);
 
 
 %% INPUT FILES  

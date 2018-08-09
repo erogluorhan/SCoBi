@@ -18,6 +18,8 @@ classdef Constants
         
         MHz2Hz = 1e6;
         
+        GHz2Hz = 1e9;
+        
         % Radius of earth - km -> m via multiplying by 1e3
         re = 6378 * 1e3;
         
@@ -76,9 +78,10 @@ classdef Constants
         id_Rx_cos_pow_n = 3;
         Rx_ant_pats = {'Generalized-Gaussian', 'User-defined', 'Cosine to the power n'};
         
-        id_dobson = 1;
-        id_mironov = 2;
-        diel_models = {'Dobson', 'Mironov'};
+        id_diel_dobson = 1;
+        id_diel_mironov = 2;
+        id_diel_wang = 3;
+        diel_models = {'Dobson', 'Mironov', 'Wang'};
         
         id_diel_slab = 1;
         id_diel_logistic = 2;
