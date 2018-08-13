@@ -8,7 +8,7 @@
 %
 %
 %--------------------------------------------------------------------------
-%                         SCoBi-Veg v1.0
+%                         SCoBi v1.0
 %
 %    Copyright (C) 2018-2023 Mehmet Kurum, Orhan Eroglu
 %--------------------------------------------------------------------------
@@ -37,7 +37,7 @@ function runSCoBi
 resetWS();
 
 % Add the common path to start running SCoBi
-addpath( genpath( strcat(pwd, '/common') ) );
+addpath( genpath( strcat(pwd, '/scobi') ) );
 
 
 %% GUI: MAIN SCOBI WINDOW (SIMULATOR SELECTION)
@@ -65,6 +65,7 @@ if (isempty(inputStruct))
     fprintf('SCoBi terminated by the user\n');
     
     return
+    
 end
 
 % Initialize all input parameters by using the inputs from GUI
