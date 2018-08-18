@@ -28,11 +28,11 @@ sim_mode_id = SimSettings.getInstance.sim_mode_id;
 pol_Tx = TxParams.getInstance.pol_Tx;
 % Receiver Parameters
 pol_Rx = RxParams.getInstance.pol_Rx;
-% Dynamic Parameters
-th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
-ph0_Tx_list_deg = DynParams.getInstance.ph0_Tx_list_deg;
-VSM_list_cm3cm3 = DynParams.getInstance.VSM_list_cm3cm3;
-RMSH_list_cm = DynParams.getInstance.RMSH_list_cm;
+% Configuration Parameters
+th0_Tx_list_deg = ConfigParams.getInstance.th0_Tx_list_deg;
+ph0_Tx_list_deg = ConfigParams.getInstance.ph0_Tx_list_deg;
+VSM_list_cm3cm3 = ConfigParams.getInstance.VSM_list_cm3cm3;
+RMSH_list_cm = ConfigParams.getInstance.RMSH_list_cm;
 
 num_Th = length( th0_Tx_list_deg );
 num_Ph = length( ph0_Tx_list_deg );
@@ -83,7 +83,7 @@ if sim_mode_id == Constants.id_snapshot
 
 
                     %% GET GLOBAL DIRECTORIES
-                    dir_out_specular = SimulationFolders.getInstance.out_specular;
+                    dir_out_specular = SimulationFolders.getInstance.products_specular;
                     
                     dir_fig_specular_P_vsTH = SimulationFolders.getInstance.fig_specular_P_vsTH;
                     if ~exist(dir_fig_specular_P_vsTH, 'dir')
@@ -271,6 +271,7 @@ function [b_coh1veg, b_coh2veg, b0_coh1veg, b0_coh2veg, ...
 
 
 %% GET GLOBAL DIRECTORIES
+% TO-DO: Correct
 dir_out_specular_tuple = SimulationFolders.getInstance.out_specular_tuple;
 
 

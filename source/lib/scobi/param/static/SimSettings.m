@@ -1,0 +1,105 @@
+classdef SimSettings < handle
+    %% SIMSETTINGS CLASS - Maintains simulation settings
+    % It keeps the settings that are specific to each 
+    % simulation. It can have only one instance throughout the whole
+    % simulation thanks to Singleton Pattern. Its properties should be 
+    % initialized once in the simulation and then used by other entities by 
+    % using the get() functions provided by it.
+    
+    properties (SetAccess = private, GetAccess = public)
+        % Simulator to be run
+        % 1: SCoBi-Veg
+        % 2: SCoBi-ML
+        simulator_id
+        
+        % Simulation mode
+        % 1: Snapshot
+        % 2: Time-series
+        sim_mode_id
+        
+        % Ground cover
+        % 1: Bare-soil
+        % 2: Vegetation
+        gnd_cover_id
+        
+        % Flag for whether to write attenuation to Excel file or not
+        % 0: Do not write 
+        % 1: Write
+        write_attenuation
+        
+        % Flag for including the simulation in Master Simulation file
+        % 0: Do not include
+        % 1: Include
+        include_in_master_sim_file
+        
+        % Flag for drawing live plots during simulations
+        draw_live_plots
+    end
+    
+    
+    methods (Access = private)
+    
+        function obj = SimSettings
+            % SIMSETTINGS - Private constructor
+        end
+    
+    end
+    
+    methods (Static)
+        
+        
+        function singleObj = getInstance
+            % GETINSTANCE - One instance for Singleton Pattern
+             persistent localObj
+             
+             if isempty(localObj) || ~isvalid(localObj)
+                localObj = SimSettings;
+             end
+             
+             singleObj = localObj;
+        end
+        
+    end
+    
+    
+    methods
+        
+        function initialize(obj, simulator_id, sim_mode_id, gnd_cover_id, write_attenuation, ...
+                include_in_master_sim_file, draw_live_plots )
+            % INITIALIZE - Initializes all the properties
+            
+            obj.simulator_id = simulator_id;
+            obj.sim_mode_id = sim_mode_id;
+            obj.gnd_cover_id = gnd_cover_id;
+            obj.write_attenuation = write_attenuation;
+            obj.include_in_master_sim_file = include_in_master_sim_file; 
+            obj.draw_live_plots = draw_live_plots; 
+        end
+        
+        function out = get.simulator_id(obj)
+            out = obj.simulator_id;        
+        end
+        
+        function out = get.sim_mode_id(obj)
+            out = obj.sim_mode_id;        
+        end
+        
+        function out = get.gnd_cover_id(obj)
+            out = obj.gnd_cover_id;        
+        end
+        
+        function out = get.write_attenuation(obj)
+            out = obj.write_attenuation;
+        end   
+        
+        function out = get.include_in_master_sim_file(obj)
+            out = obj.include_in_master_sim_file;
+        end
+        
+        function out = get.draw_live_plots(obj)
+            out = obj.draw_live_plots;
+        end
+    end
+    
+end
+

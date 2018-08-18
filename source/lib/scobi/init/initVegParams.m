@@ -4,9 +4,6 @@
 function initVegParams( inputStruct )
 
 %% GET GLOBAL PARAMETERS
-% Simulation Parameters
-veg_method_id = SimParams.getInstance.veg_method_id;
-veg_vir_orientation_id = SimParams.getInstance.veg_vir_orientation_id;
 % Simulation Settings
 gnd_cover_id = SimSettings.getInstance.gnd_cover_id;
 
@@ -14,27 +11,7 @@ gnd_cover_id = SimSettings.getInstance.gnd_cover_id;
 % If ground cover is Vegetation, then Vegetation Parameters are set
 if gnd_cover_id == Constants.id_veg_cover
 
-    % Virtual vegetation
-    if veg_method_id == Constants.id_veg_vir
-
-        % Virtual, Row-crop vegetation (e.g. crop fields like corn, soybean etc.)
-        if veg_vir_orientation_id == Constants.id_veg_vir_row_crop
-
-            initVegVirRowParams( inputStruct );
-
-        % Virtual, Random-spread vegetation
-        elseif veg_vir_orientation_id == Constants.id_veg_vir_random_spread
-
-            initVegVirRndParams( inputStruct );
-
-        end
-
-    % Homogenous vegetation
-    elseif SimParams.getInstance.veg_method_id == Constants.id_veg_hom
-
-        initVegHomParams( inputStruct );
-
-    end
+    initVegHomParams( inputStruct );
 
 end
 
@@ -151,47 +128,6 @@ end
 
 % Initialize Vegetation Parameters
 VegParams.getInstance.initialize( dim_layers_m, particleIDs, particlesCell, layersCell );
-
-end
-
-
-function initVegVirRndParams( inputStruct )
-
-% TO-DO: Should be implemented when Virtual Random-spraad Vegetation added
-
-end
-
-
-function initVegVirRowParams( inputStruct )
-    
-
-%% EXCEL FILE
-vegInputFullFile = inputStruct.veg_inputs_file;
-
-% Read the vegetation layer structure first 
-[num, ~, raw] = xlsread( vegInputFullFile, 1 );
-
-% Get vegetation stage for feeding the plugin
-vegetation_stage = char( raw(1,1) );
-
-% Plugin name to be run for virtual vegetation generation    
-plugin = char( raw(2,1) );
-
-%  Distance without vegetation between two rows (m)
-row_space_m = num(1,1);
-
-% Distance without vegetation within a row (m)
-col_space_m = num(2,1);
-
-% Azimuth angle of field rows from local North (degrees)
-phi_row_deg = num(3,1);
-
-% Max scattering dist. of a plant pos within a row (m)
-seed_fluctuation_m = num(4,1);
-
-% Initialize Virtual Row-Structured Vegetation Parameters
-VegVirRowParams.getInstance.initialize( row_space_m, col_space_m, ...
-    phi_row_deg, seed_fluctuation_m, plugin, vegetation_stage);
 
 end
 

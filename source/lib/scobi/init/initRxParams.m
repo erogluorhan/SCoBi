@@ -48,18 +48,14 @@ elseif ant_pat_Rx_id == Constants.id_Rx_user_defined
     % TO-DO: May be the user defined pattern and resolution is calculated
     % here
     
-    % Antenna pattern resolution will be calculated later by using the
-    % pattern file input
-    ant_pat_res_deg_Rx = [];
-    
-    % Set GG pattern parameters
+    % Set User-defined pattern parameters
     [ant_pat_struct_Rx, ant_pat_res_deg_Rx] = initRxUserDefinedParams( inputStruct );
   
 % Else if Antenna pattern is Cosine to the power n
 elseif ant_pat_Rx_id == Constants.id_Rx_cos_pow_n 
     
     % Should be implemented when this pattern added
-    ant_pat_struct_Rx = [];
+    
 end
 
 

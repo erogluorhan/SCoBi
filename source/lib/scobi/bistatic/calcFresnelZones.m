@@ -10,8 +10,8 @@ sim_counter = ParamsManager.sim_counter;
 Nfz = SimParams.getInstance.Nfz;
 % Transmitter Parameters
 f_Hz = TxParams.getInstance.f_MHz * Constants.MHz2Hz ;
-% Dynamic Parameters
-th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
+% Configuration Parameters
+th0_Tx_list_deg = ConfigParams.getInstance.th0_Tx_list_deg;
 th0_Tx_deg = th0_Tx_list_deg( sim_counter );
 el0_Tx_deg = 90 - th0_Tx_deg;
 

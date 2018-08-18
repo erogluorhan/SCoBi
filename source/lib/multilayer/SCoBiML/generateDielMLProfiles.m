@@ -4,8 +4,8 @@ function generateDielMLProfiles
 %% GET GLOBAL PARAMETER
 % Ground Parameters
 gnd_layer_depth_m = GndParams.getInstance.layer_depth_m;
-% Surface Dynamic Params
-eps_g = SurfaceDynParams.getInstance.eps_g;
+% Ground Dynamic Params
+eps_g = GndDynParams.getInstance.eps_g;
 % Ground-ML Parameters
 layer_bottom_m = GndMLParams.getInstance.layer_bottom_m;
 layer_thickness_m = GndMLParams.getInstance.layer_thickness_m;
@@ -59,7 +59,7 @@ plotDielProfiles( fig1, eps_diel_z2nd, eps_diel_z3rd, eps_diel_zL, eps_diel_zS, 
 
 
 % Initialize Dielectric Parameters
-DielMLParams.getInstance.initialize( fig1, fig2, eps_diel_z2nd, eps_diel_z3rd, eps_diel_zL, eps_diel_zS );
+DielMLDynParams.getInstance.initialize( fig1, fig2, eps_diel_z2nd, eps_diel_z3rd, eps_diel_zL, eps_diel_zS );
 
 
 end

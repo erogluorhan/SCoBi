@@ -25,8 +25,8 @@ SimulationFolders.getInstance.initializeStaticDirs();
 pol_Tx = TxParams.getInstance.pol_Tx;
 % Receiver Parameters
 pol_Rx = RxParams.getInstance.pol_Rx;
-% Dynamic Parameters
-VSM_list_cm3cm3 = DynParams.getInstance.VSM_list_cm3cm3;
+% Configuration Parameters
+VSM_list_cm3cm3 = ConfigParams.getInstance.VSM_list_cm3cm3;
 
 num_VSM = length( VSM_list_cm3cm3 );
 
@@ -198,12 +198,12 @@ function plotFZ(P_inc, P_inc1, P_inc2, P_inc3, P_inc4, pols)
 % Simulation Parameters
 Nr = SimParams.getInstance.Nr;
 Nfz = SimParams.getInstance.Nfz;
-% Dynamic Parameters
-th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
+% Configuration Parameters
+th0_Tx_list_deg = ConfigParams.getInstance.th0_Tx_list_deg;
 th0_Tx_deg = th0_Tx_list_deg( ParamsManager.index_Th );
-ph0_Tx_list_deg = DynParams.getInstance.ph0_Tx_list_deg;
+ph0_Tx_list_deg = ConfigParams.getInstance.ph0_Tx_list_deg;
 ph0_Tx_deg = ph0_Tx_list_deg( ParamsManager.index_Ph );
-RMSH_list_cm = DynParams.getInstance.RMSH_list_cm;
+RMSH_list_cm = ConfigParams.getInstance.RMSH_list_cm;
 RMSH_cm = RMSH_list_cm( ParamsManager.index_RMSH );
 % Receiver Parameters
 hr_m = RxParams.getInstance.hr_m;

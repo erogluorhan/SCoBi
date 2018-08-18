@@ -1,20 +1,7 @@
 % TO-DO: Check comments, copyrights, etc.
 classdef SCoBiMainGUIManager < SCoBiGUIManagers
     %SCOBIMAINGUIMANAGER This class implements handles for GUI elements, and 
-    % performs the GUI-related functionalities
-    
-        
-    
-    %% PROPERTIES
-    
-    %% PRIVATE PROPERTIES
-    properties(GetAccess = 'private', SetAccess = 'private')
-        
-        % Simulator ID
-        simulator_id = -1;
-    
-    end
-    
+    % performs the GUI-related functionalities    
     
     
     %% METHODS
@@ -26,7 +13,7 @@ classdef SCoBiMainGUIManager < SCoBiGUIManagers
         function obj = SCoBiMainGUIManager( handles )            
             
             % Call superclass constructor
-            obj = obj@SCoBiGUIManagers( handles );
+            obj = obj@SCoBiGUIManagers( handles, -1 );
             
         end
         
@@ -60,12 +47,24 @@ classdef SCoBiMainGUIManager < SCoBiGUIManagers
             end
             
             % on the group 1 of current idle simulators 
-            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_idle_1)) > 0
-                % Do not require any operation for now
+            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Snow)) > 0
+                
+                % Display a warning that the method is not implemented yet
+                waitfor(msgbox('WARNING: This is not yet implemented! Please choose another one!'));
+                  
+            end
+            
+            % on the group 1 of current idle simulators 
+            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Soil)) > 0
+                
+                obj.simulator_id = Constants.id_multi_layer;
+                
+                uiresume(obj.handles.panel_main);
+                  
             end
             
             % on the SCoBi-Veg-Agriculture 
-            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_ML)) > 0
+            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Root_Zone)) > 0
                 
                 obj.simulator_id = Constants.id_multi_layer;
                 
@@ -74,12 +73,15 @@ classdef SCoBiMainGUIManager < SCoBiGUIManagers
             end
             
             % on the group 2 of current idle simulators 
-            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_idle_2)) > 0
-                % Do not require any operation for now
+            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Topography)) > 0
+                
+                % Display a warning that the method is not implemented yet
+                waitfor(msgbox('WARNING: This is not yet implemented! Please choose another one!'));
+                
             end
             
             % on the SCoBi-Veg-Agriculture 
-            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Veg_agr)) > 0
+            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Agriculture)) > 0
                 
                 obj.simulator_id = Constants.id_veg_agr;
                 
@@ -88,7 +90,7 @@ classdef SCoBiMainGUIManager < SCoBiGUIManagers
             end
             
             % on the SCoBi-Veg-Forest 
-            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Veg_for)) > 0
+            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Forest)) > 0
                 
                 obj.simulator_id = Constants.id_veg_for;
                 
@@ -97,8 +99,11 @@ classdef SCoBiMainGUIManager < SCoBiGUIManagers
             end
             
             % on the group 3 of current idle simulators 
-            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_idle_3)) > 0
-                % Do not require any operation for now
+            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Permafrost)) > 0
+                
+                % Display a warning that the method is not implemented yet
+                waitfor(msgbox('WARNING: This is not yet implemented! Please choose another one!'));
+                
             end
             
             obj.onoffUIEl();
@@ -112,12 +117,12 @@ classdef SCoBiMainGUIManager < SCoBiGUIManagers
     methods(Access = 'protected')
         
         % Initialize the instance
-        function init( obj, handles )
+        function init( obj, handles, simulator_id )
             
             tic;
             
             % Call superclass's init() function
-            init@SCoBiGUIManagers( obj, handles );
+            init@SCoBiGUIManagers( obj, handles, simulator_id );
             
             t0 = toc;
             
@@ -151,14 +156,15 @@ classdef SCoBiMainGUIManager < SCoBiGUIManagers
           i = i+1;        id.text_description = i;          pointers(i) = obj.handles.text_description;
           
           i = i+1;        id.pb_SCoBi_main = i;             pointers(i) = obj.handles.pb_SCoBi_main;          
-          i = i+1;        id.pb_SCoBi_idle_1 = i;           pointers(i) = obj.handles.pb_SCoBi_idle_1;   
-          i = i+1;        id.pb_SCoBi_ML = i;               pointers(i) = obj.handles.pb_SCoBi_ML;   
-          i = i+1;        id.pb_SCoBi_idle_2 = i;           pointers(i) = obj.handles.pb_SCoBi_idle_2;       
-          i = i+1;        id.pb_SCoBi_Veg_agr = i;          pointers(i) = obj.handles.pb_SCoBi_Veg_agr;       
-          i = i+1;        id.pb_SCoBi_Veg_for = i;          pointers(i) = obj.handles.pb_SCoBi_Veg_for;        
-          i = i+1;        id.pb_SCoBi_idle_3 = i;           pointers(i) = obj.handles.pb_SCoBi_idle_3; 
+          i = i+1;        id.pb_SCoBi_Snow = i;             pointers(i) = obj.handles.pb_SCoBi_Snow;         
+          i = i+1;        id.pb_SCoBi_Soil = i;             pointers(i) = obj.handles.pb_SCoBi_Soil;          
+          i = i+1;        id.pb_SCoBi_Root_Zone = i;        pointers(i) = obj.handles.pb_SCoBi_Root_Zone;    
+          i = i+1;        id.pb_SCoBi_Topography = i;       pointers(i) = obj.handles.pb_SCoBi_Topography;       
+          i = i+1;        id.pb_SCoBi_Agriculture = i;      pointers(i) = obj.handles.pb_SCoBi_Agriculture;       
+          i = i+1;        id.pb_SCoBi_Forest = i;           pointers(i) = obj.handles.pb_SCoBi_Forest;        
+          i = i+1;        id.pb_SCoBi_Permafrost = i;       pointers(i) = obj.handles.pb_SCoBi_Permafrost; 
           
-          groupIDs.all = [id.text_title : id.pb_SCoBi_idle_3];
+          groupIDs.all = id.text_title : id.pb_SCoBi_Permafrost;
 
             
           %% Initialize object properties

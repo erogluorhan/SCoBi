@@ -27,11 +27,11 @@ sim_mode_id = SimSettings.getInstance.sim_mode_id;
 pol_Tx = TxParams.getInstance.pol_Tx;
 % Receiver Parameters
 pol_Rx = RxParams.getInstance.pol_Rx;
-% Dynamic Parameters
-th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
-ph0_Tx_list_deg = DynParams.getInstance.ph0_Tx_list_deg;
-VSM_list_cm3cm3 = DynParams.getInstance.VSM_list_cm3cm3;
-RMSH_list_cm = DynParams.getInstance.RMSH_list_cm;
+% Configuration Parameters
+th0_Tx_list_deg = ConfigParams.getInstance.th0_Tx_list_deg;
+ph0_Tx_list_deg = ConfigParams.getInstance.ph0_Tx_list_deg;
+VSM_list_cm3cm3 = ConfigParams.getInstance.VSM_list_cm3cm3;
+RMSH_list_cm = ConfigParams.getInstance.RMSH_list_cm;
 
 num_Th = length( th0_Tx_list_deg );
 num_Ph = length( ph0_Tx_list_deg );
@@ -201,13 +201,13 @@ end
 %% GET GLOBAL PARAMETERS
 % Simulation Parameters
 Nr = SimParams.getInstance.Nr;
-% Dynamic Parameters
-th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
-ph0_Tx_list_deg = DynParams.getInstance.ph0_Tx_list_deg;
+% Configuration Parameters
+th0_Tx_list_deg = ConfigParams.getInstance.th0_Tx_list_deg;
+ph0_Tx_list_deg = ConfigParams.getInstance.ph0_Tx_list_deg;
 ph0_Tx_deg = ph0_Tx_list_deg( ParamsManager.index_Ph );
-VSM_list_cm3cm3 = DynParams.getInstance.VSM_list_cm3cm3;
+VSM_list_cm3cm3 = ConfigParams.getInstance.VSM_list_cm3cm3;
 VSM_cm3cm3 = VSM_list_cm3cm3( ParamsManager.index_VSM );
-RMSH_list_cm = DynParams.getInstance.RMSH_list_cm;
+RMSH_list_cm = ConfigParams.getInstance.RMSH_list_cm;
 RMSH_cm = RMSH_list_cm( ParamsManager.index_RMSH );
 % Receiver Parameters
 hr_m = RxParams.getInstance.hr_m;
