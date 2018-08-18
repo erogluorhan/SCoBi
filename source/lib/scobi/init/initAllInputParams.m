@@ -1,6 +1,5 @@
 function initAllInputParams(simulator_id, inputStruct)
 
-
 %% SIMULATION SETTINGS 
 initSimSettings( simulator_id, inputStruct );
 
@@ -22,11 +21,11 @@ initRxParams( inputStruct );
 
 % TO-DO: Diel_model added
 %% GROUND INPUTS
-initGndParams( simulator_id, inputStruct );
+initGndParams( inputStruct );
 
 
-%% DYNAMIC INPUTS
-initDynParams(inputStruct);
+%% CONFIGURATION INPUTS
+initConfigParams(inputStruct);
 
 
 %% VEGETATION INPUTS

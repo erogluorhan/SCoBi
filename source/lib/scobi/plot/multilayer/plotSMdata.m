@@ -1,19 +1,15 @@
 function [fig1, fig2] = plotSMdata 
 
 
-%% GET GLOBAL DIRECTORIES
-dirFig = SimulationFolders.getInstance.fig;
-
-
 %% GET GLOBAL PARAMETER
 % Simulation Settings
 draw_live_plots = SimSettings.getInstance.draw_live_plots;
 % Ground Parameters
 layer_depth_m = GndParams.getInstance.layer_depth_m;
 layer_depth_cm = layer_depth_m * Constants.m2cm;
-% Dynamic Parameters
-DoYs = DynParams.getInstance.DoYs;
-VSM_list_cm3cm3 = DynParams.getInstance.VSM_list_cm3cm3;
+% Configuration Parameters
+DoYs = ConfigParams.getInstance.DoYs;
+VSM_list_cm3cm3 = ConfigParams.getInstance.VSM_list_cm3cm3;
 
 
 fig1 = [];

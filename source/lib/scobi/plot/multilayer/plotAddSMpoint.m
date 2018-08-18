@@ -5,13 +5,13 @@ function [M1, M2] = plotAddSMpoint
 sim_counter = ParamsManager.sim_counter;
 % Simulation Settings
 draw_live_plots = SimSettings.getInstance.draw_live_plots;
-% Dynamic Parameters
-DoYs = DynParams.getInstance.DoYs;
-VSM_list_cm3cm3 = DynParams.getInstance.VSM_list_cm3cm3;
+% Configuration Parameters
+DoYs = ConfigParams.getInstance.DoYs;
+VSM_list_cm3cm3 = ConfigParams.getInstance.VSM_list_cm3cm3;
 VSM_cm3cm3 = VSM_list_cm3cm3(sim_counter,:)';
 % Dielectric Parameters
-fig1 = DielMLParams.getInstance.fig1;
-fig2 = DielMLParams.getInstance.fig2;
+fig1 = DielMLDynParams.getInstance.fig1;
+fig2 = DielMLDynParams.getInstance.fig2;
 
 
 M1 = [];

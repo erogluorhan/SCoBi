@@ -22,7 +22,7 @@ function varargout = gui_SCoBiMain(varargin)
 
 % Edit the above text to modify the response to help gui_SCoBiMain
 
-% Last Modified by GUIDE v2.5 19-Jul-2018 17:24:40
+% Last Modified by GUIDE v2.5 17-Aug-2018 15:50:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -118,52 +118,71 @@ function pb_SCoBi_main_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 
-% --- Executes on button press in pb_SCoBi_idle_1.
-function pb_SCoBi_idle_1_Callback(hObject, eventdata, handles)
-% hObject    handle to pb_SCoBi_idle_1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in pb_SCoBi_Veg_agr.
-function pb_SCoBi_Veg_agr_Callback(hObject, eventdata, handles)
-% hObject    handle to pb_SCoBi_Veg_agr (see GCBO)
+% --- Executes on button press in pb_SCoBi_Permafrost.
+function pb_SCoBi_Permafrost_Callback(hObject, eventdata, handles)
+% hObject    handle to pb_SCoBi_Permafrost (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 global scobiMainGUI
-scobiMainGUI.syncFromGUI( scobiMainGUI.uiIDs.pb_SCoBi_Veg_agr );
+scobiMainGUI.syncFromGUI( scobiMainGUI.uiIDs.pb_SCoBi_Permafrost );
 
 
-% --- Executes on button press in pb_SCoBi_Veg_for.
-function pb_SCoBi_Veg_for_Callback(hObject, eventdata, handles)
-% hObject    handle to pb_SCoBi_Veg_for (see GCBO)
+% --- Executes on button press in pb_SCoBi_Agriculture.
+function pb_SCoBi_Agriculture_Callback(hObject, eventdata, handles)
+% hObject    handle to pb_SCoBi_Agriculture (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 global scobiMainGUI
-scobiMainGUI.syncFromGUI( scobiMainGUI.uiIDs.pb_SCoBi_Veg_for );
+scobiMainGUI.syncFromGUI( scobiMainGUI.uiIDs.pb_SCoBi_Agriculture );
 
 
-% --- Executes on button press in pb_SCoBi_idle_3.
-function pb_SCoBi_idle_3_Callback(hObject, eventdata, handles)
-% hObject    handle to pb_SCoBi_idle_3 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in pb_SCoBi_ML.
-function pb_SCoBi_ML_Callback(hObject, eventdata, handles)
-% hObject    handle to pb_SCoBi_ML (see GCBO)
+% --- Executes on button press in pb_SCoBi_Forest.
+function pb_SCoBi_Forest_Callback(hObject, eventdata, handles)
+% hObject    handle to pb_SCoBi_Forest (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 global scobiMainGUI
-scobiMainGUI.syncFromGUI( scobiMainGUI.uiIDs.pb_SCoBi_ML );
+scobiMainGUI.syncFromGUI( scobiMainGUI.uiIDs.pb_SCoBi_Forest );
 
 
-% --- Executes on button press in pb_SCoBi_idle_2.
-function pb_SCoBi_idle_2_Callback(hObject, eventdata, handles)
-% hObject    handle to pb_SCoBi_idle_2 (see GCBO)
+% --- Executes on button press in pb_SCoBi_Topography.
+function pb_SCoBi_Topography_Callback(hObject, eventdata, handles)
+% hObject    handle to pb_SCoBi_Topography (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+global scobiMainGUI
+scobiMainGUI.syncFromGUI( scobiMainGUI.uiIDs.pb_SCoBi_Topography );
+
+
+% --- Executes on button press in pb_SCoBi_Soil.
+function pb_SCoBi_Root_Zone_Callback(hObject, eventdata, handles)
+% hObject    handle to pb_SCoBi_Soil (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+global scobiMainGUI
+scobiMainGUI.syncFromGUI( scobiMainGUI.uiIDs.pb_SCoBi_Root_Zone );
+
+
+% --- Executes on button press in pb_SCoBi_Snow.
+function pb_SCoBi_Snow_Callback(hObject, eventdata, handles)
+% hObject    handle to pb_SCoBi_Snow (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+global scobiMainGUI
+scobiMainGUI.syncFromGUI( scobiMainGUI.uiIDs.pb_SCoBi_Snow );
+
+
+% --- Executes on button press in pb_SCoBi_Soil.
+function pb_SCoBi_Soil_Callback(hObject, eventdata, handles)
+% hObject    handle to pb_SCoBi_Soil (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+global scobiMainGUI
+scobiMainGUI.syncFromGUI( scobiMainGUI.uiIDs.pb_SCoBi_Soil );

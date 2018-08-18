@@ -4,7 +4,17 @@ folderNotEmpty = any(size(dir([strcat( pathname ) '/*.dat' ] ), 1 ));
 
 if folderNotEmpty
     
-    if ~isempty(pathname), filename = strcat( pathname, '\', filename, '.dat' ) ; end
+    if exist( [strcat(pathname, '\') strcat(filename, '.dat')], 'file' )
+        
+        filename = strcat( pathname, '\', filename, '.dat' );
+        
+    else
+        
+        var = NaN;
+        
+        return
+    
+    end
 
     fid = fopen(filename,'r') ;
 

@@ -1,32 +1,29 @@
 classdef ParamsManager < handle
-    %% PARAMSMANAGER CLASS - Check the validity of input parameters
+    %% PARAMSMANAGER CLASS - Manage the parameters through the whole sim.
+    % Static class.
     %
+    % Following parameters are managed as persistent variables within
+    % methods, but they act as global simulation parameters
+    %
+    % num_sims:    Total number of simulations (based on sim_mode)
+    % sim_counter: Current simulation index within num_sims 
     
     
     methods (Static)
-                
+          
+        % num_sims: Total number of simulations (based on sim_mode)
+        % This function is both a getter and a setter
         function result = num_sims( value )
            
             persistent num_sims
             
+            % Set value
             if nargin ~= 0
                 num_sims = value;
             end
             
+            % Get value
             result = num_sims;
-            
-        end
-        
-                
-        function result = index_DoY( value )
-           
-            persistent index_DoY
-            
-            if nargin ~= 0
-                index_DoY = value;
-            end
-            
-            result = index_DoY;
             
         end
         
@@ -39,9 +36,9 @@ classdef ParamsManager < handle
             if nargin ~= 0
                 
                 %% GET GLOBAL PARAMETERS
-                % Dynamic Parameters
-                th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
-                ph0_Tx_list_deg = DynParams.getInstance.ph0_Tx_list_deg;
+                % Configuration Parameters
+                th0_Tx_list_deg = ConfigParams.getInstance.th0_Tx_list_deg;
+                ph0_Tx_list_deg = ConfigParams.getInstance.ph0_Tx_list_deg;
                 % Receiver Parameters
                 orientation_Rx_id = RxParams.getInstance.orientation_Rx_id;
                 
@@ -67,108 +64,209 @@ classdef ParamsManager < handle
         end
         
         
-        function [validityResult, terminateResult, terminateMsg] = isInputValid()
-                        
+        function sim_counter_start = determineSimCounterStart
+
+
             %% GET GLOBAL DIRECTORIES
-            dir_hr = SimulationFolders.getInstance.hr;
+            dir_products_specular_power = SimulationFolders.getInstance.products_specular_power;
             
-            
-            %% GET GLOBAL PARAMETERS
-            sim_name = SimParams.getInstance.sim_name;
-            
-            
-            %% DEFINE PERSISTENT VARIABLES
-            persistent isValid 
-            persistent isTerminate
-            persistent msg
-            
-            isValid = 0;
-            isTerminate = 0;
-            
-            
-            if exist( strcat( dir_hr, '\', ConstantNames.input_params_filename), 'file') == 2 
-                        
-                isSysInputEqual = ParamsManager.isSysInputEqual();
-                isVegInputEqual = ParamsManager.isVegInputEqual();
-                isDynInputsValid = ParamsManager.isDynInputsValid();
-                
-                isValid = isSysInputEqual & isVegInputEqual & isDynInputsValid;
+                                   
+            % First read the existing specular variable, if any    
+            % Choose the last bare-soil power item that is stored in
+            % specularTerm (to make sure the other direct and specular 
+            % items should have been stored if this is stored)
+            filename02 = 'Bare02';
+            currentVar = readVar(dir_products_specular_power, filename02 );
 
-                if ~isValid
-                    
-                    % If the reason for invalidity is the number of Dynamic
-                    % Parameters
-                    if ~isDynInputsValid
-                        
-                        isTerminate = 1;
-                        msg = 'Dynamic inputs are not valid for simulation mode. SCoBi simulator will be terminated for user check!';
-                        
-                    % Else if the reason is input inequality with the
-                    % existing simulation folders
-                    else
+            % If no current variable, write var as initial
+            if isnan( currentVar )
 
-                        % TO-DO: Design SCoBi-s own GUI
-                        %newSimName;
+                sim_counter_start = 1;
 
-                        prompt = {'Either one or more inputs conflict with the existing simulations. Enter new simulation name:'};
-                        dlg_title = 'Input Conflict!';
-                        num_lines = 1;
-                        defaultans = {sim_name};
-                        new_sim_name = char( inputdlg(prompt,dlg_title,num_lines,defaultans) );  
-
-                        if ~isempty(new_sim_name)
-                            SimParams.getInstance.updateSimName( new_sim_name );
-
-                            % Initializing simulations' directories for the updated simulation name
-                            SimulationFolders.getInstance.initialize();
-
-                            ParamsManager.isInputValid();
-                        else
-                            isTerminate = 1;
-                            msg = 'A simulation with the same name exists, but input_params file is missing. SCoBi simulator will be terminated for user check!';
-                        end
-                    end
-                end
-            
+            % Else if current variable exists, append var to the end
             else
-                
-                % The first time this simulation is being created
-                if ~exist( dir_hr)
-                
-                    isValid = ParamsManager.isDynInputsValid();
-                
-                % Simulation exists, but input_params_filename looks 
-                % to be deleted. That is an error. User should check!
-                else
-                    isValid = 0;
-                    isTerminate = 1;
-                    msg = 'Input_params file is missing from the simulation directory; it might have been deleted. SCoBi simulator will be terminated for user check!'
-                end
-                
+                % First read the current variable's size
+                [~, M] = size(currentVar);
+
+                % Jump to the next index for starting the sim_counter
+                sim_counter_start = M + 1;
+
             end
-            
-            validityResult = isValid;
-            terminateResult = isTerminate;
-            terminateMsg = msg;
             
         end
         
         
-        function isValid = isDynInputsValid
+        function inputParamsStruct = generateInputParamsStruct
+
+            
+        %% GET GLOBAL PARAMETERS
+        % Simulation Settings
+        gnd_cover_id = SimSettings.getInstance.gnd_cover_id;
+        
+            
+        %% SIMULATION SETTINGS
+        simSettings = SimSettings.getInstance;
+        
+        inputParamsStruct.simulator_id = simSettings.simulator_id;
+        inputParamsStruct.sim_mode_id = simSettings.sim_mode_id;
+        inputParamsStruct.gnd_cover_id = simSettings.gnd_cover_id;
+        
+        if gnd_cover_id == Constants.id_veg_cover
+            
+            inputParamsStruct.write_attenuation = simSettings.write_attenuation;
+            
+        end
+        
+        inputParamsStruct.include_in_master_sim_file = simSettings.include_in_master_sim_file;
+        inputParamsStruct.draw_live_plots = simSettings.draw_live_plots;
+        
+            
+        %% SIMULATION PARAMETERS
+        simParams = SimParams.getInstance;
+        
+        inputParamsStruct.sim_name = simParams.sim_name;
+        inputParamsStruct.campaign = simParams.campaign;
+        inputParamsStruct.campaign_date = simParams.campaign_date;
+        inputParamsStruct.plot = simParams.plot;
+        
+        if gnd_cover_id == Constants.id_veg_cover
+            
+            inputParamsStruct.vegetation_plant = simParams.vegetation_plant;
+            
+        end
+        
+        inputParamsStruct.Nr = simParams.Nr;
+        inputParamsStruct.Nfz = simParams.Nfz;
+        
+            
+        %% TRASNMITTER PARAMETERS
+        txParams = TxParams.getInstance;
+        
+        inputParamsStruct.f_MHz = txParams.f_MHz;
+        inputParamsStruct.r_Tx_m = txParams.r_Tx_m;
+        inputParamsStruct.EIRP_dB = txParams.EIRP_dB;
+        inputParamsStruct.pol_Tx = txParams.pol_Tx;
+        
+            
+        %% RECEIVER PARAMETERS
+        rxParams = RxParams.getInstance;
+        
+        inputParamsStruct.hr_m = rxParams.hr_m;
+        inputParamsStruct.G0r_dB = rxParams.G0r_dB;
+        inputParamsStruct.pol_Rx = rxParams.pol_Rx;
+        inputParamsStruct.ant_pat_Rx_id = rxParams.ant_pat_Rx_id;   
+        inputParamsStruct.ant_pat_struct_Rx = rxParams.ant_pat_struct_Rx;
+        inputParamsStruct.ant_pat_res_deg = rxParams.ant_pat_res_deg;
+        inputParamsStruct.orientation_Rx_id = rxParams.orientation_Rx_id;
+        
+        if rxParams.orientation_Rx_id == Constants.id_Rx_fixed
+            
+            inputParamsStruct.th0_Rx_deg = rxParams.th0_Rx_deg;
+            inputParamsStruct.ph0_Rx_deg = rxParams.ph0_Rx_deg;  
+            
+        end
+
+        % If receiver antenna pattern is Generalized-Gaussian
+        if rxParams.ant_pat_Rx_id == Constants.id_Rx_GG
+
+            rxGGParams = RxGGParams.getInstance;
+            
+            inputParamsStruct.hpbw_deg = rxGGParams.hpbw_deg;
+            inputParamsStruct.SLL_dB = rxGGParams.SLL_dB;
+            inputParamsStruct.XPL_dB = rxGGParams.XPL_dB;
+
+        elseif rxParams.ant_pat_Rx_id == Constants.id_Rx_user_defined
+
+            rxUserDefinedParams = RxUserDefinedParams.getInstance;
+            
+            inputParamsStruct.ant_pat_fullfilename = rxUserDefinedParams.ant_pat_fullfilename;
+
+        % Else if Antenna pattern is Cosine to the power n
+        elseif rxParams.ant_pat_Rx_id == Constants.id_Rx_cos_pow_n 
+
+            % Should be implemented when this pattern added
+
+        end
+
+        
+        %% GROUND PARAMETERS
+        gndParams = GndParams.getInstance;
+        
+        inputParamsStruct.layer_depth_m = gndParams.layer_depth_m;
+        inputParamsStruct.sand_ratio = gndParams.sand_ratio;
+        inputParamsStruct.clay_ratio = gndParams.clay_ratio;
+        inputParamsStruct.rhob_gcm3 = gndParams.rhob_gcm3;
+        inputParamsStruct.diel_model_id = gndParams.diel_model_id;
+                    
+        % If simulator is SCoBi-ML (Multilayer), then set the multi-layer
+        % ground inputs
+        if simSettings.simulator_id == Constants.id_multi_layer
+
+            gndMLParams = GndMLParams.getInstance;
+        
+            inputParamsStruct.delZ_m = gndMLParams.delZ_m;
+            inputParamsStruct.zA_m = gndMLParams.zA_m;
+            inputParamsStruct.zB_m = gndMLParams.zB_m;
+
+        end
+
+        
+        %% CONFIGURATION PARAMETERS
+        configParams = ConfigParams.getInstance;
+        
+        if simSettings.sim_mode_id == Constants.id_time_series
+        
+            inputParamsStruct.DoYs = configParams.DoYs;
+            
+        end
+        
+        inputParamsStruct.th0_Tx_list_deg = configParams.th0_Tx_list_deg;
+        inputParamsStruct.ph0_Tx_list_deg = configParams.ph0_Tx_list_deg;
+        inputParamsStruct.VSM_list_cm3cm3 = configParams.VSM_list_cm3cm3;
+        inputParamsStruct.RMSH_list_cm = configParams.RMSH_list_cm;
+
+        
+        %% VEGETATION PARAMETERS
+        % If ground cover is Vegetation, then Vegetation Parameters are set
+        if gnd_cover_id == Constants.id_veg_cover
+            
+            vegParams = VegParams.getInstance;
+
+            inputParamsStruct.dim_layers_m = vegParams.dim_layers_m;
+            inputParamsStruct.num_layers = vegParams.num_layers;
+            inputParamsStruct.TYPKND = vegParams.TYPKND;
+            inputParamsStruct.num_types = vegParams.num_types;
+            inputParamsStruct.num_kinds = vegParams.num_kinds;
+            inputParamsStruct.scat_cal_veg = vegParams.scat_cal_veg;
+            inputParamsStruct.LTK = vegParams.LTK;
+            inputParamsStruct.dsty = vegParams.dsty;
+            inputParamsStruct.dim1_m = vegParams.dim1_m;
+            inputParamsStruct.dim2_m = vegParams.dim2_m;
+            inputParamsStruct.dim3_m = vegParams.dim3_m;
+            inputParamsStruct.epsr = vegParams.epsr;
+            inputParamsStruct.parm1_deg = vegParams.parm1_deg;
+            inputParamsStruct.parm2_deg = vegParams.parm2_deg;
+
+        end
+            
+        end  
+        
+        
+        function isValid = isConfigInputsValid
             
             %% GET GLOBAL PARAMETERS
             % Simulation 
             sim_mode_id = SimSettings.getInstance.sim_mode_id;
-            % Dynamic Parameters
-            DoYs = DynParams.getInstance.DoYs;
+            % Configuration Parameters
+            DoYs = ConfigParams.getInstance.DoYs;
             num_DoY = length( DoYs );
-            th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
+            th0_Tx_list_deg = ConfigParams.getInstance.th0_Tx_list_deg;
             num_Th = length( th0_Tx_list_deg );
-            ph0_Tx_list_deg = DynParams.getInstance.ph0_Tx_list_deg;
+            ph0_Tx_list_deg = ConfigParams.getInstance.ph0_Tx_list_deg;
             num_Ph = length( ph0_Tx_list_deg );
-            VSM_list_cm3cm3 = DynParams.getInstance.VSM_list_cm3cm3;
+            VSM_list_cm3cm3 = ConfigParams.getInstance.VSM_list_cm3cm3;
             num_VSM = length( VSM_list_cm3cm3 );
-            RMSH_list_cm = DynParams.getInstance.RMSH_list_cm;
+            RMSH_list_cm = ConfigParams.getInstance.RMSH_list_cm;
             num_RMSH = length( RMSH_list_cm );
             
             
@@ -197,300 +295,81 @@ classdef ParamsManager < handle
         end
         
         
-        function isEqual = isSysInputEqual
-                        
-            %% GET GLOBAL DIRECTORIES
-            dir_hr = SimulationFolders.getInstance.hr;            
-            
-            
-            %% GET GLOBAL PARAMETERS
-            % Simulation Parameters
-            Nfz = SimParams.getInstance.Nfz;
-            % Ground Parameters
-            sand_ratio = GndParams.getInstance.sand_ratio;
-            clay_ratio = GndParams.getInstance.clay_ratio;
-            rhob_gcm3 = GndParams.getInstance.rhob_gcm3;
-            % Transmitter Parameters
-            f_MHz = TxParams.getInstance.f_MHz;
-            r_Tx_m = TxParams.getInstance.r_Tx_m;
-            EIRP_dB = TxParams.getInstance.EIRP_dB;
-            
-            
-            %% LOAD META-DATA           
-            load( strcat( dir_hr, '\', ConstantNames.input_params_filename), ConstantNames.input_params_var );
-            
-            isEqual = 0;
-
-            if input_params(ConstantNames.sim_Nfz) == Nfz
-                if input_params(ConstantNames.gnd_sand_ratio) == sand_ratio
-                    if input_params(ConstantNames.gnd_clay_ratio) == clay_ratio
-                        if input_params(ConstantNames.gnd_rhob_gcm3) == rhob_gcm3
-                            if input_params(ConstantNames.Tx_f_MHz) == f_MHz
-                                if input_params(ConstantNames.r_Tx_m) == r_Tx_m
-                                    if input_params(ConstantNames.Tx_EIRP_dB) == EIRP_dB
-                                        isEqual = 1;
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-            
-        end
-        
-        function isEqual = isVegInputEqual
-                        
-            %% GET GLOBAL DIRECTORIES
-            dir_hr = SimulationFolders.getInstance.hr;  
-            
-            
-            %% GET GLOBAL PARAMETERS
-            % Simulation Parameters
-            veg_method_id = SimParams.getInstance.veg_method_id;
-            veg_vir_orientation_id = SimParams.getInstance.veg_vir_orientation_id;
-            
-            
-            %% LOAD INPUT PARAMS
-            load( strcat( dir_hr, '\', ConstantNames.input_params_filename), ConstantNames.input_params_var );
-            
-            
-            isEqual = 0;
-            
-            % If vegetation method is homogenous
-            if veg_method_id == Constants.id_veg_hom
-            
-                %% GET GLOBAL PARAMETERS
-                % Vegetation Parameters
-                TYPES = VegParams.getInstance.TYPES;
-                dim_layers_m = VegParams.getInstance.dim_layers_m;
-                TYPKND = VegParams.getInstance.TYPKND;
-                scat_cal_veg = VegParams.getInstance.scat_cal_veg;
-                LTK = VegParams.getInstance.LTK;
-                dsty = VegParams.getInstance.dsty;
-                dim1_m = VegParams.getInstance.dim1_m;
-                dim2_m = VegParams.getInstance.dim2_m;
-                dim3_m = VegParams.getInstance.dim3_m;
-                epsr = VegParams.getInstance.epsr;
-                parm1_deg = VegParams.getInstance.parm1_deg;
-                parm2_deg = VegParams.getInstance.parm2_deg;
-                
-                if isequal( input_params(ConstantNames.veg_hom_TYPES), TYPES )
-                    if isequal( input_params(ConstantNames.veg_hom_dimLayers_m), dim_layers_m )
-                        if isequal( input_params(ConstantNames.veg_hom_TYPKND), TYPKND )                                          
-                            if isequal( input_params(ConstantNames.veg_hom_scatCalVeg), scat_cal_veg )
-                                if isequal( input_params(ConstantNames.veg_hom_LTK), LTK )
-                                    if isequal( input_params(ConstantNames.veg_hom_dsty), dsty )
-                                        if isequal( input_params(ConstantNames.veg_hom_dim1_m), dim1_m )
-                                            if isequal( input_params(ConstantNames.veg_hom_dim2_m), dim2_m )
-                                                if isequal( input_params(ConstantNames.veg_hom_dim3_m), dim3_m )
-                                                    if isequal( input_params(ConstantNames.veg_hom_epsr), epsr )
-                                                        if isequal( input_params(ConstantNames.veg_hom_parm1_deg), parm1_deg )
-                                                            if isequal( input_params(ConstantNames.veg_hom_parm2_deg), parm2_deg )
-                                                                isEqual = 1;
-                                                            end
-                                                        end
-                                                    end
-                                                end
-                                            end
-                                        end
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
-                
-            % Else if vegetation method is virtual    
-            else
-                
-                % If veg_method is Virtual and veg_vir_orientation is Row-crop
-                if veg_vir_orientation_id == Constants.id_veg_vir_row_crop
-                    %% GET GLOBAL PARAMETERS
-                    % Virtual Row-Structured Vegetation Parameters
-                    vegetation_stage = VegVirRowParams.getInstance.vegetation_stage;
-                    plugin = VegVirRowParams.getInstance.plugin;
-                    row_space_m = VegVirRowParams.getInstance.row_space_m;
-                    col_space_m = VegVirRowParams.getInstance.col_space_m;
-                    phi_row_deg = VegVirRowParams.getInstance.phi_row_deg;
-                    seed_fluctuation_m = VegVirRowParams.getInstance.seed_fluctuation_m;
-
-                    if strcmp( input_params(ConstantNames.veg_vegetationStage), vegetation_stage )
-                        if input_params(ConstantNames.veg_vir_row_plugin).isTheSame( plugin )
-                            if input_params(ConstantNames.veg_vir_row_rowSpace_m) == row_space_m
-                                if input_params(ConstantNames.veg_vir_row_colSpace_m) == col_space_m
-                                    if input_params(ConstantNames.veg_vir_row_phiRow_deg) == phi_row_deg
-                                        if input_params(ConstantNames.veg_vir_row_seedFluctuation_m) == seed_fluctuation_m
-                                            isEqual = 1;
-                                        end
-                                    end
-                                end
-                            end
-                        end
-                    end
-                  
-                % Else if veg_method is virtual random
-                elseif veg_vir_orientation_id == Constants.id_veg_vir_random_spread
+        function [validityResult, terminateResult, terminateMsg] = isInputValid
                    
-                    % TO-DO: Should be implemented if Virtual Random-spread vegetation is added
-                    
+            
+            %% GET GLOBAL DIRECTORIES           
+            dir_sim_input = SimulationFolders.getInstance.sim_input; 
+            
+            
+            %% DEFINE PERSISTENT VARIABLES
+            persistent isValid 
+            persistent isTerminate
+            persistent msg
+            
+            isValid = 0;
+            isTerminate = 0;
+            
+
+            full_file_name = strcat( dir_sim_input, '\', ConstantNames.inputParamsStruct_filename);
+            
+            % Get whether configuration inputs are valid for this simulation
+            isConfigInputsValid = ParamsManager.isConfigInputsValid();
+            
+            % First check if a simulation exists with the same name and it contains inputParamsStruct
+            if exist( strcat( dir_sim_input, '\', ConstantNames.inputParamsStruct_filename), 'file') == 2 
+            
+                % Load the previously saved inputParamsStruct
+                load( full_file_name, ConstantNames.inputParamsStruct);
+                
+                % Generate inputParamsStruct for the current simulation
+                newInputParamsStruct = ParamsManager.generateInputParamsStruct();
+                
+                % Check if current and the latest inputParamsStruct are
+                % equal
+                isSysInputEqual = isequaln( newInputParamsStruct, inputParamsStruct );
+                
+                
+                % Simulation validity is based on input equality (between 
+                % current and latest) and and configuration input validity 
+                isValid = isSysInputEqual & isConfigInputsValid;
+                
+                % If configuration inputs are not valid
+                if ~isConfigInputsValid
+
+                    isTerminate = 1;
+                    msg = 'Configuration inputs are not valid for simulation mode. SCoBi simulator will be terminated for user check!';
+
+                % Else if the reason is input inequality with the
+                % existing simulation folders
+                elseif ~isSysInputEqual
+
+                    isTerminate = 1;
+                    msg = 'Either one or more inputs conflict with an existing simulation. Create a simulation with a new name or remove the conflicting simulation. SCoBi simulator will be terminated for user check!';
+
                 end
-            end
             
-        end
-        
-        
-        function [result, dispMsg] = isToCalculateDiffuseTerm()
-            
-            
-            %% GET GLOBAL DIRECTORIES
-            dir_freqdiff_b1_tuple = SimulationFolders.getInstance.freqdiff_b1_tuple;
-            
-            
-            %% GET GLOBAL PARAMETERS
-            % Simulation Settings
-            gnd_cover_id = SimSettings.getInstance.gnd_cover_id; 
-            calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
-            % Simulation Parameters
-            Nr = SimParams.getInstance.Nr;
-            
-            
-            %% DECISION
-            % If ground cover is Bare-soil, then no need for scatterer
-            % positions
-            if gnd_cover_id == Constants.id_bare_soil
-                
-                dispMsg = 'Diffuse Term - SKIPPED (Ground cover - Bare-soil)';
-                result = Constants.need_for_run.NO;
-                return
-                
-            % Else if ground cover is Vegetation, then need for scatterer 
-            % positions depends on other parameters
-            elseif gnd_cover_id == Constants.id_veg_cover  
-                        
-                % First check the user preferences
-                if ~calc_diffuse_term
-                    dispMsg = 'Diffuse Term - SKIPPED (User Preferences - No Diffuse Term)';
-                    result = Constants.need_for_run.NO;
-                    return
-                end  
-                
-            end
-            
-            % If passes user preferences, check the existence of files            
-            Nr_current = 0;
-            
-            % TO-DO: Magic number 7!
-            if ( exist(dir_freqdiff_b1_tuple,'dir') == 7 )
-                
-                all_files = dir(dir_freqdiff_b1_tuple);
-                num_files = numel(all_files) - 2;
-                Nr_current = num_files / Constants.factor_frediff_b1;
-                
-            end
-            
-            if Nr_current >= Nr
-                
-                dispMsg = 'Diffuse Term - SKIPPED - Already exists!';
-                result = Constants.need_for_run.NO;
-                
             else
                 
-                dispMsg = 'Diffuse Term';
-                result = Constants.need_for_run.FULL;
+                % The first time this simulation is being created
+                if ~exist( dir_sim_input )
                 
-            end
-            
-        end
-        
-
-        function [result, dispMsg] = isToCalculateDirectTerm()
-
-            
-            %% GET GLOBAL PARAMETERS    
-            % Simulation Settings
-            calc_direct_term = SimSettings.getInstance.calc_direct_term;
-
-
-            % Check the user preferences
-            if ~calc_direct_term
+                    isValid = isConfigInputsValid;
                 
-                dispMsg = 'Direct Term - SKIPPED (User Preferences - No Direct Term)';
-                result = Constants.need_for_run.NO;
-                return
-                
-            else
-                
-                dispMsg = 'Direct Term';
-                result = Constants.need_for_run.FULL;
-                
-            end
-
-        end
-        
-        
-        function [result, Nr_current, dispMsg] = isToCalculateFScatAmp()
-            
-                        
-            %% GET GLOBAL DIRECTORIES
-            dir_fscat = SimulationFolders.getInstance.fscat;
-            
-            
-            %% GET GLOBAL PARAMETERS
-            % Simulation Settings
-            gnd_cover_id = SimSettings.getInstance.gnd_cover_id;  
-            calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
-            % Simulation Parameters
-            Nr = SimParams.getInstance.Nr;
-            % Vegetation Parameters
-            scat_cal_veg = VegParams.getInstance.scat_cal_veg;
-            num_scat_cal = sum(sum(sum(scat_cal_veg))) ;
-            
-            
-            % If ground cover is Bare-soil, then no need for scatterer
-            % positions
-            if gnd_cover_id == Constants.id_bare_soil
-                
-                dispMsg = 'Scattering Amplitudes - SKIPPED (Ground cover - Bare-soil)';
-                Nr_current = NaN;
-                result = Constants.need_for_run.NO;
-                return
-                
-            % Else if ground cover is Vegetation, then need for scatterer 
-            % positions depends on other parameters
-            elseif gnd_cover_id == Constants.id_veg_cover            
-                        
-                % First check the user preferences
-                if ~calc_diffuse_term
-                    dispMsg = 'Scattering Amplitudes - SKIPPED (User Preferences - No Diffuse Term)';
-                    Nr_current = NaN;
-                    result = Constants.need_for_run.NO;
-                    return
-                end
-                
-            end
-
-            % If passes user preferences, check the existence of files
-            all_files = dir(dir_fscat);
-            num_files = numel(all_files) - 2;
-            Nr_current = num_files / num_scat_cal / Constants.factor_fscat ;
-
-            if isnan(Nr_current), Nr_current = 0; end
-
-            if Nr_current >= Nr
-                dispMsg = 'Scattering Amplitudes - SKIPPED - Already exists!';
-                result = Constants.need_for_run.NO;
-            else
-                if Nr_current > 0
-                    dispMsg = 'Scattering Amplitudes - Partially exists!';
-                    result = Constants.need_for_run.PARTIAL;
+                % Simulation exists, but inputStruct file is missing. 
+                % That is an error. User should check that!
                 else
-                    dispMsg = 'Scattering Amplitudes';
-                    result = Constants.need_for_run.FULL;
+                    isTerminate = 1;
+                    msg = 'inputParamsStruct file is missing from the simulation directory; it might have been deleted. SCoBi simulator will be terminated for user check!'
                 end
+                
             end
             
-        end        
+            validityResult = isValid;
+            terminateResult = isTerminate;
+            terminateMsg = msg;
+            
+        end
         
         
         function [result, dispMsg] = isToCalculateMLReflectivities()
@@ -549,9 +428,7 @@ classdef ParamsManager < handle
             
             %% GET GLOBAL PARAMETERS
             % Simulation Settings
-            gnd_cover_id = SimSettings.getInstance.gnd_cover_id; 
-            calc_specular_term = SimSettings.getInstance.calc_specular_term;
-            calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
+            gnd_cover_id = SimSettings.getInstance.gnd_cover_id;
             write_attenuation = SimSettings.getInstance.write_attenuation;            
             
             
@@ -563,19 +440,6 @@ classdef ParamsManager < handle
                 Nr_current = NaN;
                 result = Constants.need_for_run.NO;
                 return
-                
-            % Else if ground cover is Vegetation, then need for scatterer 
-            % positions depends on other parameters
-            elseif gnd_cover_id == Constants.id_veg_cover
-                        
-                % First check the user preferences
-                if ~( calc_specular_term || calc_diffuse_term )
-
-                    dispMsg = 'Propagation - SKIPPED (User Preferences - No Specular and Diffuse Term)';
-                    result = Constants.need_for_run.NO;
-                    return
-
-                end
                 
             end
             
@@ -621,52 +485,6 @@ classdef ParamsManager < handle
             
             end
             
-        end
-        
-
-        function [result, dispMsg] = isToCalculateSpecularTerm()
-
-            
-            %% GET GLOBAL DIRECTORIES
-            dir_out_specular_tuple = SimulationFolders.getInstance.out_specular_tuple;
-
-
-            %% GET GLOBAL PARAMETERS
-            % Simulation Settings
-            calc_specular_term = SimSettings.getInstance.calc_specular_term;
-
-
-            %% DECISION
-            % First check the user preferences
-            if ~calc_specular_term
-                dispMsg = 'Specular Term - SKIPPED (User Preferences - No Specular Term)';
-                result = Constants.need_for_run.NO;
-                return
-            end            
-
-            % If passes user preferences, check the existence of files           
-            num_files = 0;
-
-            % To-DO: Magic number 7!
-            if ( exist(dir_out_specular_tuple,'dir') == 7 )
-
-                all_files = dir(dir_out_specular_tuple);
-                num_files = numel(all_files) - 2;
-
-            end
-
-            if num_files == Constants.num_out_specular
-
-                dispMsg = 'Specular Term - SKIPPED - Already exists!';
-                result = Constants.need_for_run.NO;
-
-            else
-
-                dispMsg = 'Specular Term';
-                result = Constants.need_for_run.FULL;
-
-            end
-
         end
         
         
@@ -730,13 +548,9 @@ classdef ParamsManager < handle
             %% GET GLOBAL PARAMETERS
             % Simulation Settings
             gnd_cover_id = SimSettings.getInstance.gnd_cover_id;  
-            calc_specular_term = SimSettings.getInstance.calc_specular_term;
-            calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
             % Simulation Parameters
             Nr = SimParams.getInstance.Nr;
-            veg_method_id = SimParams.getInstance.veg_method_id;
-            % Vegetation Parameters            
-            readExistingVegParams;
+            % Vegetation Parameters
             scat_cal_veg = VegParams.getInstance.scat_cal_veg;
             num_scat_cal = sum(sum(sum(scat_cal_veg))) ;
             
@@ -754,32 +568,7 @@ classdef ParamsManager < handle
             % positions depends on other parameters
             elseif gnd_cover_id == Constants.id_veg_cover
 
-                % First check the user preferences
-                if veg_method_id == Constants.id_veg_hom
-                    
-                    if ~calc_diffuse_term
-                        
-                        dispMsg = 'Generate Scatterer Positions - SKIPPED (User Preferences - No Diffuse Term)';
-                        Nr_current = NaN;
-                        result = Constants.need_for_run.NO;
-                        return
-                    
-                    end
-
-                elseif veg_method_id == Constants.id_veg_vir
-                    
-                    if ~calc_diffuse_term && ~calc_specular_term
-                        
-                        dispMsg = 'Generate Scatterer Positions - SKIPPED (User Preferences - No Specular and Diffuse Term)';
-                        Nr_current = NaN;
-                        result = Constants.need_for_run.NO;
-                        return
-                    
-                    end
-                    
-                end
-
-                % If passes user preferences, check the existence of files
+                % Check the existence of files
                 all_files = dir(dir_position);
                 num_files = numel(all_files) - 2;
                 Nr_current = num_files / num_scat_cal ;
@@ -812,287 +601,246 @@ classdef ParamsManager < handle
         end
         
         
-        % TO-DO: Might be obfuscated
-%         function [result, dispMsg] = isToCalcRxAntPatMatrix()
-%                        
-%             %% GET GLOBAL DIRECTORIES
-%             dir_ant_lookup = SimulationFolders.getInstance.ant_lookup;
-%             
-%             % If passes user preferences, check the existence of files
-%             all_files = dir(dir_ant_lookup);
-%             num_files = numel(all_files) - 2;
-%             
-%             if num_files >= Constants.num_ant_lookup
-%                 dispMsg = 'Antenna Pattern Matrix - SKIPPED - Already exists!';
-%                 result = Constants.need_for_run.NO;
-%             else
-%                 dispMsg = 'Antenna Pattern Matrix';
-%                 result = Constants.need_for_run.FULL;
-%             end
-%             
-%         end
-        
-
-        function [result, Nr_current, dispMsg] = isToRealizeRxAntennaPattern()
-            
+        function saveSimParams
             
             %% GET GLOBAL DIRECTORIES
-            dir_ant_real = SimulationFolders.getInstance.ant_real;
+            dir_sim_input = SimulationFolders.getInstance.sim_input;
+            
+            inputParamsStruct = ParamsManager.generateInputParamsStruct();
+
+            full_file_name = strcat( dir_sim_input, '\', ConstantNames.inputParamsStruct_filename);
+            
+            save( full_file_name, ConstantNames.inputParamsStruct);
+            
+        end
+        
+        
+        function writeInputReports( inputStruct )
             
             
             %% GET GLOBAL PARAMETERS
             % Simulation Settings
-            gnd_cover_id = SimSettings.getInstance.gnd_cover_id; 
-            calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
-            % Simulation Parameters
-            Nr = SimParams.getInstance.Nr;
-            % Vegetation Parameters
-            scat_cal_veg = VegParams.getInstance.scat_cal_veg;
-            num_scat_cal = sum(sum(sum(scat_cal_veg))) ;
+            include_in_master_sim_file = SimSettings.getInstance.include_in_master_sim_file;
             
             
-            % If ground cover is Bare-soil, then no need for scatterer
-            % positions
-            if gnd_cover_id == Constants.id_bare_soil
+            ParamsManager.writeInputStructToFile( inputStruct );
+            
+            % If selected to be included in the master simulation file
+            if include_in_master_sim_file                
                 
-                dispMsg = 'Antenna Pattern Realizations - SKIPPED (Ground cover - Bare-soil)';
-                Nr_current = NaN;
-                result = Constants.need_for_run.NO;
-                return
-                
-            % Else if ground cover is Vegetation, then need for scatterer 
-            % positions depends on other parameters
-            elseif gnd_cover_id == Constants.id_veg_cover
-                        
-                % First check the user preferences
-                if ~calc_diffuse_term
-                    
-                    dispMsg = 'Antenna Pattern Realizations - SKIPPED (User Preferences - No Diffuse Term)';
-                    Nr_current = NaN;
-                    result = Constants.need_for_run.NO;
-                    return
-                    
-                end
-            
-            end
-            
-            % If passes user preferences, check the existence of files
-            all_files = dir(dir_ant_real);
-            num_files = numel(all_files) - 2;
-            Nr_current = num_files / num_scat_cal / Constants.factor_ant_real ;
-
-            if isnan(Nr_current), Nr_current = 0; end
-            
-            if Nr_current >= Nr
-                
-                dispMsg = 'Antenna Pattern Realizations - SKIPPED - Already exists!';
-                result = Constants.need_for_run.NO;
-            
-            else
-                
-                if Nr_current > 0
-                    
-                    dispMsg = 'Antenna Pattern Realizations - Partially exists!';
-                    result = Constants.need_for_run.PARTIAL;
-                    
-                else
-                    
-                    dispMsg = 'Antenna Pattern Realizations';
-                    result = Constants.need_for_run.FULL;
-                    
-                end
+                ParamsManager.writeSimIntoMasterSimFile();
                 
             end
             
         end
         
         
-        function [result, Nr_current, dispMsg] = isToRealizeRotations()
-            
-            
-            %% GET GLOBAL DIRECTORIES
-            dir_rot_real = SimulationFolders.getInstance.rot_real;
-            
-            
-            %% GET GLOBAL PARAMETERS
-            % Simulation Settings
-            gnd_cover_id = SimSettings.getInstance.gnd_cover_id; 
-            calc_diffuse_term = SimSettings.getInstance.calc_diffuse_term;
-            % Simulation Parameters
-            Nr = SimParams.getInstance.Nr;
-            % Vegetation Parameters
-            scat_cal_veg = VegParams.getInstance.scat_cal_veg;
-            num_scat_cal = sum(sum(sum(scat_cal_veg))) ;
-            
-            
-            % If ground cover is Bare-soil, then no need for scatterer
-            % positions
-            if gnd_cover_id == Constants.id_bare_soil
-                
-                dispMsg = 'Rotation Realizations - SKIPPED (Ground cover - Bare-soil)';
-                Nr_current = NaN;
-                result = Constants.need_for_run.NO;
-                return
-                
-            % Else if ground cover is Vegetation, then need for scatterer 
-            % positions depends on other parameters
-            elseif gnd_cover_id == Constants.id_veg_cover
-                        
-                % First check the user preferences
-                if ~calc_diffuse_term
-                    
-                    dispMsg = 'Rotation Realizations - SKIPPED (User Preferences - No Diffuse Term)';
-                    Nr_current = NaN;
-                    result = Constants.need_for_run.NO;
-                    return
-                    
-                end
-                
-            end
-            
-            % If passes user preferences, check the existence of files
-            all_files = dir(dir_rot_real);
-            num_files = numel(all_files) - 2;
-            Nr_current = num_files / num_scat_cal / Constants.factor_rot_real ;
+        function writeInputStructToFile( inputStruct )
 
-            if isnan(Nr_current), Nr_current = 0; end
-            
-            if Nr_current >= Nr
-                
-                dispMsg = 'Rotation Realizations - SKIPPED - Already exists!';
-                result = Constants.need_for_run.NO;
-                
-            else
-                
-                if Nr_current > 0
-                    
-                    dispMsg = 'Rotation Realizations - Partially exists!';
-                    result = Constants.need_for_run.PARTIAL;
-                    
-                else
-                    
-                    dispMsg = 'Rotation Realizations';
-                    result = Constants.need_for_run.FULL;
-                    
-                end
-                
-            end
+
+        %% GET GLOBAL DIRECTORIES
+        dir_sim_input = SimulationFolders.getInstance.sim_input;
+        inputFile = strcat(dir_sim_input, '\', 'input_report.txt');
+
+
+        %% GET GLOBAL PARAMETERS
+        % Simulation Settings
+        simulator_id = SimSettings.getInstance.simulator_id;
+        gnd_cover_id = SimSettings.getInstance.gnd_cover_id;
+        % Receiver Parameters
+        orientation_Rx_id = RxParams.getInstance.orientation_Rx_id;
+        ant_pat_Rx_id = RxParams.getInstance.ant_pat_Rx_id;
+
+
+        % Open file to write inputs
+        fileID = fopen(inputFile,'w');
+
+
+        % Write the selected simulator name
+        simulators = Constants.simulators;
+        simulatorString = simulators{ 1, simulator_id };
+        fprintf(fileID, sprintf( strcat('++++++++++++\t\t', simulatorString, '\t\t++++++++++++\n' ) ) );
+
+        % Write the current date time
+        t = datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss Z')
+        fprintf(fileID, strcat( string(t), '\n\n' ) );
+
+
+        %%SIMULATION PARAMETERS
+        fprintf(fileID, strcat( 'Simulation name:\t', inputStruct.sim_name, '\n' ) );
+        fprintf(fileID, strcat( 'Campaign:\t\t\t', inputStruct.campaign, '\n' ) );
+        fprintf(fileID, strcat( 'Campaign Date:\t\t', inputStruct.campaign_date, '\n' ) );
+        fprintf(fileID, strcat( 'Campaign Plot:\t\t', inputStruct.plot, '\n' ) );
+
+
+        % If gnd_cover is Vegetation, then write veg_plant
+        if gnd_cover_id == Constants.id_veg_cover
+
+            fprintf(fileID, strcat( 'Vegetation plant:\t', inputStruct.veg_plant, '\n' ) );   
+
+        end
+
+        % Write number of realizations
+        fprintf(fileID, strcat( 'Number of realizations:\t', num2str(inputStruct.Nr), '\n' ) );
+        % Write number of Fresnel zones
+        fprintf(fileID, strcat( 'Number of Fresnel zones:\t', num2str(inputStruct.Nfz), '\n' ) );
+
+
+        %% SIMULATION SETTINGS
+        % Write sim_mode
+        fprintf(fileID, strcat( 'Simulation mode:\t', inputStruct.sim_mode, '\n' ) );
+        % Write gnd_cover
+        fprintf(fileID, strcat( 'Ground cover:\t\t', inputStruct.gnd_cover, '\n' ) );
+
+        if gnd_cover_id == Constants.id_veg_cover
+
+            % Write user preferences
+            fprintf(fileID, strcat( 'Write attenuation?:\t\t', num2str(inputStruct.write_attenuation), '\n' ) );
             
         end
         
+        fprintf(fileID, strcat( 'Include in Master Simulation File?:\t\t', num2str(inputStruct.include_in_master_sim_file), '\n' ) );
+
+        %fprintf(fileID, strcat( 'Draw live plots?:\t\t', num2str(inputStruct.draw_live_plots), '\n' ) );
+
+
+        %% TRANSMITTER PARAMETERS
+        fprintf(fileID, strcat( '\n\nTRANSMITTER PARAMETERS\n' ) );
+        fprintf(fileID, strcat( 'Operating frequency (MHz):\t', num2str(inputStruct.f_MHz), '\n' ) );
+        fprintf(fileID, strcat( 'Range to Earth center (km):\t', num2str(inputStruct.r_Tx_km), '\n' ) );
+        fprintf(fileID, strcat( 'EIRP (dB):\t\t\t\t\t', num2str(inputStruct.EIRP_dB), '\n' ) );
+        fprintf(fileID, strcat( 'Polarization:\t\t\t\t', inputStruct.pol_Tx, '\n' ) );
+
+
+        %% RECEIVER PARAMETERS
+        fprintf(fileID, strcat( '\n\nRECEIVER PARAMETERS\n' ) );
+        fprintf(fileID, strcat( 'Altitude (m):\t\t\t', num2str(inputStruct.hr_m), '\n' ) );
+        fprintf(fileID, strcat( 'Gain (dB):\t\t\t\t', num2str(inputStruct.G0r_dB), '\n' ) );
+        fprintf(fileID, strcat( 'Polarization:\t\t\t', inputStruct.pol_Rx, '\n' ) );
+        fprintf(fileID, strcat( 'Orientation:\t\t\t', inputStruct.orientation_Rx, '\n' ) );
+
+        if orientation_Rx_id == Constants.id_Rx_fixed
+
+            fprintf(fileID, strcat( 'Incidence angle (deg):\t', num2str(inputStruct.th0_Rx_deg), '\n' ) );
+            fprintf(fileID, strcat( 'Azimuth angle (deg):\t', num2str(inputStruct.ph0_Rx_deg), '\n' ) );
+
+        end
+
+        fprintf(fileID, strcat( 'Antenna Pattern:\t\t', inputStruct.ant_pat_Rx, '\n' ) );
+
+        % If receiver antenna pattern is Generalized-Gaussian
+        if ant_pat_Rx_id == Constants.id_Rx_GG
+
+            fprintf(fileID, strcat( 'Antenna Pattern Resolution (deg):\t', num2str(inputStruct.ant_pat_res_deg_Rx), '\n' ) );
+
+            fprintf(fileID, strcat( 'Half-power beamwidth (deg):\t\t\t', num2str(inputStruct.hpbw_deg), '\n' ) );
+            fprintf(fileID, strcat( 'Side-lobe level (dB):\t\t\t\t', num2str(inputStruct.SLL_dB), '\n' ) );
+            fprintf(fileID, strcat( 'Cross-polarization level (dB):\t\t', num2str(inputStruct.XPL_dB), '\n' ) );
+
+        % Else if receiver antenna pattern is User-defined
+        elseif ant_pat_Rx_id == Constants.id_Rx_user_defined
+
+            filename = strrep(inputStruct.ant_pat_Rx_file, '\', '/');
+            fprintf(fileID, strcat( 'Antenna pattern file:\t', filename, '\n' ) );
+
+        end
+
+
+        %% GROUND PARAMETERS
+        fprintf(fileID, strcat( '\n\nGROUND PARAMETERS\n' ) );
+        fprintf(fileID, strcat( 'Dielectric model:\t', inputStruct.diel_model, '\n' ) );
         
-        function saveSimParams()
-            
-            %% GET GLOBAL DIRECTORIES
-            dir_hr = SimulationFolders.getInstance.hr;
-            
-            
-            %% GET GLOBAL PARAMETERS
-            % Simulation Parameters
-            version = SimParams.getInstance.version;
-            Nfz = SimParams.getInstance.Nfz;
-            veg_vir_orientation_id = SimParams.getInstance.veg_vir_orientation_id;
-            veg_method_id = SimParams.getInstance.veg_method_id;
-            % Ground Parameters
-            sand_ratio = GndParams.getInstance.sand_ratio;
-            clay_ratio = GndParams.getInstance.clay_ratio;
-            rhob_gcm3 = GndParams.getInstance.rhob_gcm3;
-            % Transmitter Parameters
-            f_MHz = TxParams.getInstance.f_MHz;
-            r_Tx_m = TxParams.getInstance.r_Tx_m;
-            EIRP_dB = TxParams.getInstance.EIRP_dB;
-                    
-            
-            keySet = {ConstantNames.version, ...
-                      ConstantNames.sim_Nfz, ...
-                      ConstantNames.gnd_sand_ratio, ...
-                      ConstantNames.gnd_clay_ratio, ...
-                      ConstantNames.gnd_rhob_gcm3, ...
-                      ConstantNames.Tx_f_MHz, ...
-                      ConstantNames.r_Tx_m, ...
-                      ConstantNames.Tx_EIRP_dB};
-                  
-            valueSet = {version, ...
-                        Nfz, ...
-                        sand_ratio, ...
-                        clay_ratio, ...
-                        rhob_gcm3, ...
-                        f_MHz, ...
-                        r_Tx_m, ...
-                        EIRP_dB};
-                    
-            %% Put vegetation parameters to the map
-            % If vegetation method is homogenous
-            if veg_method_id == Constants.id_veg_hom
-            
-                keySet{end+1} = ConstantNames.veg_hom_TYPES;
-                keySet{end+1} = ConstantNames.veg_hom_dimLayers_m;
-                keySet{end+1} = ConstantNames.veg_hom_TYPKND;
-                keySet{end+1} = ConstantNames.veg_hom_scatCalVeg;
-                keySet{end+1} = ConstantNames.veg_hom_LTK;
-                keySet{end+1} = ConstantNames.veg_hom_dsty;
-                keySet{end+1} = ConstantNames.veg_hom_dim1_m;
-                keySet{end+1} = ConstantNames.veg_hom_dim2_m;
-                keySet{end+1} = ConstantNames.veg_hom_dim3_m;
-                keySet{end+1} = ConstantNames.veg_hom_epsr;
-                keySet{end+1} = ConstantNames.veg_hom_parm1_deg;
-                keySet{end+1} = ConstantNames.veg_hom_parm2_deg;
-                
-                
-                %% GET GLOBAL PARAMETERS
-                % Vegetation Parameters
-                % Assign to map values
-                valueSet{end+1} = VegParams.getInstance.TYPES;
-                valueSet{end+1} = VegParams.getInstance.dim_layers_m;
-                valueSet{end+1} = VegParams.getInstance.TYPKND;
-                valueSet{end+1} = VegParams.getInstance.scat_cal_veg;
-                valueSet{end+1} = VegParams.getInstance.LTK;
-                valueSet{end+1} = VegParams.getInstance.dsty;
-                valueSet{end+1} = VegParams.getInstance.dim1_m;
-                valueSet{end+1} = VegParams.getInstance.dim2_m;
-                valueSet{end+1} = VegParams.getInstance.dim3_m;
-                valueSet{end+1} = VegParams.getInstance.epsr;
-                valueSet{end+1} = VegParams.getInstance.parm1_deg;
-                valueSet{end+1} = VegParams.getInstance.parm2_deg;
-            
-            % If vegetation method is virtual
-            else
-                % If veg_method is Virtual and veg_vir_orientation is
-                % Row-crop
-                if veg_vir_orientation_id == Constants.id_veg_vir_row_crop
-                    keySet{end+1} = ConstantNames.veg_vegetationStage;
-                    keySet{end+1} = ConstantNames.veg_vir_row_plugin;
-                    keySet{end+1} = ConstantNames.veg_vir_row_rowSpace_m;
-                    keySet{end+1} = ConstantNames.veg_vir_row_colSpace_m;
-                    keySet{end+1} = ConstantNames.veg_vir_row_phiRow_deg;
-                    keySet{end+1} = ConstantNames.veg_vir_row_seedFluctuation_m;
+        filename = strrep(inputStruct.config_inputs_file, '\', '/');
+        fprintf(fileID, strcat( 'Ground input file:\t', filename, '\n' ) );
 
-
-                    %% GET GLOBAL PARAMETERS
-                    % Virtual Row-Structured Vegetation Parameters
-                    % Assign to map values
-                    valueSet{end+1} = VegVirRowParams.getInstance.vegetation_stage;
-                    valueSet{end+1} = VegVirRowParams.getInstance.plugin;
-                    valueSet{end+1} = VegVirRowParams.getInstance.row_space_m;
-                    valueSet{end+1} = VegVirRowParams.getInstance.col_space_m;
-                    valueSet{end+1} = VegVirRowParams.getInstance.phi_row_deg;
-                    valueSet{end+1} = VegVirRowParams.getInstance.seed_fluctuation_m;
-                
-                % TO-DO: If veg_method is Virtual, and veg_vir_orientation
-                % is Random_spread
-                elseif veg_vir_orientation_id == Constants.id_veg_vir_random_spread
-                    
-                    % TO-DO: Should be implemented if Virtual Random-spread vegetation is added
-                    
-                end
-            end
-                    
-            input_params = containers.Map(keySet,valueSet);
-
-            save( strcat( dir_hr, '\', ConstantNames.input_params_filename), ConstantNames.input_params_var);
+        %% VEGETATION PARAMETERS
+        if gnd_cover_id == Constants.id_veg_cover
+            
+            fprintf(fileID, strcat( '\n\nVEGETATION PARAMETERS\n' ) );
+            filename = strrep(inputStruct.veg_inputs_file, '\', '/');
+            fprintf(fileID, strcat( 'Vegetation input file:\t', filename, '\n' ) );
             
         end
-    end
+
+
+        %% CONFIGURATION PARAMETERS
+        fprintf(fileID, strcat( '\n\nCONFIGURATION PARAMETERS\n' ) );
+        filename = strrep(inputStruct.config_inputs_file, '\', '/');
+        fprintf(fileID, strcat( 'Configuration input file:\t', filename, '\n' ) );
+
+
+        fclose(fileID);
+
+        winopen( inputFile );
+
+        end
+        
+        
+        function writeSimIntoMasterSimFile
+
+
+        %% GET GLOBAL DIRECTORIES
+        dir_sims_main_dir = SimulationFolders.getInstance.sims_main_dir;
+        masterSimInputFullFile = strcat(dir_sims_main_dir, '\', ConstantNames.master_sim_input_filename );
+
+            
+        %% GET GLOBAL PARAMETERS
+        % Simulation Settings
+        gnd_cover_id = SimSettings.getInstance.gnd_cover_id;
+        gnd_cover = Constants.gnd_covers{ 1, gnd_cover_id };
+        sim_mode_id = SimSettings.getInstance.sim_mode_id;
+        sim_mode = Constants.sim_modes{ 1, sim_mode_id };
+        % Simulation Parameters
+        sim_name = SimParams.getInstance.sim_name;
+        
+        if gnd_cover_id == Constants.id_veg_cover
+            vegetation_plant = SimParams.getInstance.vegetation_plant;
+        elseif gnd_cover_id == Constants.id_bare_soil
+            vegetation_plant = '';
+        end
+        
+        % Transmitter Parameters
+        f_MHz = TxParams.getInstance.f_MHz;
+        pol_Tx = TxParams.getInstance.pol_Tx;
+        % Receiver Parameters
+        hr_m = RxParams.getInstance.hr_m;
+        pol_Rx = RxParams.getInstance.pol_Rx;
+        % Ground Parameters
+        num_gnd_layers = GndParams.getInstance.num_layers;
+        diel_model_id = GndParams.getInstance.diel_model_id;
+        diel_model = Constants.diel_models{ 1, diel_model_id };
+        
+        
+        % Open master inputs file to write this sim into it
+        % If this is the first time master inputs file is created
+        if ~exist( masterSimInputFullFile, 'file' )
+            
+            varNames = {'SimName', 'SimDateTime', 'NumGndLayers', 'SimMode', 'GroundCover', 'Vegetation', 'TxFreq_MHz', 'TxPol', 'RxAltitude_m', 'RxPol', 'DielModel'};
+            
+            T = table( string(sim_name), datetime('now'), num_gnd_layers, string(sim_mode), string(gnd_cover), string(vegetation_plant), f_MHz, string(pol_Tx), hr_m, string(pol_Rx), string(diel_model), 'VariableNames', varNames );
+            
+            writetable( T, masterSimInputFullFile );
+            
+        % Else, the master input file exists
+        else
+            
+            T = readtable( masterSimInputFullFile );
+            
+            if isempty( find(strcmp(sim_name, table2cell(T))) )
+                
+                [numRows, ~] = size(T);
+
+                T(numRows + 1, :) = { sim_name, datetime('now'), num_gnd_layers, sim_mode, gnd_cover, vegetation_plant, f_MHz, pol_Tx, hr_m, pol_Rx, diel_model };
+
+                writetable( T, masterSimInputFullFile);
+                
+            end
+        
+        end
+            
+        end  
+
+end
     
 end
 

@@ -10,11 +10,11 @@ dir_config = SimulationFolders.getInstance.config;
 
 %% GET GLOBAL PARAMETERS
 sim_counter = ParamsManager.sim_counter;
-% Dynamic Parameters
-th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
+% Configuration Parameters
+th0_Tx_list_deg = ConfigParams.getInstance.th0_Tx_list_deg;
 th0_Tx_deg = th0_Tx_list_deg( sim_counter );
 th0_Tx_rad = degtorad(th0_Tx_deg) ;
-ph0_Tx_list_deg = DynParams.getInstance.ph0_Tx_list_deg;
+ph0_Tx_list_deg = ConfigParams.getInstance.ph0_Tx_list_deg;
 ph0_Tx_deg = ph0_Tx_list_deg( sim_counter );
 
 %% Incoming Signal

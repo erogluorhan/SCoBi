@@ -9,10 +9,10 @@ draw_live_plots = SimSettings.getInstance.draw_live_plots;
 pol_Tx = TxParams.getInstance.pol_Tx;
 pol_Rx = RxParams.getInstance.pol_Rx;
 % Dielectric Parameters
-fig1 = DielMLParams.getInstance.fig1;
-fig2 = DielMLParams.getInstance.fig2;
-% Dynamic Parameters
-DoYs = DynParams.getInstance.DoYs;
+fig1 = DielMLDynParams.getInstance.fig1;
+fig2 = DielMLDynParams.getInstance.fig2;
+% Configuration Parameters
+DoYs = ConfigParams.getInstance.DoYs;
 
 
 if draw_live_plots

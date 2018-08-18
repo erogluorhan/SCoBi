@@ -6,16 +6,16 @@ sim_counter = ParamsManager.sim_counter;
 % Transmitter Parameters
 f_MHz = TxParams.getInstance.f_MHz;
 f_Hz = f_MHz * Constants.MHz2Hz;
-% Dynamic Parameters
-th0_Tx_list_deg = DynParams.getInstance.th0_Tx_list_deg;
+% Configuration Parameters
+th0_Tx_list_deg = ConfigParams.getInstance.th0_Tx_list_deg;
 th0_Tx_deg = th0_Tx_list_deg( sim_counter );
 % Dielectric Parameters
-eps_diel_z2nd = DielMLParams.getInstance.eps_diel_z2nd;
-eps_diel_z3rd = DielMLParams.getInstance.eps_diel_z3rd;
-eps_diel_zL = DielMLParams.getInstance.eps_diel_zL;
-eps_diel_zS = DielMLParams.getInstance.eps_diel_zS;
-% Surface Dynamic Params
-eps_g = SurfaceDynParams.getInstance.eps_g;
+eps_diel_z2nd = DielMLDynParams.getInstance.eps_diel_z2nd;
+eps_diel_z3rd = DielMLDynParams.getInstance.eps_diel_z3rd;
+eps_diel_zL = DielMLDynParams.getInstance.eps_diel_zL;
+eps_diel_zS = DielMLDynParams.getInstance.eps_diel_zS;
+% Ground Dynamic Params
+eps_g = GndDynParams.getInstance.eps_g;
 % Ground MultiLayer Parameters
 layer_bottom_m = GndMLParams.getInstance.layer_bottom_m;
 zA_m = GndMLParams.getInstance.zA_m;    % Air layer

@@ -12,10 +12,6 @@ classdef Constants
          
         m2mm = 1e3;
         
-        deg2rad = pi / 180 ;
-        
-        rad2deg = 180 / pi ;
-        
         MHz2Hz = 1e6;
         
         GHz2Hz = 1e9;
@@ -36,12 +32,19 @@ classdef Constants
         ant_pat_ph_range_deg = 360;
         
 
-        %% CELL LISTS 
+        %% CELL LISTS         
         % Simulators
         id_veg_agr = 1;
         id_veg_for = 2;
         id_multi_layer = 3;
-        simulators = {'SCoBi-Veg(Agriculture)', 'SCoBi-Veg(Forest)', 'SCoBi-ML'};
+        id_soil = 4;
+        simulators = {'Agriculture', 'Forest', 'Root-zone', 'Soil'};
+        
+        % lastInputFileNames
+        lastInputFileNames = {'last_input-agriculture.mat', 'last_input-forest.mat', 'last_input-root_zone.mat', 'last_input-soil.mat'};
+        
+        % defaultInputFileNames
+        defaultInputFileNames = {'default-agriculture.mat', 'default-forest.mat', 'default-root_zone.mat', 'default-soil.mat'};
         
         % Sim-Modes
         id_snapshot = 1;
@@ -53,14 +56,7 @@ classdef Constants
         id_veg_cover = 2;  
         gnd_covers = {'Bare-soil', 'Vegetation'};
         
-        id_veg_hom = 1;
-        id_veg_vir = 2;  
-        veg_methods = {'Homogenous', 'Virtual'};
-        
-        id_veg_vir_row_crop = 1;
-        id_veg_vir_random_spread = 2;
-        veg_vir_orientations = {'Row-crop', 'Random-spread'};
-        
+        % Polarizations
         id_pol_R = 1;
         id_pol_L = 2;
         id_pol_X = 3;
@@ -69,25 +65,34 @@ classdef Constants
         id_pol_V = 6;
         polarizations = {'R', 'L', 'X', 'Y', 'H', 'V'};
         
+        % Receiver antenna orientations
         id_Rx_fixed = 1;
         id_Rx_specular_facing = 2;
         Rx_orientations = {'Fixed', 'Specular-facing'};
         
+        % Receiver antenna patterns
         id_Rx_GG = 1;
         id_Rx_user_defined = 2;
         id_Rx_cos_pow_n = 3;
         Rx_ant_pats = {'Generalized-Gaussian', 'User-defined', 'Cosine to the power n'};
         
+        % Dielcetric models
         id_diel_dobson = 1;
         id_diel_mironov = 2;
         id_diel_wang = 3;
         diel_models = {'Dobson', 'Mironov', 'Wang'};
         
+        % Dielectric profile generation methods 
         id_diel_slab = 1;
         id_diel_logistic = 2;
         id_diel_2nd_order = 3;
         id_diel_3rd_order = 4;
         diel_profiles = {'Discrete-slab', 'Logistic', '2nd-order', '3rd-order'};
+        
+        % Receiver antenna orientations
+        id_GUI_save = 1;
+        id_GUI_save_as = 2;
+        GUI_save_options = {'Save', 'Save-as'};
         
         
         %% STRUCTS
@@ -113,20 +118,22 @@ classdef Constants
         
         factor_fscat = 8;    % 4x2 (4: # mechanisms, 2: real and imag.)
         
-        num_ant_lookup = 1;  % only AntPat.mat
-        
         factor_ant_real = 4; % 2x2 (2: Real and imag., 2: Rec and RecI)
         
-        num_rot_lookup = 6;  % u_tr, u_gar, u_garI, u_sr, u_ts, u_tIs
+        num_rot_lookup = 4;  % u_tr, u_sr, u_ts, u_tIs
         
-        factor_rot_real = 4;    % 2x2 (2: Real and imag., 2: Rec and RecI)
-        
-        num_out_specular = 24;  % 2x2(2x2 + 2) (2: Bare and Veg, 2: Ideal 
-                                % or modelled Rec. pattern, 2: real and 
-                                % imag. parts, 2: #e_t's, 2: Power terms ) 
-        
-        factor_frediff_b1 = 16; % 4x2x2 (4: #incoh. mechanisms, 2:#e_t's 
-                                % 2: real and imag. parts)
+        num_products_specular_bare = 8;  % 2x2x2 (2: Ideal or sim. ant. pat.
+                                    %        2: real and imag. parts, 
+                                    %        2: #e_t's ) 
+                                    
+        num_products_specular_veg = 16; % 2x2x2x2 (2: Ideal/ sim. ant. pat.
+                                    %              2: real and imag. parts, 
+                                    %              2: #e_t's 
+                                    %              2: Bare and vegetation) 
+                                    
+                                    
+        %% INPUTS
+        num_gnd_single_params = 3;  % sand_ratio, clay_ratio, and rhob_gcm3
         
     end
     

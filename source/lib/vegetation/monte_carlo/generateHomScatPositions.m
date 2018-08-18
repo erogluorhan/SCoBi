@@ -12,7 +12,7 @@ TYPKND = VegParams.getInstance.TYPKND;
 dsty = VegParams.getInstance.dsty;
 dim3_m = VegParams.getInstance.dim3_m;
 % Bistatic Parameters
-AllPoints_m = BistaticParams.getInstance.AllPoints_m;
+AllPoints_m = BistaticDynParams.getInstance.AllPoints_m;
 
 
 % AllPoints_m = [pos_Tx_m, pos_TxI_m, pos_SP_m, pos_Rx_m, pos_RxI_m, pos_Gnd_m, pos_B_Rx_m, pos_FP_Rx_m, pos_FZ_m] ;
@@ -92,7 +92,7 @@ hr_m = RxParams.getInstance.hr_m ;     % Receiver height
 TYPES = VegParams.getInstance.TYPES;
 dim_layers_m = VegParams.getInstance.dim_layers_m;
 % Bistatic Parameters
-Tgs = BistaticParams.getInstance.Tgs;   % Transformation Gnd -> Specular
+Tgs = BistaticDynParams.getInstance.Tgs;   % Transformation Gnd -> Specular
 
 
 %% CALCULATIONS
@@ -222,9 +222,6 @@ writeVar( dir_position, filename, pP) ;
 
 % Number of particles per each Fresnel zone with a cumulative array
 writeVar( dir_fzones, filename, Npart) ;
-
-%% Incident, scattering angles
-calcScatAngles(filename, pP) ;
 
 
 end

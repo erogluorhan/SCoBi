@@ -74,7 +74,7 @@ for ii = 1 : Nlayer
 
             for aa = 1 : Na
 
-                tho = ANGDEG(aa) * Constants.deg2rad ;
+                tho = degtorad( ANGDEG(aa) );
                 pho = 0 ;
                 % Average Forward Scattering Amplitude
                 fXAmp(:, aa, kk, jj, ii) ...
@@ -114,7 +114,7 @@ ATTENV = zeros(Na, 1) ;
 % Propagation Constants
 for aa = 1 : Na
     
-    tho = ANGDEG(aa) * Constants.deg2rad ;
+    tho = degtorad( ANGDEG(aa) );
     
     for ii = 1 : Nlayer
         
@@ -481,8 +481,8 @@ function Object = Object_mode1(prob_deg, dim1_m, dim2_m, dim3_m, eps_r, filename
 theta1_deg = prob_deg(1, 1) ;
 theta2_deg = prob_deg(1, 2) ;
 
-theta1_rad = theta1_deg * Constants.deg2rad ;
-theta2_rad = theta2_deg * Constants.deg2rad ;
+theta1_rad = degtorad( theta1_deg );
+theta2_rad = degtorad( theta2_deg );
 
 EPSILON = eps_r ;
 var1 = EPSILON ;

@@ -19,16 +19,16 @@ ant_pat_struct_Rx = RxParams.getInstance.ant_pat_struct_Rx;
 % Ground Parameters
 polG = GndParams.getInstance.polG;
 % Bistatic Parameters
-idn = BistaticParams.getInstance.idn;  % propagation vector (i_d^-)
-isn = BistaticParams.getInstance.isn;  % propagation vector (i_s^-)
-osp = BistaticParams.getInstance.osp;  % propagation vector (o_s^+)
+idn = BistaticDynParams.getInstance.idn;  % propagation vector (i_d^-)
+isn = BistaticDynParams.getInstance.isn;  % propagation vector (i_s^-)
+osp = BistaticDynParams.getInstance.osp;  % propagation vector (o_s^+)
 isp = osp;                             % propagation vector (i_s^+)
 % Transformations
-Tgs = BistaticParams.getInstance.Tgs;
-Tgr = BistaticParams.getInstance.Tgr;
-TgrI = BistaticParams.getInstance.TgrI;
-Tgt = BistaticParams.getInstance.Tgt;
-TgtI = BistaticParams.getInstance.TgtI;
+Tgs = BistaticDynParams.getInstance.Tgs;
+Tgr = BistaticDynParams.getInstance.Tgr;
+TgrI = BistaticDynParams.getInstance.TgrI;
+Tgt = BistaticDynParams.getInstance.Tgt;
+TgtI = BistaticDynParams.getInstance.TgtI;
 
 
 %% CALCULATIONS
@@ -113,87 +113,15 @@ toc
 %     dot(uhoI, conj(ur2)), dot(uvoI, conj(ur2))] ;
 
 
-
-%% Calculate Rotation Matrices (Ground to Receiver)
-% u_p_r(o_a^+)
-u_gar = [];
-u_garI = [];
-[needForDiffuseTerm, dispMsg] = ParamsManager.isToCalculateDiffuseTerm();
-
-if needForDiffuseTerm == Constants.need_for_run.FULL
-
-    disp('Rotation Matrix (Ground to Receiver) . . .')
-    tic;
-    [Nph, Nth] = size(th) ;
-    for t = 1 : Nth
-        for p = 1 : Nph
-
-            thpt = th(p, t) ; phpt = ph(p, t) ;
-            oap_rf = -[sin(thpt) .* cos(phpt); sin(thpt) .* sin(phpt); cos(thpt)] ;
-            oap = Tgr' * oap_rf ;   % in reference (ground) plane
-            [uvo, uho, ur1, ur2] = tanUnitVectors(Tgs, Tgr, oap, polG, pol_Rx) ;
-
-            % Polarization Basis Dot Products        
-            u11 = dot(uvo, conj(ur1)) ; u12 = dot(uho, conj(ur1)) ;
-            u21 = dot(uvo, conj(ur2)) ; u22 = dot(uho, conj(ur2)) ;
-
-            % 2 X 2
-            u_gar{p, t} = [u11, u12; u21, u22] ;
-    % %         % 4 X 4      
-    % %         U_gar{p, t} = calc_Muller(u_gar{p, t}) ;
-
-        end
-    end
-    toc
-    %% Calculate Rotation Matrices (Ground to Image Receiver)
-    % u_p_rI(o_a^-)
-
-    disp('Rotation Matrix (Ground to Image Receiver) . . .')
-    % % tic ;
-    % % [Nph, Nth] = size(th) ;
-    % % for t = 1 : Nth
-    % %     for p = 1 : Nph
-    % %        
-    % %         pol1 = 'V' ; pol2 = pol_Rx ;
-    % %         thpt = th(p, t) ; phpt = ph(p, t) ;
-    % %         oap_rIf = -[sin(thpt) .* cos(phpt); sin(thpt) .* sin(phpt); cos(thpt)] ;
-    % %         oaIp = TgrI' * oap_rIf ;  % in reference (ground) plane
-    % %         [uvoI, uhoI, ur1, ur2] = tanUnitVectors(Tgs, TgrI, oaIp, pol1, pol2) ;
-    % %         
-    % %         % Polarization Basis Dot Products
-    % %         u_garI{p, t} = [dot(uvoI, conj(ur1)), dot(uhoI, conj(ur1));...
-    % %             dot(uvoI, conj(ur2)), dot(uhoI, conj(ur2))] ;
-    % %         
-    % %     end
-    % % end
-    % % toc
-
-    % 2 X 2
-    u_garI = u_gar ; %% added april 29, 2017
-    % % % 4 X 4
-    % % U_garI = U_gar ; %% added May 1, 2017
-end
-
-%% Saving . . . 
-
+%% SAVE
 disp('Saving Rotation Matrices . . .')
 tic ;
 
-% TO-DO: u_gar and u_garI conditional on diffuseTerm
 % 2 X 2
-save([dir_rot_lookup '\u_gar.mat'], 'u_gar', 'th', 'ph')
-save([dir_rot_lookup '\u_garI.mat'], 'u_garI', 'th', 'ph')
 save([dir_rot_lookup '\u_sr.mat'], 'u_sr')
 save([dir_rot_lookup '\u_ts.mat'], 'u_ts')
 save([dir_rot_lookup '\u_tIs.mat'], 'u_tIs')
 save([dir_rot_lookup '\u_tr.mat'], 'u_tr')
-% % % 4 X 4
-% % save([dir_rot_lookup '\U_gar.mat'], 'U_gar', 'th', 'ph')
-% % save([dir_rot_lookup '\U_garI.mat'], 'U_garI', 'th', 'ph')
-% % save([dir_rot_lookup '\U_sr.mat'], 'U_sr')
-% % save([dir_rot_lookup '\U_ts.mat'], 'U_ts')
-% % save([dir_rot_lookup '\U_tIs.mat'], 'U_tIs')
-% % save([dir_rot_lookup '\U_tr.mat'], 'U_tr')
 
 toc
 
