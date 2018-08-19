@@ -40,15 +40,6 @@ classdef SCoBiGUIManagers < handle
         
         
         initialized = 0;
-
-        
-        % LEDs    
-        ledOff = 0;          % Led status off
-        ledOn  = 1;          % Led status on
-        ledOk  = 3;          % Led status ok
-        ledKo  = 4;          % Led status ko
-        ledCk  = 5;          % Led status check
-        ledOp  = 6;          % Led status optional parameter
            
     end
     
@@ -91,7 +82,7 @@ classdef SCoBiGUIManagers < handle
         % the status is kept updated
         getAllElStatus(obj)
         
-        % Get LED items content if exist in a GUI
+        % Get specific content in a GUI, if any
         getSpecificElContent(obj)
         
         % Initialize pop-up menus if exist in a GUI
@@ -103,12 +94,8 @@ classdef SCoBiGUIManagers < handle
         % Initialize UI IDs: Assign an id (integer) to each UI element
         initUIAccess(obj)
         
-        % Set LED items content if exist in a GUI
-        setSpecificElContent(obj)        
-        
-        % Test if the active file/dir paths
-        % contain valid file/dir
-        updateLEDstate(obj)
+        % Set specific content in a GUI, if any
+        setSpecificElContent(obj) 
     
     end
     
@@ -188,7 +175,7 @@ classdef SCoBiGUIManagers < handle
             
             if (sum(obj.setFlag) > 0)
                 
-                % If any LED exists
+                % Set specific content in a GUI, if any
                 obj.setSpecificElContent();
                 
                 % Save the status in the object
@@ -219,6 +206,13 @@ classdef SCoBiGUIManagers < handle
         % Set a value of an element of the interface
         function setGuiElVal(obj, hObject, value)
             set(hObject, 'Value', value);
+        end
+        
+        
+        % Set a string of an element of the interface
+        function setGuiElVisibility( obj, idEl, isVisible )
+            
+             set( obj.uiPointers(idEl), 'Visible', isVisible );
         end
                 
     end
@@ -441,7 +435,7 @@ classdef SCoBiGUIManagers < handle
         % Set the value of an element
         %  - idEl           is the identifier of the object (or group of
         %                   objects (see idUI/idGroup for the list of ids)
-        %  - value          could be 0/1 'on'/'off'
+        %  - status          could be 0/1 'on'/'off'
         %  - <autoapply>    if set obj.setAllElContent() is automatically
         %                   called after to show immediatly the modification 
         %                   in the GUI
@@ -483,37 +477,6 @@ classdef SCoBiGUIManagers < handle
                 obj.setAllElContent();
             end
             
-        end
-        
-        
-        % Led status
-        % Set green / red status of the UI and optionally lock the UI
-        % -------------------------------------------------------------------------
-        function setGUILedStatus(obj, idEl, status, autoapply)
-            
-            if nargin == 3
-                autoapply = true;
-            end
-            
-            if (status == obj.ledOk)    % Led Ok
-                if ~obj.isColor(idEl, obj.green)
-                    obj.setElVal(idEl, obj.green)
-                end
-            elseif (status == obj.ledKo) % Led Ko
-                if ~obj.isColor(idEl, obj.red)
-                    obj.setElVal(idEl,obj.red)
-                end
-            elseif (status == obj.ledCk) % Led Check
-                if ~obj.isColor(idEl, obj.yellow)
-                    obj.setElVal(idEl,obj.yellow)
-                end
-            elseif (status == obj.ledOp) % Led Optional parameter
-                if ~obj.isColor(idEl, obj.blue)
-                    obj.setElVal(idEl,obj.blue)
-                end
-            end
-            obj.setAllElContent();
-            %obj.setElStatus(idEl, status > 1, autoapply)
         end
         
         % Set new enable / disable status

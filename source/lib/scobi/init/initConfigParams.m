@@ -30,17 +30,32 @@ if sim_mode_id == Constants.id_time_series
 end
 
 
-% TO-DO: This is for satGeometryManual. There should be an option for
-% transmitterGeometry
-% Incidence angle
-ind = ind + 1;
-th0_Tx_list_deg = num(:, ind);    
-th0_Tx_list_deg(any(isnan(th0_Tx_list_deg), 2), :) = [];
+orientation_Tx_id = findElementIdInCell( Constants.Tx_orientations, inputStruct.orientation_Tx );
+% If transmitter orientation is variable, get incidence and azimuth angles
+% from configuration inputs file
+if orientation_Tx_id == Constants.id_Tx_variable
+    
+    % Incidence angle
+    ind = ind + 1;
+    th0_Tx_list_deg = num(:, ind);    
+    th0_Tx_list_deg(any(isnan(th0_Tx_list_deg), 2), :) = [];
 
-% Azimuth angle
-ind = ind + 1;
-ph0_Tx_list_deg = num(:, ind);    
-ph0_Tx_list_deg(any(isnan(ph0_Tx_list_deg), 2), :) = [];
+    % Azimuth angle
+    ind = ind + 1;
+    ph0_Tx_list_deg = num(:, ind);    
+    ph0_Tx_list_deg(any(isnan(ph0_Tx_list_deg), 2), :) = [];
+    
+% Else if transmitter orientation is Geo-stationary, get incidence and 
+% azimuth angles from inputStruct
+elseif orientation_Tx_id == Constants.id_Tx_geostationary
+    
+    % Incidence angle
+    th0_Tx_list_deg = inputStruct.th0_Tx_deg;
+
+    % Azimuth angle
+    ph0_Tx_list_deg = inputStruct.ph0_Tx_deg;    
+    
+end
 
 % Surface rms height (cm)
 ind = ind + 1;

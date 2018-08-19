@@ -1,6 +1,6 @@
 % TO-DO: Check comments, copyrights, etc.
-classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
-    %GUI_SCO_VEG_MANAGER This class implements handles for GUI elements, and 
+classdef gui_SCoBi_Manager < SCoBiGUIManagers
+    %GUI_SCOBI_MANAGER This class implements handles for GUI elements, and 
     % performs the GUI-related functionalities
     
     
@@ -17,7 +17,7 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
     methods
         
         % Constructor
-        function obj = gui_SCoBi_Veg_Manager( handles, simulator_id )           
+        function obj = gui_SCoBi_Manager( handles, simulator_id )           
             
             % Call superclass constructor
             obj = obj@SCoBiGUIManagers( handles, simulator_id );
@@ -115,6 +115,24 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
         end
 
 
+        % Check if orientation_Tx value is Fixed
+        function result = is_popup_orientation_Tx_geostationary(obj)
+            
+            isOn = obj.isEnabled( obj.uiIDs.popup_orientation_Tx );
+            result = isOn && (obj.getElVal(obj.uiIDs.popup_orientation_Tx) == Constants.id_Tx_geostationary );
+            
+        end
+
+
+        % Check if orientation_Tx value is Specular-facing
+        function result = is_popup_orientation_Tx_variable(obj)
+            
+            isOn = obj.isEnabled( obj.uiIDs.popup_orientation_Tx );
+            result = isOn && (obj.getElVal(obj.uiIDs.popup_orientation_Tx) == Constants.id_Tx_variable );
+            
+        end
+
+
         % Check if sim_mode value is Snapshot
         function result = is_popup_sim_mode_snapshot(obj)
             
@@ -207,6 +225,39 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
           end
           
           
+          %% TRANSMITTER INPUTS
+          % If orientation_Tx popup value is changed            
+          if sum(intersect(idEl, obj.uiIDs.popup_orientation_Tx)) > 0                
+                  
+              % If selected orientation_Tx is Geo-stationary
+              if obj.is_popup_orientation_Tx_geostationary()
+
+                  obj.setElStatus(obj.uiGroups.on_popup_orientation_Tx_geostationary, 1, 0);  
+                  obj.setElStatus(obj.uiGroups.on_popup_orientation_Tx_variable, 0, 0);
+                  
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_orientation_Tx_geostationary, 'on' );
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_orientation_Tx_variable, 'off' );
+
+              % Else if selected orientation_Tx is Variable
+              elseif obj.is_popup_orientation_Tx_variable()
+
+                  obj.setElStatus([obj.uiGroups.on_popup_orientation_Tx_geostationary], 0, 0);
+                  obj.setElStatus(obj.uiGroups.on_popup_orientation_Tx_variable, 1, 0);
+                  
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_orientation_Tx_geostationary, 'off' );
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_orientation_Tx_variable, 'on' );
+
+              else
+
+                  % TO-DO: Handle Exception?
+
+              end
+              
+              obj.updateGUI();
+              
+          end
+          
+          
           %% RECEIVER INPUTS
           % If orientation_Rx popup value is changed            
           if sum(intersect(idEl, obj.uiIDs.popup_orientation_Rx)) > 0                
@@ -214,12 +265,20 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
               % If selected orientation_Rx is Fixed
               if obj.is_popup_orientation_Rx_fixed()
 
-                  obj.setElStatus(obj.uiGroups.on_popup_orientation_Rx, 1, 0);                  
+                  obj.setElStatus(obj.uiGroups.on_popup_orientation_Rx_fixed, 1, 0);  
+                  obj.setElStatus(obj.uiGroups.on_popup_orientation_Rx_specular_facing, 0, 0); 
+                  
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_orientation_Rx_fixed, 'on' );
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_orientation_Rx_specular_facing, 'off' );                 
 
               % Else if selected orientation_Rx is Specular-facing
               elseif obj.is_popup_orientation_Rx_specular_facing()
 
-                  obj.setElStatus([obj.uiGroups.on_popup_orientation_Rx], 0, 0);
+                  obj.setElStatus(obj.uiGroups.on_popup_orientation_Rx_fixed, 0, 0);  
+                  obj.setElStatus(obj.uiGroups.on_popup_orientation_Rx_specular_facing, 1, 0); 
+                  
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_orientation_Rx_fixed, 'off' );
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_orientation_Rx_specular_facing, 'on' );
 
               else
 
@@ -237,17 +296,20 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
               persistent last_ant_pat_res_Rx_val               
                 
               % If selected ant_pat_Rx is Generalized-Gaussian
-              if obj.is_popup_ant_pat_Rx_GG()
+              if obj.is_popup_ant_pat_Rx_GG()                  
       
-                  if isnumeric( last_ant_pat_res_Rx_val ) && ~isempty(last_ant_pat_res_Rx_val)        
+                  if isnumeric( last_ant_pat_res_Rx_val ) && ~isempty(last_ant_pat_res_Rx_val)  
+                      
                       obj.setElVal( obj.uiIDs.edit_ant_pat_res_Rx, num2str(last_ant_pat_res_Rx_val) );
+                      
                   end
 
                   obj.setElStatus([obj.uiGroups.on_popup_ant_pat_Rx_GG], 1, 0); 
-
                   obj.setElStatus([obj.uiGroups.on_popup_ant_pat_Rx_user_defined], 0, 0); 
-
-                  % TO-DO: GUI window for GG .id_Rx_GG);            
+                  
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_ant_pat_Rx_GG, 'on' );
+                  obj.setGuiElVisibility( obj.uiGroups.visibility_on_popup_ant_pat_Rx_user_defined, 'off' );                  
+                  
 
               % Else if selected ant_pat_Rx is User-defined
               elseif obj.is_popup_ant_pat_Rx_user_defined()
@@ -255,8 +317,10 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
                   last_ant_pat_res_Rx_val = str2double( obj.getElVal( obj.uiIDs.edit_ant_pat_res_Rx ) );
 
                   obj.setElStatus([obj.uiGroups.on_popup_ant_pat_Rx_GG], 0, 0); 
-
-                  obj.setElStatus([obj.uiGroups.on_popup_ant_pat_Rx_user_defined], 1, 0);                  
+                  obj.setElStatus([obj.uiGroups.on_popup_ant_pat_Rx_user_defined], 1, 0); 
+                  
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_ant_pat_Rx_GG, 'off' );
+                  obj.setGuiElVisibility( obj.uiGroups.visibility_on_popup_ant_pat_Rx_user_defined, 'on' );                
 
               % Else if selected ant_pat_Rx is Cosine-to-the-power-n
               elseif obj.is_popup_ant_pat_Rx_cos_pow_n()
@@ -468,6 +532,20 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
         end
 
         
+        % Fill the popup_orientation_Tx
+        function init_popup_orientation_Tx(obj, str)
+            
+            if nargin < 2
+                str = Constants.Tx_orientations;
+            end
+            
+            value = get(obj.handles.popup_orientation_Tx,'Value');
+            value = min(1,max(length(str), value));
+            set(obj.handles.popup_orientation_Tx,'Value', value);
+            set(obj.handles.popup_orientation_Tx,'String', str);
+        end
+
+        
         % Fill the popup_orientation_Rx
         function init_popup_orientation_Rx(obj, str)
             
@@ -600,8 +678,19 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
           i = i+1;        id.text_dB_EIRP = i;              pointers(i) = obj.handles.text_dB_EIRP;
           i = i+1;        id.text_pol_Tx = i;               pointers(i) = obj.handles.text_pol_Tx;
           i = i+1;        id.popup_pol_Tx = i;              pointers(i) = obj.handles.popup_pol_Tx;
+          i = i+1;        id.text_orientation_Tx = i;       pointers(i) = obj.handles.text_orientation_Tx;
+          i = i+1;        id.popup_orientation_Tx = i;      pointers(i) = obj.handles.popup_orientation_Tx;
+          % Geo-stationary Transmitter Input
+          i = i+1;        id.text_th0_Tx = i;               pointers(i) = obj.handles.text_th0_Tx;
+          i = i+1;        id.edit_th0_Tx = i;               pointers(i) = obj.handles.edit_th0_Tx;
+          i = i+1;        id.text_deg_th0_Tx = i;           pointers(i) = obj.handles.text_deg_th0_Tx;
+          i = i+1;        id.text_ph0_Tx = i;               pointers(i) = obj.handles.text_ph0_Tx;
+          i = i+1;        id.edit_ph0_Tx = i;               pointers(i) = obj.handles.edit_ph0_Tx;
+          i = i+1;        id.text_deg_ph0_Tx = i;           pointers(i) = obj.handles.text_deg_ph0_Tx;
+          % Variable-orientation Transmitter UI element
+          i = i+1;        id.text_orientation_Tx_variable = i;           pointers(i) = obj.handles.text_orientation_Tx_variable;
             
-          groupIDs.Tx_inputs = [id.panel_Tx_inputs id.text_f_MHz : id.popup_pol_Tx];
+          groupIDs.Tx_inputs                            = [id.panel_Tx_inputs, id.text_f_MHz : id.text_orientation_Tx_variable];
           
           
           %% RECEIVER (Rx) INPUTS PANEL ELEMENTS           
@@ -615,17 +704,15 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
           i = i+1;        id.popup_pol_Rx = i;              pointers(i) = obj.handles.popup_pol_Rx;
           i = i+1;        id.text_orientation_Rx = i;       pointers(i) = obj.handles.text_orientation_Rx;
           i = i+1;        id.popup_orientation_Rx = i;      pointers(i) = obj.handles.popup_orientation_Rx;
+          i = i+1;        id.text_ant_pat_Rx = i;           pointers(i) = obj.handles.text_ant_pat_Rx;
+          i = i+1;        id.popup_ant_pat_Rx = i;          pointers(i) = obj.handles.popup_ant_pat_Rx;
+          % Fixed-orientation Receiver Input
           i = i+1;        id.text_th0_Rx = i;               pointers(i) = obj.handles.text_th0_Rx;
           i = i+1;        id.edit_th0_Rx = i;               pointers(i) = obj.handles.edit_th0_Rx;
           i = i+1;        id.text_deg_th0_Rx = i;           pointers(i) = obj.handles.text_deg_th0_Rx;
           i = i+1;        id.text_ph0_Rx = i;               pointers(i) = obj.handles.text_ph0_Rx;
           i = i+1;        id.edit_ph0_Rx = i;               pointers(i) = obj.handles.edit_ph0_Rx;
           i = i+1;        id.text_deg_ph0_Rx = i;           pointers(i) = obj.handles.text_deg_ph0_Rx;
-          i = i+1;        id.text_ant_pat_Rx = i;           pointers(i) = obj.handles.text_ant_pat_Rx;
-          i = i+1;        id.popup_ant_pat_Rx = i;          pointers(i) = obj.handles.popup_ant_pat_Rx;
-          i = i+1;        id.text_ant_pat_res_Rx = i;       pointers(i) = obj.handles.text_ant_pat_res_Rx;
-          i = i+1;        id.edit_ant_pat_res_Rx = i;       pointers(i) = obj.handles.edit_ant_pat_res_Rx;
-          i = i+1;        id.text_deg_ant_pat_res_Rx = i;   pointers(i) = obj.handles.text_deg_ant_pat_res_Rx;
           % Generalized-Gaussian Antenna Pattern Input
           i = i+1;        id.panel_Rx_GG = i;               pointers(i) = obj.handles.panel_Rx_GG;
           i = i+1;        id.text_hpbw_deg = i;             pointers(i) = obj.handles.text_hpbw_deg;
@@ -637,9 +724,15 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
           i = i+1;        id.text_XPL_dB = i;               pointers(i) = obj.handles.text_XPL_dB;
           i = i+1;        id.edit_XPL_dB = i;               pointers(i) = obj.handles.edit_XPL_dB;
           i = i+1;        id.text_dB_XPL = i;               pointers(i) = obj.handles.text_dB_XPL;
+          i = i+1;        id.text_ant_pat_res_Rx = i;       pointers(i) = obj.handles.text_ant_pat_res_Rx;
+          i = i+1;        id.edit_ant_pat_res_Rx = i;       pointers(i) = obj.handles.edit_ant_pat_res_Rx;
+          i = i+1;        id.text_deg_ant_pat_res_Rx = i;   pointers(i) = obj.handles.text_deg_ant_pat_res_Rx;
+          i = i+1;        id.text_orientation_Rx_specular_facing = i;           pointers(i) = obj.handles.text_orientation_Rx_specular_facing;
+          % User-defined antenna patter Receiver UI element
+          i = i+1;        id.text_ant_pat_Rx_user_defined = i;           pointers(i) = obj.handles.text_ant_pat_Rx_user_defined;
             
-          groupIDs.Rx_inputs = [id.panel_Rx_inputs id.text_hr_m : id.text_deg_ant_pat_res_Rx];
-          groupIDs.ant_pat_Rx_GG_inputs = [id.panel_Rx_GG : id.text_dB_XPL];
+          groupIDs.Rx_inputs                               = [id.panel_Rx_inputs, id.text_hr_m : id.text_deg_ph0_Rx];
+          groupIDs.ant_pat_Rx_GG_inputs                    = id.panel_Rx_GG : id.text_deg_ant_pat_res_Rx;
           
           
           %% GROUND INPUTS PANEL ELEMENTS               
@@ -650,15 +743,12 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
           
           
           %% INPUT FILES PANEL ELEMENTS
-          i = i+1;        id.text_LED_config_inputs_file = i;  pointers(i) = obj.handles.text_LED_config_inputs_file;
           i = i+1;        id.text_config_inputs_file = i;      pointers(i) = obj.handles.text_config_inputs_file;
           i = i+1;        id.edit_config_inputs_file = i;      pointers(i) = obj.handles.edit_config_inputs_file;
           i = i+1;        id.pb_config_inputs_file = i;        pointers(i) = obj.handles.pb_config_inputs_file;
-          i = i+1;        id.text_LED_ant_pat_Rx_file = i;  pointers(i) = obj.handles.text_LED_ant_pat_Rx_file;
           i = i+1;        id.text_ant_pat_Rx_file = i;      pointers(i) = obj.handles.text_ant_pat_Rx_file;
           i = i+1;        id.edit_ant_pat_Rx_file = i;      pointers(i) = obj.handles.edit_ant_pat_Rx_file;
           i = i+1;        id.pb_ant_pat_Rx_file = i;        pointers(i) = obj.handles.pb_ant_pat_Rx_file;
-          i = i+1;        id.text_LED_veg_inputs_file = i;  pointers(i) = obj.handles.text_LED_veg_inputs_file;
           i = i+1;        id.text_veg_inputs_file = i;      pointers(i) = obj.handles.text_veg_inputs_file;
           i = i+1;        id.edit_veg_inputs_file = i;      pointers(i) = obj.handles.edit_veg_inputs_file;
           i = i+1;        id.pb_veg_inputs_file = i;        pointers(i) = obj.handles.pb_veg_inputs_file;
@@ -688,13 +778,29 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
                                    id.edit_veg_inputs_file ...
                                    id.pb_veg_inputs_file ];
                                 
+          % On Tx_orientation change
+          % Because there are currently only two Tx orientations, it can be
+          % adjusted by only on_Tx_orientation. If more items exist in the
+          % future, each should have its own enable/disable group)             
+          groupIDs.on_popup_orientation_Tx_geostationary = [id.text_th0_Tx ...
+                                    id.edit_th0_Tx ...    
+                                    id.text_deg_th0_Tx ...
+                                    id.text_ph0_Tx ...
+                                    id.edit_ph0_Tx ...
+                                    id.text_deg_ph0_Tx];
+          groupIDs.on_popup_orientation_Tx_variable = id.text_orientation_Tx_variable;
+                                
           % On Rx_orientation change
           % Because there are currently only two Rx orientations, it can be
           % adjusted by only on_Rx_orientation. If more items exist in the
           % future, each should have its own enable/disable group)             
-          groupIDs.on_popup_orientation_Rx = [id.text_th0_Rx id.edit_th0_Rx ...
-                                        id.text_deg_th0_Rx id.text_ph0_Rx ...
-                                        id.edit_ph0_Rx id.text_deg_ph0_Rx];
+          groupIDs.on_popup_orientation_Rx_fixed = [id.text_th0_Rx ...
+                                                id.edit_th0_Rx ...
+                                                id.text_deg_th0_Rx ...
+                                                id.text_ph0_Rx ...
+                                                id.edit_ph0_Rx ...
+                                                id.text_deg_ph0_Rx];
+          groupIDs.on_popup_orientation_Rx_specular_facing = id.text_orientation_Rx_specular_facing;
           
           % On ant_pat_Rx change
           groupIDs.on_popup_ant_pat_Rx_GG = [id.text_ant_pat_res_Rx ...
@@ -702,14 +808,14 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
                                              id.text_deg_ant_pat_res_Rx ...
                                              groupIDs.ant_pat_Rx_GG_inputs ];
                                       
-          groupIDs.on_popup_ant_pat_Rx_user_defined = [id.text_LED_ant_pat_Rx_file ...
-                                                       id.text_ant_pat_Rx_file ...
+          groupIDs.on_popup_ant_pat_Rx_user_defined = [id.text_ant_pat_Rx_file ...
                                                        id.edit_ant_pat_Rx_file ...
                                                        id.pb_ant_pat_Rx_file ];
+          groupIDs.visibility_on_popup_ant_pat_Rx_user_defined = id.text_ant_pat_Rx_user_defined;
                                       
           
-          groupIDs.input_files = [id.panel_input_files id.text_config_inputs_file:id.text_veg_inputs_file];          
-          groupIDs.gLED = [id.text_LED_config_inputs_file id.text_LED_ant_pat_Rx_file id.text_LED_veg_inputs_file];
+          groupIDs.input_files = [id.panel_input_files, ...
+                               id.text_config_inputs_file : id.text_veg_inputs_file];         
 
             
           %% Initialize object properties
@@ -771,10 +877,42 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
             end
               
             
-            % popup_orientation_Rx
-            if obj.is_popup_orientation_Rx_specular_facing()
+            % popup_orientation_Tx
+            if obj.is_popup_orientation_Tx_geostationary()
 
-                  obj.setElStatus(obj.uiGroups.on_popup_orientation_Rx, 0, 0);
+                  obj.setElStatus(obj.uiGroups.on_popup_orientation_Tx_geostationary, 1, 0);
+                  obj.setElStatus(obj.uiGroups.on_popup_orientation_Tx_variable, 0, 0);
+                  
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_orientation_Tx_geostationary, 'on' );
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_orientation_Tx_variable, 'off' );
+                  
+            elseif obj.is_popup_orientation_Tx_variable()
+
+                  obj.setElStatus(obj.uiGroups.on_popup_orientation_Tx_geostationary, 0, 0);
+                  obj.setElStatus(obj.uiGroups.on_popup_orientation_Tx_variable, 1, 0);
+                  
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_orientation_Tx_geostationary, 'off' );
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_orientation_Tx_variable, 'on' );
+                  
+            end
+              
+            
+            % popup_orientation_Rx
+            if obj.is_popup_orientation_Rx_fixed()
+
+                  obj.setElStatus(obj.uiGroups.on_popup_orientation_Rx_fixed, 1, 0);
+                  obj.setElStatus(obj.uiGroups.on_popup_orientation_Rx_specular_facing, 0, 0);
+                  
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_orientation_Rx_fixed, 'on' );
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_orientation_Rx_specular_facing, 'off' );
+                  
+            elseif obj.is_popup_orientation_Rx_specular_facing()
+
+                  obj.setElStatus(obj.uiGroups.on_popup_orientation_Rx_fixed, 0, 0);
+                  obj.setElStatus(obj.uiGroups.on_popup_orientation_Rx_specular_facing, 1, 0);
+                  
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_orientation_Rx_fixed, 'off' );
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_orientation_Rx_specular_facing, 'on' );
                   
             end
               
@@ -782,19 +920,21 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
             % popup_ant_pat_Rx
             if obj.is_popup_ant_pat_Rx_user_defined()
 
-                  obj.setElStatus(obj.uiGroups.on_popup_ant_pat_Rx_GG, 0, 0);
+                  obj.setElStatus([obj.uiGroups.on_popup_ant_pat_Rx_GG], 0, 0); 
+                  obj.setElStatus([obj.uiGroups.on_popup_ant_pat_Rx_user_defined], 1, 0); 
+                  
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_ant_pat_Rx_GG, 'off' );
+                  obj.setGuiElVisibility( obj.uiGroups.visibility_on_popup_ant_pat_Rx_user_defined, 'on' ); 
                       
                   obj.setElVal( obj.uiIDs.edit_ant_pat_res_Rx, num2str(0) );
-
-                  obj.setElStatus(obj.uiGroups.on_popup_ant_pat_Rx_user_defined, 1, 0);
                   
             elseif obj.is_popup_ant_pat_Rx_GG()
 
-                  obj.setElStatus(obj.uiGroups.on_popup_ant_pat_Rx_GG, 1, 0);
-                      
-%                   obj.setElVal( obj.uiIDs.edit_ant_pat_res_Rx, num2str(1) );
-
-                  obj.setElStatus(obj.uiGroups.on_popup_ant_pat_Rx_user_defined, 0, 0);
+                  obj.setElStatus([obj.uiGroups.on_popup_ant_pat_Rx_GG], 1, 0); 
+                  obj.setElStatus([obj.uiGroups.on_popup_ant_pat_Rx_user_defined], 0, 0); 
+                  
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_ant_pat_Rx_GG, 'on' );
+                  obj.setGuiElVisibility( obj.uiGroups.visibility_on_popup_ant_pat_Rx_user_defined, 'off' ); 
             end
             
         end
@@ -839,13 +979,10 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
             textEl = false(length(obj.uiPointers),1);     % init logical text elements group
             textEl(obj.uiGroups.strEl) = true;              % set logical indexes of the text elements
                 
-            % Modified LED elements
-            mLED = obj.uiGroups.gLED(obj.getFlag(obj.uiGroups.gLED));
-                
             % Modified text elements
-            mTextEl = setdiff(idEl(textEl & obj.getFlag), mLED);
+            mTextEl = idEl(textEl & obj.getFlag);
 
-            mIdEl = setdiff(idEl(~panels & ~textEl & obj.getFlag), mLED); % id of elements that are not panels nor text elements that have been modified
+            mIdEl = idEl(~panels & ~textEl & obj.getFlag); % id of elements that are not panels nor text elements that have been modified
                 
             % For each modified panel
             for i=1:length(mPanel)
@@ -855,11 +992,6 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
             % For each modified txt Element
             for i=1:length(mTextEl)
                 obj.curVal{mTextEl(i)} = obj.getGuiElStr(obj.uiPointers(mTextEl(i)));
-            end
-
-            % For all the LEDs
-            for i=1:length(mLED)
-                obj.curVal{mLED(i)} = obj.getGuiElColor(obj.uiPointers(mLED(i)));
             end
 
             % For all the other modified elements
@@ -962,6 +1094,13 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
             
             obj.init_popup_pol_Tx();
             obj.setElVal(obj.uiIDs.popup_pol_Tx, Constants.id_pol_R, 0);
+            
+            obj.init_popup_orientation_Tx();
+            obj.setElVal(obj.uiIDs.popup_orientation_Tx, Constants.id_Tx_geostationary, 0);
+                
+            obj.setElVal(obj.uiIDs.edit_th0_Tx, [], 0);
+
+            obj.setElVal(obj.uiIDs.edit_ph0_Tx, [], 0);
             
             
             %% RECEIVER (Rx) INPUTS
@@ -1123,6 +1262,20 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
             pol_Tx_id = findElementIdInCell( Constants.polarizations, inputStruct.pol_Tx );
             obj.setElVal(obj.uiIDs.popup_pol_Tx, pol_Tx_id, 0);
             
+            obj.init_popup_orientation_Tx();
+            orientation_Tx_id = findElementIdInCell( Constants.Tx_orientations, inputStruct.orientation_Tx );
+            obj.setElVal(obj.uiIDs.popup_orientation_Tx, orientation_Tx_id, 0);
+            
+            % If transmitter orientation is Geo-stationary, then load 
+            % incidence and azimuth agles
+            if orientation_Tx_id == Constants.id_Tx_geostationary
+                
+                obj.setElVal(obj.uiIDs.edit_th0_Tx, num2str(inputStruct.th0_Tx_deg), 0);
+            
+                obj.setElVal(obj.uiIDs.edit_ph0_Tx, num2str(inputStruct.ph0_Tx_deg), 0);
+                
+            end
+            
             
             %% RECEIVER (Rx) INPUTS
             obj.setElVal(obj.uiIDs.edit_hr_m, num2str(inputStruct.hr_m), 0);
@@ -1254,6 +1407,18 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
         pol_Tx_id       = obj.getElVal(obj.uiIDs.popup_pol_Tx);
         inputStruct.pol_Tx	= Constants.polarizations{ 1, pol_Tx_id };
 
+        orientation_Tx_id       = obj.getElVal(obj.uiIDs.popup_orientation_Tx);
+        inputStruct.orientation_Tx	= Constants.Tx_orientations{ 1, orientation_Tx_id };
+
+        % If transmitter orientation is Geo-stationary, then assign 
+        % incidence and azimuth angles
+        if orientation_Tx_id == Constants.id_Tx_geostationary
+            
+            inputStruct.th0_Tx_deg	= str2double(obj.getElVal(obj.uiIDs.edit_th0_Tx));
+            inputStruct.ph0_Tx_deg	= str2double(obj.getElVal(obj.uiIDs.edit_ph0_Tx));
+            
+        end
+
 
         %% RECEIVER (Rx) INPUTS PANEL ELEMENTS 
         inputStruct.hr_m      = str2double(obj.getElVal(obj.uiIDs.edit_hr_m));
@@ -1361,7 +1526,7 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
             dir_gui_last_input = Directories.getInstance.scobi_gui_last_input;
             
 
-            lastInputFileName = ConstantNames.lastInputFileNames{ 1, obj.simulator_id };
+            lastInputFileName = Constants.lastInputFileNames{ 1, obj.simulator_id };
             
             filename = strcat( dir_gui_last_input, '/', lastInputFileName );
             
@@ -1384,27 +1549,19 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
             panels = false(length(obj.uiPointers),1);     % init logical panels group
             panels(obj.uiGroups.gPanels) = true;           % set logical indexes of the panels
             % modified panels
-            mPanel = idEl(panels & obj.setFlag);
-                
-            % Modified LED elements
-            mLED = obj.uiGroups.gLED(obj.setFlag(obj.uiGroups.gLED));            
+            mPanel = idEl(panels & obj.setFlag);         
                 
             % Sets of text elements
             textEl = false(length(obj.uiPointers),1);     % init logical text elements group
             textEl(obj.uiGroups.strEl) = true;              % set logical indexes of the text elements
             % Modified text elements
-            mTextEl = setdiff(idEl(textEl & obj.setFlag), mLED);
+            mTextEl = idEl(textEl & obj.setFlag);
 
-            mIdEl = setdiff(idEl(~panels & ~textEl & obj.setFlag), mLED); % id of elements that are not panels nor text elements that have been modified
+            mIdEl = idEl(~panels & ~textEl & obj.setFlag); % id of elements that are not panels nor text elements that have been modified
                 
             % For each modified panel
             for i=1:length(mPanel)
                 obj.setGuiElTitle(obj.uiPointers(mPanel(i)), obj.newVal{mPanel(i)});
-            end
-                
-            % For all the LEDs
-            for i=1:length(mLED)
-                obj.setGuiElColor(obj.uiPointers(mLED(i)), obj.newVal{mLED(i)});
             end
                 
             % For each modified txt element
@@ -1415,80 +1572,6 @@ classdef gui_SCoBi_Veg_Manager < SCoBiGUIManagers
             % For all the other modified elements
             for i=1:length(mIdEl)
                 obj.setGuiElVal(obj.uiPointers(mIdEl(i)), obj.newVal{mIdEl(i)});
-            end
-            
-        end
-        
-        
-        % Test if the active file/dir paths
-        % contain valid file/dir
-        function updateLEDstate(obj)
-            
-            % Check edit_config_inputs_file
-            if obj.isEnabled(obj.uiIDs.edit_config_inputs_file)
-                
-                filename = obj.getElVal(obj.uiIDs.edit_config_inputs_file);
-                
-                if isempty(filename)
-                    
-                    obj.setGUILedStatus(obj.uiIDs.text_LED_config_inputs_file, obj.ledKo, 0);
-                    
-%                     % If there is NO config_inputs_file, every LED should be RED
-%                     for  i = 1:length(obj.uiGroups.gInINILED)
-%                         obj.setGUILedStatus(obj.uiGroups.gInINILED(i), obj.ledKo, 0);
-%                     end
-                else
-                    
-                    if exist(filename,'file')
-                        
-                        obj.setGUILedStatus(obj.uiIDs.text_LED_config_inputs_file, obj.ledOk, 0);
-                    else
-                        obj.setGUILedStatus(obj.uiIDs.text_LED_config_inputs_file, obj.ledCk, 0);
-                    end
-                    
-                end
-            end
-            
-            % Check edit_ant_pat_Rx_file
-            if obj.isEnabled(obj.uiIDs.edit_ant_pat_Rx_file)
-                
-                filename = obj.getElVal(obj.uiIDs.edit_ant_pat_Rx_file);
-                
-                if isempty(filename)
-                    
-                    obj.setGUILedStatus(obj.uiIDs.text_LED_ant_pat_Rx_file, obj.ledKo, 0);
-                    
-                else
-                    
-                    if exist(filename,'file')
-                        
-                        obj.setGUILedStatus(obj.uiIDs.text_LED_ant_pat_Rx_file, obj.ledOk, 0);
-                    else
-                        obj.setGUILedStatus(obj.uiIDs.text_LED_ant_pat_Rx_file, obj.ledCk, 0);
-                    end
-                    
-                end
-            end
-            
-            % Check edit_veg_inputs_file
-            if obj.isEnabled(obj.uiIDs.edit_veg_inputs_file)
-                
-                filename = obj.getElVal(obj.uiIDs.edit_veg_inputs_file);
-                
-                if isempty(filename)
-                    
-                    obj.setGUILedStatus(obj.uiIDs.text_LED_veg_inputs_file, obj.ledKo, 0);
-                    
-                else
-                    
-                    if exist(filename,'file')
-                        
-                        obj.setGUILedStatus(obj.uiIDs.text_LED_veg_inputs_file, obj.ledOk, 0);
-                    else
-                        obj.setGUILedStatus(obj.uiIDs.text_LED_veg_inputs_file, obj.ledCk, 0);
-                    end
-                    
-                end
             end
             
         end 

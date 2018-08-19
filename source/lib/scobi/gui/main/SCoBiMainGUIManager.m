@@ -273,15 +273,6 @@ classdef SCoBiMainGUIManager < SCoBiGUIManagers
             
         end
         
-        
-        % Test if the active file/dir paths
-        % contain valid file/dir
-        function updateLEDstate(obj)
-            
-            % May not be needed
-            
-        end 
-        
     end
     
 end

@@ -22,7 +22,7 @@ function varargout = gui_ant_pat_Rx_GG(varargin)
 
 % Edit the above text to modify the response to help gui_ant_pat_Rx_GG
 
-% Last Modified by GUIDE v2.5 24-Jul-2018 20:25:50
+% Last Modified by GUIDE v2.5 18-Aug-2018 15:51:42
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -60,7 +60,7 @@ function gui_ant_pat_Rx_GG_OpeningFcn(hObject, eventdata, handles, varargin)
 
 clearvars -global antPatRxGgGUI
 global antPatRxGgGUI
-antPatRxGgGUI = AntPatRxGgGUIManager(handles);
+antPatRxGgGUI = gui_ant_pat_Rx_GG_Manager( handles);
 
 % Wait for thee user response
 uiwait( hObject );
@@ -178,6 +178,32 @@ antPatRxGgGUI.syncFromGUI( antPatRxGgGUI.uiIDs.edit_XPL_dB );
 % --- Executes during object creation, after setting all properties.
 function edit_XPL_dB_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to edit_XPL_dB (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit_ant_pat_res_deg_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_ant_pat_res_deg (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_ant_pat_res_deg as text
+%        str2double(get(hObject,'String')) returns contents of edit_ant_pat_res_deg as a double
+
+global antPatRxGgGUI
+antPatRxGgGUI.syncFromGUI( antPatRxGgGUI.uiIDs.edit_ant_pat_res_deg );
+
+
+% --- Executes during object creation, after setting all properties.
+function edit_ant_pat_res_deg_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_ant_pat_res_deg (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 

@@ -1,6 +1,6 @@
 % TO-DO: Check comments, copyrights, etc.
-classdef AntPatRxGgGUIManager < SCoBiGUIManagers
-    %ANTPATRXGGGUIMANAGER This class implements handles for GUI elements, and 
+classdef gui_ant_pat_Rx_GG_Manager < SCoBiGUIManagers
+    %GUI_ANT_PAT_RX_GG_MANAGER This class implements handles for GUI elements, and 
     % performs the GUI-related functionalities
     
     
@@ -14,6 +14,9 @@ classdef AntPatRxGgGUIManager < SCoBiGUIManagers
         
         % Cross-polarization level in decibels
         XPL_dB
+        
+        % Antenna pattern resolution (degrees)
+        ant_pat_res_deg
            
     end
     
@@ -24,10 +27,10 @@ classdef AntPatRxGgGUIManager < SCoBiGUIManagers
     methods
         
         % Constructor
-        function obj = AntPatRxGgGUIManager( handles )            
+        function obj = gui_ant_pat_Rx_GG_Manager( handles )            
             
             % Call superclass constructor
-            obj = obj@SCoBiGUIManagers( handles );
+            obj = obj@SCoBiGUIManagers( handles, -1 );
             
         end
         
@@ -37,6 +40,7 @@ classdef AntPatRxGgGUIManager < SCoBiGUIManagers
             funout{1} = obj.hpbw_deg;
             funout{2} = obj.SLL_dB;
             funout{3} = obj.XPL_dB;
+            funout{4} = obj.ant_pat_res_deg;
             
         end
         
@@ -66,6 +70,8 @@ classdef AntPatRxGgGUIManager < SCoBiGUIManagers
                 obj.SLL_dB = obj.getElVal( obj.uiIDs.edit_SLL_dB );
                 
                 obj.XPL_dB = obj.getElVal( obj.uiIDs.edit_XPL_dB );
+                
+                obj.ant_pat_res_deg = obj.getElVal( obj.uiIDs.edit_ant_pat_res_deg );
 	
                 uiresume(obj.handles.panel_main);
                 
@@ -79,6 +85,8 @@ classdef AntPatRxGgGUIManager < SCoBiGUIManagers
                 obj.SLL_dB = [];
                 
                 obj.XPL_dB = [];
+                
+                obj.ant_pat_res_deg = [];
 	
                 uiresume(obj.handles.panel_main);
                 
@@ -102,10 +110,10 @@ classdef AntPatRxGgGUIManager < SCoBiGUIManagers
     methods(Access = 'protected')
         
         % Initialize the instance
-        function init( obj, handles )
+        function init( obj, handles, simulator_id )
             
             % Call superclass's init() function
-            init@SCoBiGUIManagers( obj, handles );
+            init@SCoBiGUIManagers( obj, handles, simulator_id );
         
         end
 
@@ -140,6 +148,10 @@ classdef AntPatRxGgGUIManager < SCoBiGUIManagers
           i = i+1;        id.text_XPL_dB = i;                   pointers(i) = obj.handles.text_XPL_dB;
           i = i+1;        id.text_dB_XPL = i;                   pointers(i) = obj.handles.text_dB_XPL;
           i = i+1;        id.edit_XPL_dB = i;                   pointers(i) = obj.handles.edit_XPL_dB; 
+          
+          i = i+1;        id.text_ant_pat_res_deg = i;          pointers(i) = obj.handles.text_ant_pat_res_deg;
+          i = i+1;        id.text_deg_ant_pat_res = i;          pointers(i) = obj.handles.text_deg_ant_pat_res;
+          i = i+1;        id.edit_ant_pat_res_deg = i;          pointers(i) = obj.handles.edit_ant_pat_res_deg; 
           
           
           %% PUSH BUTTONS
@@ -262,15 +274,6 @@ classdef AntPatRxGgGUIManager < SCoBiGUIManagers
             for i=1:length(mIdEl)
                 obj.setGuiElVal(obj.uiPointers(mIdEl(i)), obj.newVal{mIdEl(i)});
             end
-            
-        end
-        
-        
-        % Test if the active file/dir paths
-        % contain valid file/dir
-        function updateLEDstate(obj)
-                        
-            % May not be needed
             
         end 
         
