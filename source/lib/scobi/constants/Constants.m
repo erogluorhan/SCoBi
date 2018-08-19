@@ -65,6 +65,11 @@ classdef Constants
         id_pol_V = 6;
         polarizations = {'R', 'L', 'X', 'Y', 'H', 'V'};
         
+        % Transmitter orientations
+        id_Tx_geostationary = 1;
+        id_Tx_variable = 2;
+        Tx_orientations = {'Geo-stationary', 'Variable'};
+        
         % Receiver antenna orientations
         id_Rx_fixed = 1;
         id_Rx_specular_facing = 2;
