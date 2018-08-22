@@ -45,7 +45,7 @@ classdef GndDynParams < handle
     
     methods
         
-        function initialize(obj, h, eps_g )
+        function update(obj, h, eps_g )
             % INITIALIZE - Initializes all the properties
             
             obj.h = h;

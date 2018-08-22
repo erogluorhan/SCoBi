@@ -10,8 +10,8 @@ classdef Directories < handle
         scobi        
         scobi_gui_last_input    
         scobi_gui_scobi        
-        scobi_ml
-        scobi_veg
+        multi_layer
+        vegetation
         
         input
         input_config
@@ -55,10 +55,10 @@ classdef Directories < handle
                         
             %% INPUT DIRECTORIES
             obj.input = fullfile( obj.main_dir, 'input');
-            obj.input_config = fullfile( obj.input, 'config');
-            obj.input_sys = fullfile( obj.input, 'sys');
-            obj.input_ant_pat_Rx = fullfile( obj.input, 'ant_pat_Rx');
-            obj.input_veg = fullfile( obj.input, 'veg');
+            obj.input_config = fullfile( obj.input, 'configuration');
+            obj.input_sys = fullfile( obj.input, 'system');
+            obj.input_ant_pat_Rx = fullfile( obj.input, 'Rx_antenna_pattern');
+            obj.input_veg = fullfile( obj.input, 'vegetation');
             
             
             %% SCOBI DIRECTORIES
@@ -66,9 +66,9 @@ classdef Directories < handle
             
             obj.scobi = fullfile(lib, 'scobi');
             
-            obj.scobi_ml = fullfile(lib, 'multilayer');
+            obj.multi_layer = fullfile(lib, 'multilayer');
             
-            obj.scobi_veg = fullfile(lib, 'vegetation');
+            obj.vegetation = fullfile(lib, 'vegetation');
 
             
             %% GUI DIRECTORIES
@@ -104,12 +104,12 @@ classdef Directories < handle
             out = obj.input_veg;
         end
         
-        function out = get.scobi_ml(obj)
-            out = obj.scobi_ml;
+        function out = get.multi_layer(obj)
+            out = obj.multi_layer;
         end
         
-        function out = get.scobi_veg(obj)
-            out = obj.scobi_veg;
+        function out = get.vegetation(obj)
+            out = obj.vegetation;
         end
         
         function out = get.scobi_gui_scobi(obj)

@@ -64,11 +64,38 @@ classdef ParamsManager < handle
         end
         
         
+        function copyInputFiles( varin )
+            
+            
+            %% GET GLOBAL DIRECTORIES
+            dir_sim_input_used_files = SimulationFolders.getInstance.sim_input_used_files;
+            
+            if ~isempty( varin{1,1} )
+                
+                copyfile( varin{1,1}, dir_sim_input_used_files );
+                
+            end
+            
+            if ~isempty( varin{2,1} )
+                
+                copyfile( varin{2,1}, dir_sim_input_used_files );
+                
+            end
+            
+            if ~isempty( varin{3,1} )
+                
+                copyfile( varin{3,1}, dir_sim_input_used_files );
+                
+            end
+            
+        end
+        
+        
         function sim_counter_start = determineSimCounterStart
 
 
             %% GET GLOBAL DIRECTORIES
-            dir_products_specular_power = SimulationFolders.getInstance.products_specular_power;
+            dir_products_specular_reflectivity = SimulationFolders.getInstance.products_specular_reflectivity;
             
                                    
             % First read the existing specular variable, if any    
@@ -76,7 +103,7 @@ classdef ParamsManager < handle
             % specularTerm (to make sure the other direct and specular 
             % items should have been stored if this is stored)
             filename02 = 'Bare02';
-            currentVar = readVar(dir_products_specular_power, filename02 );
+            currentVar = readVar(dir_products_specular_reflectivity, filename02 );
 
             % If no current variable, write var as initial
             if isnan( currentVar )
@@ -104,9 +131,12 @@ classdef ParamsManager < handle
         gnd_cover_id = SimSettings.getInstance.gnd_cover_id;
         
             
-        %% SIMULATION SETTINGS
+        %% SIMULATION SETTINGS        
         simSettings = SimSettings.getInstance;
         
+        inputParamsStruct.version = simSettings.version;
+        inputParamsStruct.campaign = simSettings.campaign;
+        inputParamsStruct.sim_name = simSettings.sim_name;
         inputParamsStruct.simulator_id = simSettings.simulator_id;
         inputParamsStruct.sim_mode_id = simSettings.sim_mode_id;
         inputParamsStruct.gnd_cover_id = simSettings.gnd_cover_id;
@@ -119,24 +149,6 @@ classdef ParamsManager < handle
         
         inputParamsStruct.include_in_master_sim_file = simSettings.include_in_master_sim_file;
         inputParamsStruct.draw_live_plots = simSettings.draw_live_plots;
-        
-            
-        %% SIMULATION PARAMETERS
-        simParams = SimParams.getInstance;
-        
-        inputParamsStruct.sim_name = simParams.sim_name;
-        inputParamsStruct.campaign = simParams.campaign;
-        inputParamsStruct.campaign_date = simParams.campaign_date;
-        inputParamsStruct.plot = simParams.plot;
-        
-        if gnd_cover_id == Constants.id_veg_cover
-            
-            inputParamsStruct.vegetation_plant = simParams.vegetation_plant;
-            
-        end
-        
-        inputParamsStruct.Nr = simParams.Nr;
-        inputParamsStruct.Nfz = simParams.Nfz;
         
             
         %% TRASNMITTER PARAMETERS
@@ -198,9 +210,8 @@ classdef ParamsManager < handle
         inputParamsStruct.rhob_gcm3 = gndParams.rhob_gcm3;
         inputParamsStruct.diel_model_id = gndParams.diel_model_id;
                     
-        % If simulator is SCoBi-ML (Multilayer), then set the multi-layer
-        % ground inputs
-        if simSettings.simulator_id == Constants.id_multi_layer
+        % If ground is multi-layered
+        if gndParams.num_layers > 1
 
             gndMLParams = GndMLParams.getInstance;
         
@@ -237,7 +248,6 @@ classdef ParamsManager < handle
             inputParamsStruct.TYPKND = vegParams.TYPKND;
             inputParamsStruct.num_types = vegParams.num_types;
             inputParamsStruct.num_kinds = vegParams.num_kinds;
-            inputParamsStruct.scat_cal_veg = vegParams.scat_cal_veg;
             inputParamsStruct.LTK = vegParams.LTK;
             inputParamsStruct.dsty = vegParams.dsty;
             inputParamsStruct.dim1_m = vegParams.dim1_m;
@@ -379,40 +389,23 @@ classdef ParamsManager < handle
             %dir_rot_real = SimulationFolders.getInstance.rot_real;
             
             %% GET GLOBAL PARAMETERS
-            % Simulation Settings
-            simulator_id = SimSettings.getInstance.simulator_id;
+            % Ground Parameters
+            num_gnd_layers = GndParams.getInstance.num_layers;
             
-                        
-            % First check the simulator 
-            % If, it is not SCoBi-ML, skip
-            if simulator_id ~= Constants.id_multi_layer
+
+            % If ground is single-layered
+            if num_gnd_layers == 1
                 
                 dispMsg = '';
                 result = Constants.need_for_run.NO;
                 return
             
-                % Else, it is SCoBi-ML
+            % Else, it is multi-layered
             else
             
-% %                 % If passes simulator selection, check existence of files
-% %                 all_files = dir(dir_rot_real);
-% %                 num_files = numel(all_files) - 2;
-% %                 Nr_current = num_files / num_scat_cal / Constants.factor_rot_real ;
-% % 
-% %                 if isnan(Nr_current), Nr_current = 0; end
-% % 
-% %                 if Nr_current >= Nr
-% %                     dispMsg = 'Rotation Realizations - SKIPPED - Already exists!';
-% %                     result = Constants.need_for_run.NO;
-% %                 else
-% %                     if Nr_current > 0
-% %                         dispMsg = 'Rotation Realizations - Partially exists!';
-% %                         result = Constants.need_for_run.PARTIAL;
-% %                     else
-                        dispMsg = 'Multilayer Reflectivities';
-                        result = Constants.need_for_run.FULL;
-%                     end
-%                 end
+            dispMsg = 'Multilayer Reflectivities';
+            result = Constants.need_for_run.FULL;
+
             
             end            
             
@@ -437,7 +430,6 @@ classdef ParamsManager < handle
             if gnd_cover_id == Constants.id_bare_soil
                 
                 dispMsg = 'Propagation - SKIPPED (Ground cover - Bare-soil)';
-                Nr_current = NaN;
                 result = Constants.need_for_run.NO;
                 return
                 
@@ -462,146 +454,34 @@ classdef ParamsManager < handle
         end
         
         
-        function [result, dispMsg] = isToCalcRotationMatrices()
-            
-            
-            %% GET GLOBAL DIRECTORIES
-            dir_rot_lookup = SimulationFolders.getInstance.rot_lookup;
-            
-            
-            % Check the existence of files
-            all_files = dir(dir_rot_lookup);
-            num_files = numel(all_files) - 2;
-            
-            if num_files >= Constants.num_rot_lookup
-                
-                dispMsg = 'Rotation Matrices - SKIPPED - Already exists!';
-                result = Constants.need_for_run.NO;
-            
-            else
-                
-                dispMsg = 'Rotation Matrices';
-                result = Constants.need_for_run.FULL;
-            
-            end
-            
-        end
-        
-        
         % to-DO: Determine the final version
         function [result, dispMsg] = isToGenerateDielMLProfiles()
             
             
-            %% GET GLOBAL DIRECTORIES
-            % TO-DO: Add folder and file existence controls
-            %dir_rot_real = SimulationFolders.getInstance.rot_real;
-            
-            
             %% GET GLOBAL PARAMETERS
-            % Simulation Settings
-            simulator_id = SimSettings.getInstance.simulator_id;
+            % Ground Parameters
+            num_gnd_layers = GndParams.getInstance.num_layers;
             
                         
-            % First check the simulator 
-            % If, it is not SCoBi-ML, skip
-            if simulator_id ~= Constants.id_multi_layer
+            % If ground is single-layered, skip
+            if num_gnd_layers == 1
                 
-                dispMsg = 'MultiLayer Dielectric Profiles - SKIPPED - Simulator not SCoBi-ML!';
+                dispMsg = 'MultiLayer Dielectric Profiles - SKIPPED - Single-layered ground!';
                 result = Constants.need_for_run.NO;
                 return
             
             % Else, it is SCoBi-ML
             else
-            
-% %                 % If passes simulator selection, check existence of files
-% %                 all_files = dir(dir_rot_real);
-% %                 num_files = numel(all_files) - 2;
-% %                 Nr_current = num_files / num_scat_cal / Constants.factor_rot_real ;
-% % 
-% %                 if isnan(Nr_current), Nr_current = 0; end
-% % 
-% %                 if Nr_current >= Nr
-% %                     dispMsg = 'Rotation Realizations - SKIPPED - Already exists!';
-% %                     result = Constants.need_for_run.NO;
-% %                 else
-% %                     if Nr_current > 0
-% %                         dispMsg = 'Rotation Realizations - Partially exists!';
-% %                         result = Constants.need_for_run.PARTIAL;
-% %                     else
-                        dispMsg = 'MultiLayer Dielectric Profiles';
-                        result = Constants.need_for_run.FULL;
-%                     end
-%                 end
+
+            dispMsg = 'MultiLayer Dielectric Profiles';
+            result = Constants.need_for_run.FULL;
             
             end            
             
         end
         
         
-        function [result, Nr_current, dispMsg] = isToGenerateScatPos()
-            
-            
-            %% GET GLOBAL DIRECTORIES
-            dir_position = SimulationFolders.getInstance.position;
-            
-            
-            %% GET GLOBAL PARAMETERS
-            % Simulation Settings
-            gnd_cover_id = SimSettings.getInstance.gnd_cover_id;  
-            % Simulation Parameters
-            Nr = SimParams.getInstance.Nr;
-            % Vegetation Parameters
-            scat_cal_veg = VegParams.getInstance.scat_cal_veg;
-            num_scat_cal = sum(sum(sum(scat_cal_veg))) ;
-            
-            
-            % If ground cover is Bare-soil, then no need for scatterer
-            % positions
-            if gnd_cover_id == Constants.id_bare_soil
-                
-                dispMsg = 'Generate Scatterer Positions - SKIPPED (Ground cover - Bare-soil)';
-                Nr_current = NaN;
-                result = Constants.need_for_run.NO;
-                return
-                
-            % Else if ground cover is Vegetation, then need for scatterer 
-            % positions depends on other parameters
-            elseif gnd_cover_id == Constants.id_veg_cover
-
-                % Check the existence of files
-                all_files = dir(dir_position);
-                num_files = numel(all_files) - 2;
-                Nr_current = num_files / num_scat_cal ;
-
-                if isnan(Nr_current) || isinf(Nr_current), Nr_current = 0; end
-
-                if Nr_current >= Nr
-                    
-                    dispMsg = 'Generate Scatterer Positions - SKIPPED - Already exists!';
-                    result = Constants.need_for_run.NO;
-                    
-                else
-                    
-                    if Nr_current > 0
-                        
-                        dispMsg = 'Generate Scatterer Positions - Partially exists!';
-                        result = Constants.need_for_run.PARTIAL;
-                    
-                    else
-                        
-                        dispMsg = 'Generate Scatterer Positions';
-                        result = Constants.need_for_run.FULL;
-                    
-                    end
-                    
-                end
-                
-            end
-            
-        end
-        
-        
-        function saveSimParams
+        function saveInputParams
             
             %% GET GLOBAL DIRECTORIES
             dir_sim_input = SimulationFolders.getInstance.sim_input;
@@ -623,7 +503,7 @@ classdef ParamsManager < handle
             include_in_master_sim_file = SimSettings.getInstance.include_in_master_sim_file;
             
             
-            ParamsManager.writeInputStructToFile( inputStruct );
+            ParamsManager.writeInputStructToReportFile( inputStruct );
             
             % If selected to be included in the master simulation file
             if include_in_master_sim_file                
@@ -635,7 +515,7 @@ classdef ParamsManager < handle
         end
         
         
-        function writeInputStructToFile( inputStruct )
+        function writeInputStructToReportFile( inputStruct )
 
 
         %% GET GLOBAL DIRECTORIES
@@ -666,27 +546,11 @@ classdef ParamsManager < handle
         fprintf(fileID, strcat( string(t), '\n\n' ) );
 
 
-        %%SIMULATION PARAMETERS
-        fprintf(fileID, strcat( 'Simulation name:\t', inputStruct.sim_name, '\n' ) );
-        fprintf(fileID, strcat( 'Campaign:\t\t\t', inputStruct.campaign, '\n' ) );
-        fprintf(fileID, strcat( 'Campaign Date:\t\t', inputStruct.campaign_date, '\n' ) );
-        fprintf(fileID, strcat( 'Campaign Plot:\t\t', inputStruct.plot, '\n' ) );
-
-
-        % If gnd_cover is Vegetation, then write veg_plant
-        if gnd_cover_id == Constants.id_veg_cover
-
-            fprintf(fileID, strcat( 'Vegetation plant:\t', inputStruct.veg_plant, '\n' ) );   
-
-        end
-
-        % Write number of realizations
-        fprintf(fileID, strcat( 'Number of realizations:\t', num2str(inputStruct.Nr), '\n' ) );
-        % Write number of Fresnel zones
-        fprintf(fileID, strcat( 'Number of Fresnel zones:\t', num2str(inputStruct.Nfz), '\n' ) );
-
-
         %% SIMULATION SETTINGS
+        % Write the simulation software version
+        fprintf(fileID, strcat( 'SCoBi Version:\t\t\t', Constants.version, '\n' ) );
+        % Write the simulation campaign
+        fprintf(fileID, strcat( 'Campaign:\t\t\t', inputStruct.campaign, '\n' ) );
         % Write sim_mode
         fprintf(fileID, strcat( 'Simulation mode:\t', inputStruct.sim_mode, '\n' ) );
         % Write gnd_cover
@@ -786,18 +650,11 @@ classdef ParamsManager < handle
             
         %% GET GLOBAL PARAMETERS
         % Simulation Settings
+        sim_name = SimSettings.getInstance.sim_name;
         gnd_cover_id = SimSettings.getInstance.gnd_cover_id;
         gnd_cover = Constants.gnd_covers{ 1, gnd_cover_id };
         sim_mode_id = SimSettings.getInstance.sim_mode_id;
         sim_mode = Constants.sim_modes{ 1, sim_mode_id };
-        % Simulation Parameters
-        sim_name = SimParams.getInstance.sim_name;
-        
-        if gnd_cover_id == Constants.id_veg_cover
-            vegetation_plant = SimParams.getInstance.vegetation_plant;
-        elseif gnd_cover_id == Constants.id_bare_soil
-            vegetation_plant = '';
-        end
         
         % Transmitter Parameters
         f_MHz = TxParams.getInstance.f_MHz;
@@ -811,16 +668,14 @@ classdef ParamsManager < handle
         diel_model = Constants.diel_models{ 1, diel_model_id };
         
         
+        varNames = {'SimName', 'NumGndLayers', 'SimMode', 'GroundCover', 'TxFreq_MHz', 'TxPol', 'RxAltitude_m', 'RxPol', 'DielModel'};
+                
         % Open master inputs file to write this sim into it
         % If this is the first time master inputs file is created
         if ~exist( masterSimInputFullFile, 'file' )
             
-            varNames = {'SimName', 'SimDateTime', 'NumGndLayers', 'SimMode', 'GroundCover', 'Vegetation', 'TxFreq_MHz', 'TxPol', 'RxAltitude_m', 'RxPol', 'DielModel'};
-            
-            T = table( string(sim_name), datetime('now'), num_gnd_layers, string(sim_mode), string(gnd_cover), string(vegetation_plant), f_MHz, string(pol_Tx), hr_m, string(pol_Rx), string(diel_model), 'VariableNames', varNames );
-            
-            writetable( T, masterSimInputFullFile );
-            
+            T = table( string(sim_name), num_gnd_layers, string(sim_mode), string(gnd_cover), f_MHz, string(pol_Tx), hr_m, string(pol_Rx), string(diel_model), 'VariableNames', varNames );
+                        
         % Else, the master input file exists
         else
             
@@ -829,14 +684,16 @@ classdef ParamsManager < handle
             if isempty( find(strcmp(sim_name, table2cell(T))) )
                 
                 [numRows, ~] = size(T);
-
-                T(numRows + 1, :) = { sim_name, datetime('now'), num_gnd_layers, sim_mode, gnd_cover, vegetation_plant, f_MHz, pol_Tx, hr_m, pol_Rx, diel_model };
-
-                writetable( T, masterSimInputFullFile);
+                
+                newRow = table( string(sim_name), num_gnd_layers, string(sim_mode), string(gnd_cover), f_MHz, string(pol_Tx), hr_m, string(pol_Rx), string(diel_model), 'VariableNames', varNames  );
+                
+                T = [ T; newRow ];
                 
             end
         
         end
+
+        writetable( T, masterSimInputFullFile);
             
         end  
 

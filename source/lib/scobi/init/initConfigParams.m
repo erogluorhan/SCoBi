@@ -1,5 +1,5 @@
 
-function initConfigParams( inputStruct )
+function configInputFullFile = initConfigParams( inputStruct )
 
 
 %% GET GLOBAL PARAMETERS

@@ -1,13 +1,11 @@
 %% Mehmet Kurum
 % March 15, 2017
 
-function [S0x_m, x1_m, ax1_m, by1_m] = calcFresnelZones(ht_m, hr_m)
+function [S0x_m, x1_m, ax1_m, by1_m] = calcFresnelZones(ht_m, hr_m, Nfz)
 
 
 %% GET GLOBAL PARAMETERS
 sim_counter = ParamsManager.sim_counter;
-% Simulation Parameters
-Nfz = SimParams.getInstance.Nfz;
 % Transmitter Parameters
 f_Hz = TxParams.getInstance.f_MHz * Constants.MHz2Hz ;
 % Configuration Parameters

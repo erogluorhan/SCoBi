@@ -34,9 +34,6 @@ classdef VegParams < handle
         num_kinds;
         
         
-        scat_cal_veg;
-        
-        
         LTK;
         
         
@@ -132,10 +129,7 @@ classdef VegParams < handle
             obj.parm1_deg = zeros(obj.num_kinds, obj.num_types, obj.num_layers) ;
             obj.parm2_deg = zeros(obj.num_kinds, obj.num_types, obj.num_layers) ;
           
-            obj.LTK = cell(obj.num_kinds, obj.num_types, obj.num_layers) ;   
-            
-            % to set if we calculate scattering
-            obj.scat_cal_veg = zeros(obj.num_kinds, obj.num_types, obj.num_layers) ;           
+            obj.LTK = cell(obj.num_kinds, obj.num_types, obj.num_layers) ;            
             
             
             for ii = 1 : obj.num_layers
@@ -191,47 +185,10 @@ classdef VegParams < handle
                     obj.epsr(part_kind, part_type, ii) = partStruct.EPSILON;
                     obj.parm1_deg(part_kind, part_type, ii) = partStruct.PARM1;
                     obj.parm2_deg(part_kind, part_type, ii) = partStruct.PARM2;
-                    
-                    obj.scat_cal_veg(part_kind, part_type, ii) = partStruct.IS_SCATTERER;
                 end
             end
             
         end 
-        
-        function initialize2(obj, dim_layers_m, scat_cal_veg,...
-            TYPKND, dsty, dim1_m, dim2_m, dim3_m, epsr, parm1_deg, parm2_deg)
-            % INITIALIZE - Initializes all the properties excluding LTK
-
-            obj.scat_cal_veg = scat_cal_veg;
-            obj.dim_layers_m = dim_layers_m;
-            obj.TYPKND = TYPKND;
-            obj.dsty = dsty;
-            obj.dim1_m = dim1_m;
-            obj.dim2_m = dim2_m;
-            obj.dim3_m = dim3_m;
-            obj.epsr = epsr;
-            obj.parm1_deg = parm1_deg;
-            obj.parm2_deg = parm2_deg;
-            
-        end
-        
-        function initialize3(obj, dim_layers_m, scat_cal_veg,...
-            TYPKND, LTK, dsty, dim1_m, dim2_m, dim3_m, epsr, parm1_deg, parm2_deg)
-            % INITIALIZE - Initializes all the properties
-
-            obj.scat_cal_veg = scat_cal_veg;
-            obj.dim_layers_m = dim_layers_m;
-            obj.TYPKND = TYPKND;
-            obj.LTK = LTK;
-            obj.dsty = dsty;
-            obj.dim1_m = dim1_m;
-            obj.dim2_m = dim2_m;
-            obj.dim3_m = dim3_m;
-            obj.epsr = epsr;
-            obj.parm1_deg = parm1_deg;
-            obj.parm2_deg = parm2_deg;
-            
-        end
          
         
         function out = get.dim_layers_m(obj)
@@ -252,10 +209,6 @@ classdef VegParams < handle
         
         function out = get.num_kinds(obj)
             out = obj.num_kinds;
-        end
-        
-        function out = get.scat_cal_veg(obj)
-            out = obj.scat_cal_veg;
         end
         
         function out = get.LTK(obj)

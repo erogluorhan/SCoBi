@@ -20,15 +20,11 @@ properties (SetAccess = private, GetAccess = public)
 
     % Input
     sim_input
+    sim_input_used_files
 
     % Metadata
     metadata
     afsa
-    geo
-    position
-    fzones
-    config
-    rot_lookup
 
     % Products
     products
@@ -36,15 +32,17 @@ properties (SetAccess = private, GetAccess = public)
     products_direct_field
     products_direct_power
     products_specular
-    products_specular_field
-    products_specular_power
+    products_specular_reff_coeff
+    products_specular_reff_coeff_diel_profiles
+    products_specular_reflectivity
+    products_specular_reflectivity_diel_profiles
 
     % Figures
     fig
     fig_direct
     fig_specular
-    fig_specular_P
-    fig_specular_P_vsTH
+    fig_specular_reflectivity
+    fig_specular_reflectivity_vsTH
 
 end
     
@@ -82,9 +80,9 @@ methods
 
     %% GET GLOBAL PARAMETERS
     % Simulation Settings
+    sim_name = SimSettings.getInstance.sim_name;
     include_in_master_sim_file = SimSettings.getInstance.include_in_master_sim_file;
-    % Simulation Parameters
-    sim_name = SimParams.getInstance.sim_name;
+    gnd_cover_id = SimSettings.getInstance.gnd_cover_id;
 
 
     %% INITIALIZE DIRECTORIES
@@ -109,14 +107,19 @@ methods
     % TO-DO: create a unique name with timestamp
     obj.sim = strcat( obj.output, '\', sim_name);
 
-    % Meta-Data
+    % Simulation input
     obj.sim_input = strcat( obj.sim, '\input');
+    obj.sim_input_used_files = strcat( obj.sim_input, '\used_files');
 
     % Meta-Data
     obj.metadata = strcat( obj.sim, '\metadata');
 
     % Average Forward Scattering Amplitude
-    obj.afsa = strcat(obj.metadata, '\', 'afsa');  
+    if gnd_cover_id == Constants.id_veg_cover
+    
+        obj.afsa = strcat(obj.metadata, '\', 'afsa');  
+        
+    end
 
     % Products
     obj.products = strcat(obj.sim, '\', 'products') ;
@@ -124,54 +127,29 @@ methods
     obj.products_direct_field = strcat(obj.products_direct, '\', 'field') ;
     obj.products_direct_power = strcat(obj.products_direct, '\', 'power') ;
     obj.products_specular = strcat(obj.products, '\', 'specular') ;
-    obj.products_specular_field = strcat(obj.products_specular, '\', 'field') ;
-    obj.products_specular_power = strcat(obj.products_specular, '\', 'power') ;
+    obj.products_specular_reff_coeff = strcat(obj.products_specular, '\', 'reflection_coefficient') ;
+    obj.products_specular_reflectivity = strcat(obj.products_specular, '\', 'reflectivity') ;
+    
+    % Products for multiple dielectric profiles
+    diel_profiles = Constants.diel_profiles;
+    [~, num_diel_profiles] = size( diel_profiles );
+    
+    for ii = 1 : num_diel_profiles
+        
+        current_diel_profile = diel_profiles{1, ii};
+        obj.products_specular_reff_coeff_diel_profiles{1, ii}  = strcat(obj.products_specular_reff_coeff, '\', current_diel_profile );
+        obj.products_specular_reflectivity_diel_profiles{1, ii}  = strcat(obj.products_specular_reflectivity, '\', current_diel_profile );
+        
+    end
+        
 
     % Figure
     obj.fig = strcat(obj.sim, '\', 'figure' ) ;
     obj.fig_direct = strcat(obj.fig, '\', 'direct') ;
     obj.fig_specular = strcat(obj.fig, '\', 'specular') ;
-    obj.fig_specular_P = strcat(obj.fig_specular, '\', 'P') ;
-    obj.fig_specular_P_vsTH = strcat(obj.fig_specular_P, '\', 'vs_TH') ;
+    obj.fig_specular_reflectivity = strcat(obj.fig_specular, '\', 'reflectivity') ;
+    obj.fig_specular_reflectivity_vsTH = strcat(obj.fig_specular_reflectivity, '\', 'vs_TH') ;
 
-
-    end
-
-
-
-    function initializeDynamicDirs(obj)
-    % Initialize dynamically changing simulation directories
-
-
-    %% GET GLOBAL PARAMETERS
-    sim_counter = ParamsManager.sim_counter;
-    % Configuration Parameters
-    th0_Tx_list_deg = ConfigParams.getInstance.th0_Tx_list_deg;
-    th0_Tx_deg = th0_Tx_list_deg( sim_counter );
-    ph0_Tx_list_deg = ConfigParams.getInstance.ph0_Tx_list_deg;
-    ph0_Tx_deg = ph0_Tx_list_deg( sim_counter );
-
-
-    %% Angle of incidence
-    th0_Tx_deg_folder = strcat('th0_Tx_', num2str( th0_Tx_deg ), ...
-                         '-ph0_Tx_', num2str( ph0_Tx_deg ) ) ;
-    dir_th0_ph0_Tx_deg = strcat(obj.metadata, '\', th0_Tx_deg_folder) ;
-
-
-    %% Geometry
-    obj.geo = strcat(dir_th0_ph0_Tx_deg, '\', 'geo') ;
-    obj.position = strcat(obj.geo, '\', 'position') ;                        
-    obj.fzones = strcat(obj.geo, '\', 'fZones') ; 
-
-    %Configuration
-    obj.config = strcat(dir_th0_ph0_Tx_deg, '\', 'configuration') ;    
-
-
-    %% Rotation
-    obj.rot_lookup = strcat(dir_th0_ph0_Tx_deg, '\', 'rotation');
-
-
-    obj.makeDynamicDirs();
 
     end
 
@@ -193,6 +171,11 @@ methods
         %% Input folder that includes sim. report and input file used
         if ~exist(obj.sim_input, 'dir')
             mkdir(obj.sim_input)
+        end
+
+        %% Input folder that contains the used input files for the sim.
+        if ~exist(obj.sim_input_used_files, 'dir')
+            mkdir(obj.sim_input_used_files)
         end
 
         %% Average Forward Scattering Amplitude
@@ -221,12 +204,32 @@ methods
             mkdir(obj.products_specular)
         end
 
-        if ~exist(obj.products_specular_field, 'dir')
-            mkdir(obj.products_specular_field)
+        if ~exist(obj.products_specular_reff_coeff, 'dir')
+            mkdir(obj.products_specular_reff_coeff)
         end
 
-        if ~exist(obj.products_specular_power, 'dir')
-            mkdir(obj.products_specular_power)
+        if ~exist(obj.products_specular_reflectivity, 'dir')
+            mkdir(obj.products_specular_reflectivity)
+        end
+    
+        % Products for multiple dielectric profiles
+        diel_profiles = Constants.diel_profiles;
+        [~, num_diel_profiles] = size( diel_profiles );
+
+        for ii = 1 : num_diel_profiles
+
+            if ~exist(obj.products_specular_reff_coeff_diel_profiles{1, ii}, 'dir')
+            
+                mkdir(obj.products_specular_reff_coeff_diel_profiles{1, ii})
+            
+            end
+
+            if ~exist(obj.products_specular_reflectivity_diel_profiles{1, ii}, 'dir')
+            
+                mkdir(obj.products_specular_reflectivity_diel_profiles{1, ii})
+            
+            end
+        
         end
 
         % Figure
@@ -242,40 +245,12 @@ methods
             mkdir(obj.fig_specular)
         end
 
-        if ~exist(obj.fig_specular_P, 'dir')
-            mkdir(obj.fig_specular_P)
+        if ~exist(obj.fig_specular_reflectivity, 'dir')
+            mkdir(obj.fig_specular_reflectivity)
         end
 
-        if ~exist(obj.fig_specular_P_vsTH, 'dir')
-            mkdir(obj.fig_specular_P_vsTH)
-        end
-
-    end
-
-
-    function makeDynamicDirs(obj)
-
-        %% Geometry
-        if ~exist(obj.geo, 'dir')
-            mkdir(obj.geo)
-        end
-
-        if ~exist(obj.position, 'dir')
-            mkdir(obj.position)
-        end
-
-        if ~exist(obj.fzones, 'dir')
-            mkdir(obj.fzones)
-        end
-
-        %% Configuration
-        if ~exist(obj.config, 'dir')
-            mkdir(obj.config)
-        end
-
-        %% Rotation
-        if ~exist(obj.rot_lookup, 'dir')
-            mkdir(obj.rot_lookup)
+        if ~exist(obj.fig_specular_reflectivity_vsTH, 'dir')
+            mkdir(obj.fig_specular_reflectivity_vsTH)
         end
 
     end
@@ -296,25 +271,13 @@ methods
         out = obj.sim_input;
     end 
 
+    function out = get.sim_input_used_files(obj)
+        out = obj.sim_input_used_files;
+    end 
+
     function out = get.afsa(obj)
         out = obj.afsa;
     end 
-
-    function out = get.position(obj)
-        out = obj.position;
-    end 
-
-    function out = get.fzones(obj)
-        out = obj.fzones;
-    end 
-
-    function out = get.config(obj)
-        out = obj.config;
-    end
-
-    function out = get.rot_lookup(obj)
-        out = obj.rot_lookup;
-    end
 
     function out = get.products_direct(obj)
         out = obj.products_direct;
@@ -336,12 +299,20 @@ methods
         out = obj.products_specular;
     end
 
-    function out = get.products_specular_field(obj)
-        out = obj.products_specular_field;
+    function out = get.products_specular_reff_coeff(obj)
+        out = obj.products_specular_reff_coeff;
     end
 
-    function out = get.products_specular_power(obj)
-        out = obj.products_specular_power;
+    function out = get.products_specular_reff_coeff_diel_profiles(obj)
+        out = obj.products_specular_reff_coeff_diel_profiles;
+    end
+
+    function out = get.products_specular_reflectivity(obj)
+        out = obj.products_specular_reflectivity;
+    end
+
+    function out = get.products_specular_reflectivity_diel_profiles(obj)
+        out = obj.products_specular_reflectivity_diel_profiles;
     end
 
     function out = get.fig(obj)
@@ -356,12 +327,12 @@ methods
         out = obj.fig_specular;
     end
 
-    function out = get.fig_specular_P(obj)
-        out = obj.fig_specular_P;
+    function out = get.fig_specular_reflectivity(obj)
+        out = obj.fig_specular_reflectivity;
     end
 
-    function out = get.fig_specular_P_vsTH(obj)
-        out = obj.fig_specular_P_vsTH;
+    function out = get.fig_specular_reflectivity_vsTH(obj)
+        out = obj.fig_specular_reflectivity_vsTH;
     end
         
 end

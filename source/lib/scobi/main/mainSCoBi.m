@@ -9,7 +9,7 @@ disp('++++++++++++++++   START: SCoBi MAIN PROGRAM   ++++++++++++++++++++')
 tstart = datetime('now') %#ok<NOPRT,*NASGU>
 
 
-%% INITIALIZE BISTATIC CONFIGURATION AND GROUND
+%% CALCULATE AND UPDATE BISTATIC CONFIGURATION AND GROUND DYNAMIC PARAMS
 disp('++++++++   UPDATE BISTATIC CONFIGURATION AND GROUND   +++++++++')
 t = datetime('now') %#ok<NOPRT>
 
@@ -34,21 +34,6 @@ if ~needForDielProfiles == Constants.need_for_run.NO
 end
 
 
-%% GENERATE SCATTERING POSITIONS
-disp('+++++++++++++++   GENERATE SCATTERING POSITIONS   +++++++++++++++++')
-t = datetime('now') %#ok<NOPRT>
-
-[needForScatPos, Nr_current, dispMsg] = ParamsManager.isToGenerateScatPos();
-
-disp( dispMsg );
-    
-if ~needForScatPos == Constants.need_for_run.NO
-    
-        generateScatPos( Nr_current );
-        
-end
-
-
 %% CALCULATE INCREMENTAL PROPAGATION CONSTANT FOR EACH LAYER
 disp('++   CALCULATE INCREMENTAL PROPAGATION CONSTANT FOR EACH LAYER   ++')
 t = datetime('now') %#ok<NOPRT>
@@ -61,7 +46,7 @@ if needForPropagation == Constants.need_for_run.FULL
     
     calcPropagation ;
     
-    disp('++++++++   WRITE ATTENUATION VALUES TO OUTPUT EXCEL FILE   ++++++++')
+    disp('++++++   WRITE ATTENUATION VALUES TO OUTPUT EXCEL FILE   ++++++')
     
     if needForWriteAttenuation
         
@@ -71,20 +56,11 @@ if needForPropagation == Constants.need_for_run.FULL
 end
 
 
-%% CALCULATE ROTATION MATRICES
-disp('+++++++++++++++++   CALCULATE ROTATION MATRICES   +++++++++++++++++') 
-t = datetime('now') %#ok<NOPRT>
+%% CALCULATE AND UPDATE ROTATION MATRICES
+disp('+++++++++++   CALCULATE AND UPDATE ROTATION MATRICES   ++++++++++++')     
+t = datetime('now')
 
-[needForCalcRotationMatrices, dispMsg] = ParamsManager.isToCalcRotationMatrices();
-
-disp( dispMsg );
-
-% TO-DO: may be shrinked more if diffuse & specular will not be calculated
-if needForCalcRotationMatrices == Constants.need_for_run.FULL
-    
-    calcRotationMatrices ;
-    
-end
+updateRotMatDynParams();
 
 
 %% CALCULATE DIRECT CONTRIBUTION

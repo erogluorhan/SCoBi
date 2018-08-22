@@ -8,9 +8,6 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
         
         % Struct data to provide input parameters as output of GUI
         inputStruct
-        
-        % Simulation name
-        sim_name
            
     end
     
@@ -153,8 +150,6 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
         
         function funout = outputFun(obj)
             
-            obj.inputStruct.sim_name = obj.sim_name;
-            
             funout{1} = obj.inputStruct;
             
         end
@@ -179,23 +174,7 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
           %% SIMULATION SETTINGS
           % sim_mode
           % If sim_mode popup value is changed            
-          if sum(intersect(idEl, obj.uiIDs.popup_sim_mode)) > 0                
-            
-              % If selected sim_mode is Snapshot
-              if obj.is_popup_sim_mode_snapshot()
-                      
-                  obj.setElStatus(obj.uiGroups.on_popup_sim_mode, 1, 0);
-                  
-              % Else if selected sim_mode is Time-series
-              elseif obj.is_popup_sim_mode_time_series()
-    
-                  obj.setElStatus([obj.uiGroups.on_popup_sim_mode], 0, 0);
-                  
-              else
-                      
-                  % TO-DO: Handle Exception?
-
-              end
+          if sum(intersect(idEl, obj.uiIDs.popup_sim_mode)) > 0  
               
               obj.updateGUI();
               
@@ -476,7 +455,7 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
             
             t0 = toc;
             
-            fprintf('SCoBi-Veg GUI initialization completed in %.2f seconds\n', t0);
+            fprintf('SCoBi GUI initialization completed in %.2f seconds\n', t0);
         
         end
         
@@ -628,14 +607,15 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
             
           %% PANELS            
           i = i+1;        id.panel_sim_settings = i;        pointers(i) = obj.handles.panel_sim_settings;
-          i = i+1;        id.panel_sim_inputs = i;          pointers(i) = obj.handles.panel_sim_inputs;
           i = i+1;        id.panel_Tx_inputs = i;           pointers(i) = obj.handles.panel_Tx_inputs;
           i = i+1;        id.panel_Rx_inputs = i;           pointers(i) = obj.handles.panel_Rx_inputs;
           i = i+1;        id.panel_gnd_inputs = i;          pointers(i) = obj.handles.panel_gnd_inputs;
           i = i+1;        id.panel_input_files = i;         pointers(i) = obj.handles.panel_input_files;
                         
           
-          %% SIMULATION SETTINGS PANEL ELEMENTS           
+          %% SIMULATION SETTINGS PANEL ELEMENTS   
+          i = i+1;        id.text_campaign = i;                 pointers(i) = obj.handles.text_campaign;
+          i = i+1;        id.edit_campaign = i;                 pointers(i) = obj.handles.edit_campaign;         
           i = i+1;        id.text_sim_mode = i;             pointers(i) = obj.handles.text_sim_mode;  
           i = i+1;        id.popup_sim_mode = i;            pointers(i) = obj.handles.popup_sim_mode;
           i = i+1;        id.text_gnd_cover = i;            pointers(i) = obj.handles.text_gnd_cover;
@@ -646,27 +626,10 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
           i = i+1;        id.cb_include_in_master_sim_file = i;     pointers(i) = obj.handles.cb_include_in_master_sim_file;
           
             
-          groupIDs.sim_settings = [id.panel_sim_settings id.text_sim_mode : id.cb_include_in_master_sim_file];
+          groupIDs.sim_settings = [id.panel_sim_settings id.text_campaign : id.cb_include_in_master_sim_file];
           
           
-          %% SIMULATION INPUTS PANEL ELEMENTS           
-          i = i+1;        id.text_campaign = i;                 pointers(i) = obj.handles.text_campaign;
-          i = i+1;        id.edit_campaign = i;                 pointers(i) = obj.handles.edit_campaign;
-          i = i+1;        id.text_campaign_date = i;            pointers(i) = obj.handles.text_campaign_date;
-          i = i+1;        id.edit_campaign_date = i;            pointers(i) = obj.handles.edit_campaign_date;
-          i = i+1;        id.text_plot = i;                     pointers(i) = obj.handles.text_plot;
-          i = i+1;        id.edit_plot = i;                     pointers(i) = obj.handles.edit_plot;
-          i = i+1;        id.text_veg_plant = i;                pointers(i) = obj.handles.text_veg_plant;
-          i = i+1;        id.edit_veg_plant = i;                pointers(i) = obj.handles.edit_veg_plant;
-          i = i+1;        id.text_Nr = i;                       pointers(i) = obj.handles.text_Nr;
-          i = i+1;        id.edit_Nr = i;                       pointers(i) = obj.handles.edit_Nr;
-          i = i+1;        id.text_Nfz = i;                      pointers(i) = obj.handles.text_Nfz;
-          i = i+1;        id.edit_Nfz = i;                      pointers(i) = obj.handles.edit_Nfz;          
-
-          groupIDs.sim_inputs       = [id.panel_sim_inputs id.text_campaign : id.edit_Nfz];
-          
-          
-          %% TRANSMITTER (Tx) INPUTS PANEL ELEMENTS           
+          %% TRANSMITTER (Tx) INPUTS PANEL ELEMENTS            
           i = i+1;        id.text_f_MHz = i;                pointers(i) = obj.handles.text_f_MHz;
           i = i+1;        id.edit_f_MHz = i;                pointers(i) = obj.handles.edit_f_MHz;
           i = i+1;        id.text_MHz = i;                  pointers(i) = obj.handles.text_MHz;
@@ -704,8 +667,6 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
           i = i+1;        id.popup_pol_Rx = i;              pointers(i) = obj.handles.popup_pol_Rx;
           i = i+1;        id.text_orientation_Rx = i;       pointers(i) = obj.handles.text_orientation_Rx;
           i = i+1;        id.popup_orientation_Rx = i;      pointers(i) = obj.handles.popup_orientation_Rx;
-          i = i+1;        id.text_ant_pat_Rx = i;           pointers(i) = obj.handles.text_ant_pat_Rx;
-          i = i+1;        id.popup_ant_pat_Rx = i;          pointers(i) = obj.handles.popup_ant_pat_Rx;
           % Fixed-orientation Receiver Input
           i = i+1;        id.text_th0_Rx = i;               pointers(i) = obj.handles.text_th0_Rx;
           i = i+1;        id.edit_th0_Rx = i;               pointers(i) = obj.handles.edit_th0_Rx;
@@ -713,8 +674,13 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
           i = i+1;        id.text_ph0_Rx = i;               pointers(i) = obj.handles.text_ph0_Rx;
           i = i+1;        id.edit_ph0_Rx = i;               pointers(i) = obj.handles.edit_ph0_Rx;
           i = i+1;        id.text_deg_ph0_Rx = i;           pointers(i) = obj.handles.text_deg_ph0_Rx;
-          % Generalized-Gaussian Antenna Pattern Input
-          i = i+1;        id.panel_Rx_GG = i;               pointers(i) = obj.handles.panel_Rx_GG;
+          % Specular-facing orientation
+          i = i+1;        id.text_orientation_Rx_specular_facing = i;    pointers(i) = obj.handles.text_orientation_Rx_specular_facing;
+          % Antenna Pattern -related Input
+          i = i+1;        id.panel_ant_pat_Rx = i;          pointers(i) = obj.handles.panel_ant_pat_Rx;
+          i = i+1;        id.text_ant_pat_Rx = i;           pointers(i) = obj.handles.text_ant_pat_Rx;
+          i = i+1;        id.popup_ant_pat_Rx = i;          pointers(i) = obj.handles.popup_ant_pat_Rx;
+          % Antenna Pattern GG Input
           i = i+1;        id.text_hpbw_deg = i;             pointers(i) = obj.handles.text_hpbw_deg;
           i = i+1;        id.edit_hpbw_deg = i;             pointers(i) = obj.handles.edit_hpbw_deg;
           i = i+1;        id.text_deg_hpbw = i;             pointers(i) = obj.handles.text_deg_hpbw;
@@ -726,13 +692,12 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
           i = i+1;        id.text_dB_XPL = i;               pointers(i) = obj.handles.text_dB_XPL;
           i = i+1;        id.text_ant_pat_res_Rx = i;       pointers(i) = obj.handles.text_ant_pat_res_Rx;
           i = i+1;        id.edit_ant_pat_res_Rx = i;       pointers(i) = obj.handles.edit_ant_pat_res_Rx;
-          i = i+1;        id.text_deg_ant_pat_res_Rx = i;   pointers(i) = obj.handles.text_deg_ant_pat_res_Rx;
-          i = i+1;        id.text_orientation_Rx_specular_facing = i;           pointers(i) = obj.handles.text_orientation_Rx_specular_facing;
-          % User-defined antenna patter Receiver UI element
-          i = i+1;        id.text_ant_pat_Rx_user_defined = i;           pointers(i) = obj.handles.text_ant_pat_Rx_user_defined;
+          i = i+1;        id.text_deg_ant_pat_res_Rx = i;   pointers(i) = obj.handles.text_deg_ant_pat_res_Rx;  
+          % Antenna Pattern  User-defined
+          i = i+1;        id.text_ant_pat_Rx_user_defined = i;	pointers(i) = obj.handles.text_ant_pat_Rx_user_defined;
             
-          groupIDs.Rx_inputs                               = [id.panel_Rx_inputs, id.text_hr_m : id.text_deg_ph0_Rx];
-          groupIDs.ant_pat_Rx_GG_inputs                    = id.panel_Rx_GG : id.text_deg_ant_pat_res_Rx;
+          groupIDs.Rx_inputs                               = [id.panel_Rx_inputs, id.text_hr_m : id.popup_ant_pat_Rx];
+          groupIDs.ant_pat_Rx_GG_inputs                    = id.text_hpbw_deg : id.text_deg_ant_pat_res_Rx;
           
           
           %% GROUND INPUTS PANEL ELEMENTS               
@@ -754,27 +719,12 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
           i = i+1;        id.pb_veg_inputs_file = i;        pointers(i) = obj.handles.pb_veg_inputs_file;
             
 
-          %% GUI ENABLE/DISABLE GROUPS          
-          % On sim_mode change
-          % Because there are currently only two sim modes, it can be 
-          % adjusted by only on_popup_sim_mode. If three or more items exist in 
-          % the future, each should have its own enable/disable group) 
-          groupIDs.on_popup_sim_mode = [id.text_Nr ...
-                                  id.edit_Nr ...
-                                  id.text_Nfz ...
-                                  id.edit_Nfz ];
-                              
+          %% GUI ENABLE/DISABLE GROUPS                              
           % On gnd_cover change
           % Because there are currently only two ground covers, it can be 
           % adjusted by only on_popup_gnd_cover. If three or more items exist in 
           % the future, each should have its own enable/disable group) 
-          groupIDs.on_popup_gnd_cover = [id.text_veg_plant ...
-                                   id.edit_veg_plant ...
-                                   id.text_Nr ...
-                                   id.edit_Nr ...
-                                   id.text_Nfz ...
-                                   id.edit_Nfz ...
-                                   id.text_veg_inputs_file ...
+          groupIDs.on_popup_gnd_cover = [id.text_veg_inputs_file ...
                                    id.edit_veg_inputs_file ...
                                    id.pb_veg_inputs_file ];
                                 
@@ -837,37 +787,7 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
         % Function that runs inside onoffUIEl
         % Test every logical dependence in the GUI
         % E.g. a flag that activate other fields
-        function checkUIdependencies(obj)
-            
-            % sim_mode while gnd_cover
-            if obj.is_popup_sim_mode_snapshot()
-
-                  % If the gnd_cover is Bare-soil, then virtual
-                  % vegetation related fields should not be enabled
-                  if obj.is_popup_gnd_cover_bare_soil()
-                      
-                      obj.setElVal( obj.uiIDs.edit_Nr, num2str(1) );
-                      obj.setElVal( obj.uiIDs.edit_Nfz, num2str(1) );
-
-                  end
-
-            end
-              
-            
-            % gnd_cover while sim_mode
-            if obj.is_popup_gnd_cover_vegetation()
-
-                  % If the sim_mode is Time-series, then virtual
-                  % vegetation related fields should not be enabled
-                  if obj.is_popup_sim_mode_time_series()
-                      
-                      obj.setElVal( obj.uiIDs.edit_Nr, num2str(1) );
-                      obj.setElVal( obj.uiIDs.edit_Nfz, num2str(1) );
-
-                  end
-                  
-            end
-              
+        function checkUIdependencies(obj)              
             
             % gnd_cover
             if obj.is_popup_gnd_cover_bare_soil()
@@ -1056,6 +976,8 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
 
             
             %%   SIMULATION SETTINGS
+            obj.setElVal(obj.uiIDs.edit_campaign, '', 0);
+            
             % Simulation mode: Snapshot OR Time-series
             obj.init_popup_sim_mode();
             obj.setElVal( obj.uiIDs.popup_sim_mode, Constants.id_snapshot, 0 );
@@ -1069,20 +991,6 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
             
             % Flag to include the simulation in the Master Simulation file
             obj.setElVal(obj.uiIDs.cb_include_in_master_sim_file, 0, 0);
-            
-            
-            %% SIMULATION INPUTS            
-            obj.setElVal(obj.uiIDs.edit_campaign, '', 0);
-            
-            obj.setElVal(obj.uiIDs.edit_campaign_date, '', 0);
-            
-            obj.setElVal(obj.uiIDs.edit_plot, '', 0);
-            
-            obj.setElVal(obj.uiIDs.edit_veg_plant, '', 0);
-                                    
-            obj.setElVal(obj.uiIDs.edit_Nr, [], 0);
-            
-            obj.setElVal(obj.uiIDs.edit_Nfz, [], 0);
             
             
             %% TRANSMITTER (Tx) INPUTS
@@ -1178,18 +1086,16 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
             % If filename is empty, then it means this function is called
             % by ...
             if ~isempty( filename )
-            % Load the input file
+                
+                % Load the input file
                 filename = strcat( pathname, '\',filename );
                 load( filename ); % the file contains the variable inputStruct
-                
-                [~, obj.sim_name,~] = fileparts(filename);
             
             % If filename is empty, then it means this function is called 
             % by ... and pathname contains all    
             else
-                load( pathname );
                 
-                [~, obj.sim_name,~] = fileparts(pathname);
+                load( pathname );
                 
             end
 
@@ -1215,7 +1121,9 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
             
             
             %% SET GUI ELEMENTS' VALUES FROM inputStruct
-            %%   SIMULATION SETTINGS
+            %%   SIMULATION SETTINGS        
+            obj.setElVal(obj.uiIDs.edit_campaign, inputStruct.campaign, 0);
+            
             % Simulation Mode: Snapshot OR Time-series
             obj.init_popup_sim_mode();
             sim_mode_id = findElementIdInCell( Constants.sim_modes, inputStruct.sim_mode );
@@ -1231,24 +1139,6 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
             
             % Flag to include the simulation in the Master Simulation file
             obj.setElVal(obj.uiIDs.cb_include_in_master_sim_file, inputStruct.include_in_master_sim_file, 0);
-                        
-            
-            %% SIMULATION INPUTS            
-            obj.setElVal(obj.uiIDs.edit_campaign, inputStruct.campaign, 0);
-            
-            obj.setElVal(obj.uiIDs.edit_campaign_date, inputStruct.campaign_date, 0);
-            
-            obj.setElVal(obj.uiIDs.edit_plot, inputStruct.plot, 0);
-            
-            if gnd_cover_id == Constants.id_veg_cover
-            
-                obj.setElVal(obj.uiIDs.edit_veg_plant, inputStruct.veg_plant, 0);
-                
-            end
-                        
-            obj.setElVal(obj.uiIDs.edit_Nr, num2str(inputStruct.Nr), 0);
-            
-            obj.setElVal(obj.uiIDs.edit_Nfz, num2str(inputStruct.Nfz), 0);
             
             
             %% TRANSMITTER (Tx) INPUTS
@@ -1356,6 +1246,8 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
      
             
         %% SIMULATION SETTINGS PANEL ELEMENTS
+        inputStruct.campaign        = obj.getElVal(obj.uiIDs.edit_campaign);
+        
         sim_mode_id                     = obj.getElVal(obj.uiIDs.popup_sim_mode);            
         inputStruct.sim_mode            = Constants.sim_modes{ 1, sim_mode_id };
 
@@ -1365,36 +1257,6 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
         inputStruct.write_attenuation	= obj.getElVal(obj.uiIDs.cb_write_attenuation);
 
         inputStruct.include_in_master_sim_file	= obj.getElVal(obj.uiIDs.cb_include_in_master_sim_file);
-
-
-        %% SIMULATION INPUTS PANEL ELEMENTS 
-        inputStruct.campaign        = obj.getElVal(obj.uiIDs.edit_campaign);
-
-        inputStruct.campaign_date	= obj.getElVal(obj.uiIDs.edit_campaign_date);
-
-        inputStruct.plot            = obj.getElVal(obj.uiIDs.edit_plot);
-
-        if gnd_cover_id == Constants.id_veg_cover
-        
-            inputStruct.veg_plant = obj.getElVal(obj.uiIDs.edit_veg_plant);
-            
-        end
-
-        inputStruct.Nr	= str2double(obj.getElVal(obj.uiIDs.edit_Nr));
-
-        if isnan(inputStruct.Nr)
-            
-            inputStruct.Nr = 1;
-            
-        end
-
-        inputStruct.Nfz	= str2double(obj.getElVal(obj.uiIDs.edit_Nfz));
-
-        if isnan(inputStruct.Nfz)
-            
-            inputStruct.Nfz = 1;
-            
-        end
 
 
         %% TRANSMITTER (Tx) INPUTS PANEL ELEMENTS  
@@ -1493,8 +1355,6 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
                 filename = strcat( path, file );
 
                 save(filename, 'inputStruct');
-                
-                [~, obj.sim_name,~] = fileparts(filename);
 
                 obj.inputStruct = inputStruct;
 
@@ -1508,8 +1368,6 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
             end
 
         else
-            
-            obj.inputStruct.sim_name = obj.sim_name;
             
             % No change on the input file; so, do not save but good to go.
             savingResult = 2;
