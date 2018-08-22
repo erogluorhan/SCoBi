@@ -31,11 +31,14 @@
 
 function runSCoBi
 
-% Add the common path to start running SCoBi
-addpath( genpath( strcat(pwd, '/scobi') ) );
-
 
 %% WORKSPACE MANAGEMENT
+% Add the common "scobi" directory to the path to start running SCoBi
+addpath( genpath( strcat(pwd, '/scobi') ) );
+
+% Add "input" directory to the path
+addpath( genpath( Directories.getInstance.input ) );
+
 % Reset workspace
 resetWS();
 
@@ -53,9 +56,6 @@ if (isempty(simulator_id))
     
 end
 
-% Initialize workspace for the selected simulator
-initSCoBiWS( simulator_id );
-
 
 %% GUI: START THE SELECTED SIMULATOR'S GUI
 inputStruct = startSelectedGUI( simulator_id );
@@ -70,10 +70,10 @@ if (isempty(inputStruct))
 end
 
 % Initialize all input parameters by using the inputs from GUI
-initAllInputParams(simulator_id, inputStruct);
+varout = initAllInputParams(simulator_id, inputStruct);
 
 % Check input validity
-[isInputValid, sim_counter_start] = initWithInputs();
+[isInputValid, sim_counter_start] = initWithInputs( varout );
 
 
 %% SIMULATIONS
@@ -92,9 +92,6 @@ if isInputValid
     for ii = sim_counter_start : num_sims
 
         ParamsManager.sim_counter( ii );
-
-        % Initialize the directories depending on dynamic parameters
-        SimulationFolders.getInstance.initializeDynamicDirs();
 
         % Call SCoBi main flow
         mainSCoBi;

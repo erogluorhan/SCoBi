@@ -47,6 +47,6 @@ eps_g = round(eps_g * 10) / 10 ;
 
 
 % Initialize Ground Dynamic Parameters
-GndDynParams.getInstance.initialize(h, eps_g);
+GndDynParams.getInstance.update(h, eps_g);
 
 end

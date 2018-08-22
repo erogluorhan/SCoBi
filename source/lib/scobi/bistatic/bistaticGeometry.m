@@ -6,14 +6,8 @@ function [rd_m, idn, isn, osp, osn, Tgs, Tgr, TgrI, AntRotZ_Rx, ...
           AllPoints_m, AngT2R_rf, AngS2R_rf, AngT2S_sf] = bistaticGeometry
 
 
-%% GET GLOBAL DIRECTORIES
-dir_config = SimulationFolders.getInstance.config;
-
-
 %% GET GLOBAL PARAMETERS
 sim_counter = ParamsManager.sim_counter;
-% Simulation Parameters
-Nfz = SimParams.getInstance.Nfz;
 % Transmitter Parameters
 r_Tx_m = TxParams.getInstance.r_Tx_m;
 % Configuration Parameters
@@ -101,7 +95,8 @@ pos_TxI_m = [pos_Tx_m(1); pos_Tx_m(2); -ht_m] ;
 % % pHt = [pos_Tx_m(1), pos_Tx_m(2), 0] ;
 
 % Specular point and 1st Fresnel zone ellipse
-[S0x_m, x1_m, ax1_m, by1_m] = calcFresnelZones(ht_m, hr_m) ;
+Nfz = 1;  % number of fresnel zones is 1 for specular 
+[S0x_m, x1_m, ~, ~] = calcFresnelZones(ht_m, hr_m, Nfz) ;
 
 pos_SP_m = [S0x_m; 0; 0] ;
 pos_SP_m = AntRotZ_Tx * pos_SP_m  ; % specular point location
@@ -109,9 +104,6 @@ pos_SP_m = AntRotZ_Tx * pos_SP_m  ; % specular point location
 % Center of first Fresnel ellipse
 pos_FZ_m = [x1_m(1); 0; 0] ;
 pos_FZ_m = AntRotZ_Tx * pos_FZ_m  ;
-
-ellipses_FZ_m = [ax1_m, by1_m] ; % specular point Fresnel zone
-ellipse_centers_FZ_m = AntRotZ_Tx * [x1_m'; zeros(1,Nfz); zeros(1,Nfz)] ;
 
 
 %% RECEIVER FOOTPRINT - ELLIPSE
@@ -268,14 +260,5 @@ th0 = acos(-isn_sf(3)) * 180 / pi ;
 ph0 = atan2(-isn_sf(2), -isn_sf(1)) * 180 / pi ;
 
 AngT2S_sf = [th0; convertAngleTo360Range( ph0 ) ]  ;
-
-
-%% SAVE ALL
-% ellipses_FZ_m - specular point Fresnel zone [major and minor axes]
-filename = 'ellipses_FZ_m' ;
-writeVar(dir_config, filename, ellipses_FZ_m) ;
-
-filename = 'ellipse_centers_FZ_m' ;
-writeVar(dir_config, filename, ellipse_centers_FZ_m) ;
     
 end

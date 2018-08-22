@@ -46,7 +46,7 @@ classdef SCoBiMainGUIManager < SCoBiGUIManagers
                 % Do not require any operation
             end
             
-            % on the group 1 of current idle simulators 
+            % on the sim: Snow
             if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Snow)) > 0
                 
                 % Display a warning that the method is not implemented yet
@@ -54,25 +54,25 @@ classdef SCoBiMainGUIManager < SCoBiGUIManagers
                   
             end
             
-            % on the group 1 of current idle simulators 
+            % on the sim: Soils
             if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Soil)) > 0
                 
-                obj.simulator_id = Constants.id_multi_layer;
+                obj.simulator_id = Constants.id_sim_soil;
                 
                 uiresume(obj.handles.panel_main);
                   
             end
             
-            % on the SCoBi-Veg-Agriculture 
+            % on the sim: Root-zone 
             if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Root_Zone)) > 0
                 
-                obj.simulator_id = Constants.id_multi_layer;
+                obj.simulator_id = Constants.id_sim_root_zone;
                 
                 uiresume(obj.handles.panel_main);
                 
             end
             
-            % on the group 2 of current idle simulators 
+            % on the sim: Topography
             if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Topography)) > 0
                 
                 % Display a warning that the method is not implemented yet
@@ -80,25 +80,25 @@ classdef SCoBiMainGUIManager < SCoBiGUIManagers
                 
             end
             
-            % on the SCoBi-Veg-Agriculture 
+            % on the sim: Agriculture 
             if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Agriculture)) > 0
                 
-                obj.simulator_id = Constants.id_veg_agr;
+                obj.simulator_id = Constants.id_sim_agriculture;
                 
                 uiresume(obj.handles.panel_main);
                 
             end
             
-            % on the SCoBi-Veg-Forest 
+            % on the sim: Forest 
             if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Forest)) > 0
                 
-                obj.simulator_id = Constants.id_veg_for;
+                obj.simulator_id = Constants.id_sim_forest;
                 
                 uiresume(obj.handles.panel_main);
                 
             end
             
-            % on the group 3 of current idle simulators 
+            % on the sim: Permafrost
             if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Permafrost)) > 0
                 
                 % Display a warning that the method is not implemented yet

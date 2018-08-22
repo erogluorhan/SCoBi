@@ -7,7 +7,6 @@ function directTerm
 
 
 %% GET GLOBAL DIRECTORIES
-dir_rot_lookup = SimulationFolders.getInstance.rot_lookup;
 dir_products = SimulationFolders.getInstance.products;
 dir_products_direct = SimulationFolders.getInstance.products_direct;
 dir_products_direct_field = SimulationFolders.getInstance.products_direct_field;
@@ -30,16 +29,13 @@ G0r_dB = RxParams.getInstance.G0r_dB;
 G0r = convertDecibelToNatural( G0r_dB );
 ant_pat_struct_Rx = RxParams.getInstance.ant_pat_struct_Rx;
 ant_pat_res_deg = RxParams.getInstance.ant_pat_res_deg;
-% Bistatic Parameters
-AllPoints_m = BistaticDynParams.getInstance.AllPoints_m;
-AngT2R_rf = BistaticDynParams.getInstance.AngT2R_rf;
 % Configuration Parameters
 DoYs = ConfigParams.getInstance.DoYs;
-
-
-%% READ OR LOAD META-DATA
-% Transmitter-Receiver Rotation Matrix
-load([dir_rot_lookup '\u_tr.mat'], 'u_tr')
+% Bistatic Dynamic Parameters
+AllPoints_m = BistaticDynParams.getInstance.AllPoints_m;
+AngT2R_rf = BistaticDynParams.getInstance.AngT2R_rf;
+% Rotation Dynamic Parameters
+u_tr = RotMatDynParams.getInstance.u_tr;
 
 
 %% INITIALIZE REQUIRED PARAMETERS
@@ -123,18 +119,12 @@ P0_d2 = G_r0 * U_tr * G_t * E_t2 ;
 
 
 %% SAVE
-% Start and end indices of each variable to be appended to the
-% cumulative (incremental) direct term are the same, because number of
-% dielectric profiles is not effective on direct term
-start_index = sim_counter;
-end_index = sim_counter;
-
 % If sim_mode is Time-series, write DoYs
 if sim_mode_id == Constants.id_time_series
     
     DoY = DoYs( sim_counter );
     filename = 'DoYs';
-    writeVarIncremental( dir_products, filename, start_index, end_index, DoY )
+    writeVarIncremental( dir_products, filename, sim_counter, DoY )
     
 end
 
@@ -148,15 +138,15 @@ filename01 = 'Dir01';
 filename02 = 'Dir02';
 
 % Field: 2 X 1
-writeComplexVarIncremental(dir_products_direct_field, filename1, start_index, end_index, b_d1);
-writeComplexVarIncremental(dir_products_direct_field, filename2, start_index, end_index, b_d2);
-writeComplexVarIncremental(dir_products_direct_field, filename01, start_index, end_index, b0_d1);
-writeComplexVarIncremental(dir_products_direct_field, filename02, start_index, end_index, b0_d2);
+writeComplexVarIncremental(dir_products_direct_field, filename1, sim_counter, b_d1);
+writeComplexVarIncremental(dir_products_direct_field, filename2, sim_counter, b_d2);
+writeComplexVarIncremental(dir_products_direct_field, filename01, sim_counter, b0_d1);
+writeComplexVarIncremental(dir_products_direct_field, filename02, sim_counter, b0_d2);
 
 % Power: 4 X 1
-writeVarIncremental(dir_products_direct_power, filename1, start_index, end_index, P_d1);
-writeVarIncremental(dir_products_direct_power, filename2, start_index, end_index, P_d2);
-writeVarIncremental(dir_products_direct_power, filename01, start_index, end_index, P0_d1);
-writeVarIncremental(dir_products_direct_power, filename02, start_index, end_index, P0_d2);
+writeVarIncremental(dir_products_direct_power, filename1, sim_counter, P_d1);
+writeVarIncremental(dir_products_direct_power, filename2, sim_counter, P_d2);
+writeVarIncremental(dir_products_direct_power, filename01, sim_counter, P0_d1);
+writeVarIncremental(dir_products_direct_power, filename02, sim_counter, P0_d2);
 
 end

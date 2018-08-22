@@ -1,24 +1,28 @@
 
 
 
-function initVegParams( inputStruct )
+function vegInputFullFile = initVegParams( inputStruct )
 
 %% GET GLOBAL PARAMETERS
 % Simulation Settings
 gnd_cover_id = SimSettings.getInstance.gnd_cover_id;
 
+vegInputFullFile = [];
 
 % If ground cover is Vegetation, then Vegetation Parameters are set
 if gnd_cover_id == Constants.id_veg_cover
+    
+    % Initialize workspace for vegetation
+    initWSVegetation();
 
-    initVegHomParams( inputStruct );
+    vegInputFullFile = initVegHomParams( inputStruct );
 
 end
 
 end
 
 
-function initVegHomParams( inputStruct )
+function vegInputFullFile = initVegHomParams( inputStruct )
 
 
 %% EXCEL FILE

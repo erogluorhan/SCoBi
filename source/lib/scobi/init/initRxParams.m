@@ -1,5 +1,7 @@
 
-function initRxParams( inputStruct )
+function ant_pat_fullfile = initRxParams( inputStruct )
+
+ant_pat_fullfile = [];
 
 % Antenna Height (m)
 hr_m = inputStruct.hr_m;
@@ -45,8 +47,7 @@ if ant_pat_Rx_id == Constants.id_Rx_GG
     
 elseif ant_pat_Rx_id == Constants.id_Rx_user_defined
     
-    % TO-DO: May be the user defined pattern and resolution is calculated
-    % here
+    ant_pat_fullfile = inputStruct.ant_pat_Rx_file;  
     
     % Set User-defined pattern parameters
     [ant_pat_struct_Rx, ant_pat_res_deg_Rx] = initRxUserDefinedParams( inputStruct );

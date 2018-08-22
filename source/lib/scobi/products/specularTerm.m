@@ -8,11 +8,12 @@ function specularTerm
 
 
 %% GET GLOBAL DIRECTORIES
-dir_rot_lookup = SimulationFolders.getInstance.rot_lookup ;
 dir_products = SimulationFolders.getInstance.products;
 dir_products_specular = SimulationFolders.getInstance.products_specular;
-dir_products_specular_field = SimulationFolders.getInstance.products_specular_field;
-dir_products_specular_power = SimulationFolders.getInstance.products_specular_power;
+dir_products_specular_reff_coeff = SimulationFolders.getInstance.products_specular_reff_coeff;
+dir_products_specular_reflectivity = SimulationFolders.getInstance.products_specular_reflectivity;
+dir_products_specular_reff_coeff_diel_profiles = SimulationFolders.getInstance.products_specular_reff_coeff_diel_profiles;
+dir_products_specular_reflectivity_diel_profiles = SimulationFolders.getInstance.products_specular_reflectivity_diel_profiles;
 
 
 %% GET GLOBAL PARAMETERS
@@ -32,19 +33,16 @@ f_MHz = TxParams.getInstance.f_MHz;
 g_t = TxParams.getInstance.g_t ; % ideal
 e_t1 = TxParams.getInstance.e_t1 ; 
 e_t2 = TxParams.getInstance.e_t2 ;
-% Bistatic Parameters
-AllPoints_m = BistaticDynParams.getInstance.AllPoints_m;
-AngS2R_rf = BistaticDynParams.getInstance.AngS2R_rf; % SP->Rx Rotation Angle
 % Configuration Parameters
 DoYs = ConfigParams.getInstance.DoYs;
 % Ground Parameters
 num_gnd_layers = GndParams.getInstance.num_layers;
-
-
-%% READ OR LOAD META-DATA
-% Transmitter-Receiver Rotation Matrix
-load([dir_rot_lookup '\u_ts.mat'], 'u_ts')
-load([dir_rot_lookup '\u_sr.mat'], 'u_sr')
+% Bistatic Dynamic Parameters
+AllPoints_m = BistaticDynParams.getInstance.AllPoints_m;
+AngS2R_rf = BistaticDynParams.getInstance.AngS2R_rf; % SP->Rx Rotation Angle
+% Rotation Matrices Dynamic Parameters
+u_ts = RotMatDynParams.getInstance.u_ts;
+u_sr = RotMatDynParams.getInstance.u_sr;
 
 
 %% INITIALIZE REQUIRED PARAMETERS
@@ -124,11 +122,10 @@ U_sr = calc_Muller(u_sr) ;
 % For single ground layer
 num_diel_profiles = 1;
 
-% For multiplw ground layers
+% For multiple ground layers
 if num_gnd_layers > 1
     
-    % Number of dielectric profiles depends on whether simulator is SCoBi-Veg
-    % or SCoBi-ML. SCoBi-ML has several diel profiles.
+    % Number of dielectric profiles depends on number of ground layers.
     [~, num_diel_profiles] = size( Constants.diel_profiles );
     
 end
@@ -168,73 +165,76 @@ end
 
 
 %% SAVE OUTPUTS
-% Start and end indices of DoY variable to be appended to the
-% cumulative (incremental) direct term are the same, because number of
-% dielectric profiles is not effective on direct term
-start_index = sim_counter;
-end_index = sim_counter;
+% Day-of-year for Time-series simulations
 if sim_mode_id == Constants.id_time_series
     
     DoY = DoYs( sim_counter );    
     filename = 'DoYs';
-    writeVarIncremental( dir_products, filename, start_index, end_index, DoY )
+    writeVarIncremental( dir_products, filename, sim_counter, DoY )
     
 end
 
 % Kc Factor
-filename3 = 'Kc';
-writeComplexVar(dir_products_specular, filename3, Kc)
+filename = 'Kc';
+writeComplexVar(dir_products_specular, filename, Kc)
 
-% Calculate start and end indices of each variable to be appended to the
-% cumulative (incremental) specular term
-start_index = 1 + (sim_counter-1) * num_diel_profiles;
-end_index = sim_counter * num_diel_profiles;
 
-% Field: 2 X 1
-if gnd_cover_id == Constants.id_veg_cover
+% Determine the output fodlers w.r.t number of ground layers
+if num_diel_profiles == 1
     
-    filename1 = 'Veg1';
-    filename2 = 'Veg2';
-    filename01 = 'Veg01';
-    filename02 = 'Veg02';
-    writeComplexVarIncremental(dir_products_specular_field, filename1, start_index, end_index, b_coh1v)
-    writeComplexVarIncremental(dir_products_specular_field, filename2, start_index, end_index, b_coh2v)
-    writeComplexVarIncremental(dir_products_specular_field, filename01, start_index, end_index, b0_coh1v)
-    writeComplexVarIncremental(dir_products_specular_field, filename02, start_index, end_index, b0_coh2v)
+    pathname_reff_coeff{1,1} = dir_products_specular_reff_coeff;
+    pathname_reflectivity{1,1} = dir_products_specular_reflectivity;
+    
+else
+    
+    pathname_reff_coeff = dir_products_specular_reff_coeff_diel_profiles;
+    pathname_reflectivity = dir_products_specular_reflectivity_diel_profiles;
     
 end
 
-filename1 = 'Bare1';
-filename2 = 'Bare2';
-filename01 = 'Bare01';
-filename02 = 'Bare02';
-writeComplexVarIncremental(dir_products_specular_field, filename1, start_index, end_index, b_coh1b)
-writeComplexVarIncremental(dir_products_specular_field, filename2, start_index, end_index, b_coh2b)
-writeComplexVarIncremental(dir_products_specular_field, filename01, start_index, end_index, b0_coh1b)
-writeComplexVarIncremental(dir_products_specular_field, filename02, start_index, end_index, b0_coh2b)
 
-% Power: 4 X 1
-if gnd_cover_id == Constants.id_veg_cover
+filename_veg_1 = 'Veg1';
+filename_veg_2 = 'Veg2';
+filename_veg_01 = 'Veg01';
+filename_veg_02 = 'Veg02';
+filename_bare_1 = 'Bare1';
+filename_bare_2 = 'Bare2';
+filename_bare_01 = 'Bare01';
+filename_bare_02 = 'Bare02';
+
+for ii = 1 : num_diel_profiles
     
-    filename1 = 'Veg1';
-    filename2 = 'Veg2';
-    filename01 = 'Veg01';
-    filename02 = 'Veg02';
-    writeVarIncremental(dir_products_specular_power, filename1, start_index, end_index, P_coh1v);
-    writeVarIncremental(dir_products_specular_power, filename2, start_index, end_index, P_coh2v);
-    writeVarIncremental(dir_products_specular_power, filename01, start_index, end_index, P0_coh1v);
-    writeVarIncremental(dir_products_specular_power, filename02, start_index, end_index, P0_coh2v);
+    % Field: 2 X 1
+    if gnd_cover_id == Constants.id_veg_cover
+        
+        writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_veg_1, sim_counter, b_coh1v(:,ii) )
+        writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_veg_2, sim_counter, b_coh2v(:,ii) )
+        writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_veg_01, sim_counter, b0_coh1v(:,ii) )
+        writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_veg_02, sim_counter, b0_coh2v(:,ii) )
+
+    end
+
+    writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_bare_1, sim_counter, b_coh1b(:,ii) )
+    writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_bare_2, sim_counter, b_coh2b(:,ii) )
+    writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_bare_01, sim_counter, b0_coh1b(:,ii) )
+    writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_bare_02, sim_counter, b0_coh2b(:,ii) )
+
+    % Power: 4 X 1
+    if gnd_cover_id == Constants.id_veg_cover
+        
+        writeVarIncremental(pathname_reflectivity{1,ii}, filename_veg_1, sim_counter, P_coh1v(:,ii) );
+        writeVarIncremental(pathname_reflectivity{1,ii}, filename_veg_2, sim_counter, P_coh2v(:,ii));
+        writeVarIncremental(pathname_reflectivity{1,ii}, filename_veg_01, sim_counter, P0_coh1v(:,ii) );
+        writeVarIncremental(pathname_reflectivity{1,ii}, filename_veg_02, sim_counter, P0_coh2v(:,ii) );
+
+    end
+
+    writeVarIncremental(pathname_reflectivity{1,ii}, filename_bare_1, sim_counter, P_coh1b(:,ii) );
+    writeVarIncremental(pathname_reflectivity{1,ii}, filename_bare_2, sim_counter, P_coh2b(:,ii) );
+    writeVarIncremental(pathname_reflectivity{1,ii}, filename_bare_01, sim_counter, P0_coh1b(:,ii) );
+    writeVarIncremental(pathname_reflectivity{1,ii}, filename_bare_02, sim_counter, P0_coh2b(:,ii) );
     
 end
-
-filename1 = 'Bare1';
-filename2 = 'Bare2';
-filename01 = 'Bare01';
-filename02 = 'Bare02';
-writeVarIncremental(dir_products_specular_power, filename1, start_index, end_index, P_coh1b);
-writeVarIncremental(dir_products_specular_power, filename2, start_index, end_index, P_coh2b);
-writeVarIncremental(dir_products_specular_power, filename01, start_index, end_index, P0_coh1b);
-writeVarIncremental(dir_products_specular_power, filename02, start_index, end_index, P0_coh2b);
 
 
 end
@@ -267,10 +267,6 @@ filename = 'dKz' ;
 dKz = readComplexVar(dir_afsa, filename) ;
 filename = 'ANGDEG' ;
 ANGDEG = readVar(dir_afsa, filename) ;
-% Layer Thickness
-% filename = 'D' ;
-% D = readVar(dir_veg, filename) ;
-% Nlayer = length(D) ;
 
 
 %% CALCULATIONS

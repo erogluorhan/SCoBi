@@ -1,7 +1,7 @@
 % Orhan Eroglu
 % Jun 2, 2017
 
-function [isInputValid, sim_counter_start] = initWithInputs
+function [isInputValid, sim_counter_start] = initWithInputs( varin )
 
 sim_counter_start = -1;
 
@@ -15,7 +15,9 @@ if isInputValid
     % Create but not creating simulations' directories
     SimulationFolders.getInstance.makeStaticDirs();
     
-    ParamsManager.saveSimParams();
+    ParamsManager.copyInputFiles( varin );
+    
+    ParamsManager.saveInputParams();
     
     sim_counter_start = ParamsManager.determineSimCounterStart();
     

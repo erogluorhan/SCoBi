@@ -22,7 +22,7 @@ function varargout = gui_SCoBi(varargin)
 
 % Edit the above text to modify the response to help gui_SCoBi
 
-% Last Modified by GUIDE v2.5 18-Aug-2018 15:23:14
+% Last Modified by GUIDE v2.5 21-Aug-2018 23:15:52
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -145,58 +145,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
-function edit_campaign_date_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_campaign_date (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit_campaign_date as text
-%        str2double(get(hObject,'String')) returns contents of edit_campaign_date as a double
-
-global guiSCoBiManager
-guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.edit_campaign_date );
-
-
-% --- Executes during object creation, after setting all properties.
-function edit_campaign_date_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit_campaign_date (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function edit_plot_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_plot (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit_plot as text
-%        str2double(get(hObject,'String')) returns contents of edit_plot as a double
-
-global guiSCoBiManager
-guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.edit_plot );
-
-
-% --- Executes during object creation, after setting all properties.
-function edit_plot_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit_plot (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
 % --- Executes on selection change in popup_gnd_cover.
 function popup_gnd_cover_Callback(hObject, eventdata, handles)
 % hObject    handle to popup_gnd_cover (see GCBO)
@@ -245,84 +193,6 @@ function cb_include_in_master_sim_file_Callback(hObject, eventdata, handles)
 
 global guiSCoBiManager
 guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.cb_include_in_master_sim_file );
-
-
-
-function edit_veg_plant_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_veg_plant (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit_veg_plant as text
-%        str2double(get(hObject,'String')) returns contents of edit_veg_plant as a double
-
-global guiSCoBiManager
-guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.edit_veg_plant );
-
-
-% --- Executes during object creation, after setting all properties.
-function edit_veg_plant_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit_veg_plant (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function edit_Nr_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_Nr (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit_Nr as text
-%        str2double(get(hObject,'String')) returns contents of edit_Nr as a double
-
-global guiSCoBiManager
-guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.edit_Nr );
-
-
-% --- Executes during object creation, after setting all properties.
-function edit_Nr_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit_Nr (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function edit_Nfz_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_Nfz (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit_Nfz as text
-%        str2double(get(hObject,'String')) returns contents of edit_Nfz as a double
-
-global guiSCoBiManager
-guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.edit_Nfz );
-
-
-% --- Executes during object creation, after setting all properties.
-function edit_Nfz_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit_Nfz (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
 
 
 
@@ -987,29 +857,6 @@ guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.edit_ph0_Tx );
 % --- Executes during object creation, after setting all properties.
 function edit_ph0_Tx_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to edit_ph0_Tx (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function edit33_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_ant_pat_res_Rx (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit_ant_pat_res_Rx as text
-%        str2double(get(hObject,'String')) returns contents of edit_ant_pat_res_Rx as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function edit33_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit_ant_pat_res_Rx (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 

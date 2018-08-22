@@ -4,9 +4,6 @@
 
 function [Tgt, TgtI] = transmitterGeometryManuel
 
-%%GET GLOBAL DIRECTORIES
-dir_config = SimulationFolders.getInstance.config;
-
 
 %% GET GLOBAL PARAMETERS
 sim_counter = ParamsManager.sim_counter;

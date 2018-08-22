@@ -1,5 +1,5 @@
 
-function writeVarIncremental(pathname, filename, start_index, end_index, var)
+function writeVarIncremental(pathname, filename, index, var)
 % var: Column vector    
 
 % First read the existing variable, if any    
@@ -15,12 +15,12 @@ else
     % First read the current variable's size
     [N, M] = size(currentVar);
     
-    if end_index > M
+    if index > M
         % Enlarge the current var w.r.t var's end index
-        M = end_index; 
+        M = index; 
     end
     
-    currentVar(:, start_index : end_index) = var;
+    currentVar(:, index) = var;
     var = currentVar;
 
 end

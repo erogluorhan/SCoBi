@@ -2,12 +2,7 @@
 % 03/03/2017
 
 
-function calcRotationMatrices
-
-
-%% GET GLOBAL DIRECTORIES
-dir_config = SimulationFolders.getInstance.config;
-dir_rot_lookup = SimulationFolders.getInstance.rot_lookup ;
+function updateRotMatDynParams
 
 
 %% GET GLOBAL PARAMETERS
@@ -22,20 +17,13 @@ polG = GndParams.getInstance.polG;
 idn = BistaticDynParams.getInstance.idn;  % propagation vector (i_d^-)
 isn = BistaticDynParams.getInstance.isn;  % propagation vector (i_s^-)
 osp = BistaticDynParams.getInstance.osp;  % propagation vector (o_s^+)
-isp = osp;                             % propagation vector (i_s^+)
 % Transformations
 Tgs = BistaticDynParams.getInstance.Tgs;
 Tgr = BistaticDynParams.getInstance.Tgr;
-TgrI = BistaticDynParams.getInstance.TgrI;
 Tgt = BistaticDynParams.getInstance.Tgt;
-TgtI = BistaticDynParams.getInstance.TgtI;
 
 
 %% CALCULATIONS
-% Antenna Pattern and Look-up Angles (th and ph)
-th = ant_pat_struct_Rx.th;
-ph = ant_pat_struct_Rx.ph;
-
 % Rotation Matrix (Transmitter to Receiver)
 % u_t_r(i_d^-)
 
@@ -70,15 +58,6 @@ u_ts = [u11, u12; u21, u22] ;
 % % U_ts = calc_Muller(u_ts) ;
 
 toc
-%% Rotation Matrix (Image Transmitter to Specular Point - Ground)
-% u_tI_s(i_s^+)
-
-% % pol1 = TxParams.pol_Tx ; pol2 = 'V' ;
-% % [utI1, utI2, uvsi, uhsi] = tanUnitVectors(TgtI, Tgs, isp, pol1, pol2) ;
-% % 
-% % % Polarization Basis Dot Products
-% % u_tIs = [dot(utI1, conj(uvsi)), dot(utI2, conj(uvsi));...
-% %     dot(utI1, conj(uhsi)), dot(utI2, conj(uhsi))] ;
 
 % 2 X 2
 u_tIs = u_ts ; %% added april 29, 2017
@@ -102,26 +81,9 @@ u_sr = [u11, u12; u21, u22] ;
 
 toc
 
-%% Calculate Rotation Matrices (Specular point - Ground to Image Receiver)
-% u_p_rI(o_s^-)
 
-% pol1 = 'V' ; pol2 = 'Y' ;
-% [uvoI, uhoI, ur1, ur2] = tanUnitVectors(Tgs, TgrI, osn, pol1, pol2) ;
-% 
-% % Polarization Basis Dot Products
-% usrI = [dot(uhoI, conj(ur1)), dot(uvoI, conj(ur1));...
-%     dot(uhoI, conj(ur2)), dot(uvoI, conj(ur2))] ;
-
-
-%% SAVE
-disp('Saving Rotation Matrices . . .')
-tic ;
-
-% 2 X 2
-save([dir_rot_lookup '\u_sr.mat'], 'u_sr')
-save([dir_rot_lookup '\u_ts.mat'], 'u_ts')
-save([dir_rot_lookup '\u_tIs.mat'], 'u_tIs')
-save([dir_rot_lookup '\u_tr.mat'], 'u_tr')
+%% UPDATE ROTATION MATRICES DYNAMIC PARAMETERS
+RotMatDynParams.getInstance.update( u_sr, u_tr, u_ts, u_tIs );
 
 toc
 

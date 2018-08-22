@@ -1,7 +1,7 @@
 
 function initGndParams( inputStruct ) 
 
-% TO-DO: Handle multi-layer ground for SCoBi-Veg
+% TO-DO: Handle multi-layer ground gnd_cover == Vegetation
 % Get the string diel_model and convert it to an integer index
 diel_model_id = findElementIdInCell( Constants.diel_models, inputStruct.diel_model );
 
@@ -50,6 +50,9 @@ GndParams.getInstance.initialize( layer_depth_m, sand_ratio, clay_ratio, rhob_gc
 % If number of greater than standard single ground parameter numbsers,
 % ground is multi-layer
 if num_gnd_params > Constants.num_gnd_single_params
+    
+    % Initialize workspace for ground-multilayer
+    initWSMultilayer();
     
     % Layer discritization
     ind = ind + 1;
