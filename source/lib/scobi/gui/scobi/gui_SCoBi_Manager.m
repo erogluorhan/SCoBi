@@ -150,7 +150,9 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
         
         function funout = outputFun(obj)
             
-            funout{1} = obj.inputStruct;
+            funout{1} = obj.simulator_id;
+            
+            funout{2} = obj.inputStruct;
             
         end
         
@@ -333,7 +335,44 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
           end
           
             
-          %% PUSH BUTTONS                        
+          %% PUSH BUTTONS               
+            % on Forest button
+            if sum(intersect(idEl, obj.uiIDs.pb_Forest)) > 0
+                    
+                obj.init( obj.handles, Constants.id_sim_forest );
+                
+            end
+            
+            % on Agriculture button
+            if sum(intersect(idEl, obj.uiIDs.pb_Agriculture)) > 0
+                    
+                obj.init( obj.handles, Constants.id_sim_agriculture );
+                
+            end
+            
+            % on Root-zone button
+            if sum(intersect(idEl, obj.uiIDs.pb_Root_zone)) > 0
+                    
+                obj.init( obj.handles, Constants.id_sim_root_zone );
+                
+            end
+            
+            % on Soil button
+            if sum(intersect(idEl, obj.uiIDs.pb_Soil)) > 0
+                    
+                obj.init( obj.handles, Constants.id_sim_soil );
+                
+            end
+            
+            % on the other simulation buttons
+            if sum(intersect(idEl, obj.uiIDs.pb_Snow)) > 0 ...
+                   || sum(intersect(idEl, obj.uiIDs.pb_Topography)) > 0 ...
+                   || sum(intersect(idEl, obj.uiIDs.pb_Permafrost)) > 0
+                    
+                waitfor(msgbox('WARNING: This simulation mode has not yet been implemented!'));
+                
+            end
+            
             % on Load Settings
             if sum(intersect(idEl, obj.uiIDs.pb_load_inputs)) > 0
 	
@@ -599,6 +638,15 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
           i = i+1;        id.text_title = i;                pointers(i) = obj.handles.text_title;
           i = i+1;        id.text_description = i;          pointers(i) = obj.handles.text_description;
           
+          
+          i = i+1;        id.pb_SCoBi_Illustration = i;     pointers(i) = obj.handles.pb_SCoBi_Illustration;  
+          i = i+1;        id.pb_Forest = i;                 pointers(i) = obj.handles.pb_Forest; 
+          i = i+1;        id.pb_Snow = i;                   pointers(i) = obj.handles.pb_Snow;   
+          i = i+1;        id.pb_Soil = i;                   pointers(i) = obj.handles.pb_Soil;   
+          i = i+1;        id.pb_Topography = i;             pointers(i) = obj.handles.pb_Topography;   
+          i = i+1;        id.pb_Root_zone = i;              pointers(i) = obj.handles.pb_Root_zone;   
+          i = i+1;        id.pb_Permafrost = i;             pointers(i) = obj.handles.pb_Permafrost;   
+          i = i+1;        id.pb_Agriculture = i;            pointers(i) = obj.handles.pb_Agriculture;     
           i = i+1;        id.pb_load_inputs = i;            pointers(i) = obj.handles.pb_load_inputs;          
           i = i+1;        id.pb_save_inputs = i;            pointers(i) = obj.handles.pb_save_inputs;        
           i = i+1;        id.pb_SCoBi = i;                  pointers(i) = obj.handles.pb_SCoBi;       
