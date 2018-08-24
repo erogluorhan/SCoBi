@@ -22,7 +22,7 @@ function varargout = gui_SCoBi(varargin)
 
 % Edit the above text to modify the response to help gui_SCoBi
 
-% Last Modified by GUIDE v2.5 23-Aug-2018 09:51:46
+% Last Modified by GUIDE v2.5 23-Aug-2018 14:36:08
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -81,7 +81,7 @@ global guiSCoBiManager
     
 % If clicked the exit button
 if(~isstruct(handles))
-    varargout = cell(1,1);
+    varargout = cell(1,2);
     return
 end
     
@@ -945,3 +945,77 @@ function pb_Agriculture_Callback(hObject, eventdata, handles)
 
 global guiSCoBiManager
 guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.pb_Agriculture );
+
+
+% --- Executes on selection change in popup_gnd_structure.
+function popup_gnd_structure_Callback(hObject, eventdata, handles)
+% hObject    handle to popup_gnd_structure (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popup_gnd_structure contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popup_gnd_structure
+
+global guiSCoBiManager
+guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.popup_gnd_structure );
+
+
+% --- Executes during object creation, after setting all properties.
+function popup_gnd_structure_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popup_gnd_structure (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in cb_3rd_order.
+function cb_3rd_order_Callback(hObject, eventdata, handles)
+% hObject    handle to cb_3rd_order (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of cb_3rd_order
+
+global guiSCoBiManager
+guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.cb_3rd_order );
+
+
+% --- Executes on button press in cb_2nd_order.
+function cb_2nd_order_Callback(hObject, eventdata, handles)
+% hObject    handle to cb_2nd_order (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of cb_2nd_order
+
+global guiSCoBiManager
+guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.cb_2nd_order );
+
+
+% --- Executes on button press in cb_logistic_regression.
+function cb_logistic_regression_Callback(hObject, eventdata, handles)
+% hObject    handle to cb_logistic_regression (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of cb_logistic_regression
+
+global guiSCoBiManager
+guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.cb_logistic_regression );
+
+
+% --- Executes on button press in cb_discrete_slab.
+function cb_discrete_slab_Callback(hObject, eventdata, handles)
+% hObject    handle to cb_discrete_slab (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of cb_discrete_slab
+
+global guiSCoBiManager
+guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.cb_discrete_slab );

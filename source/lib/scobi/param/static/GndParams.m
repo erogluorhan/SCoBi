@@ -8,11 +8,8 @@ classdef GndParams < handle
     
     properties (SetAccess = private, GetAccess = public)
                 
-        % Used when ground is multi-layered
-        layer_depth_m
-        
-        % Calculated by using layer_depth
-        num_layers
+        % Gorund layer structure: Single-layered (1), or Multi-layered (2)
+        gnd_structure_id
         
         % Sand content ratio of the soil texture [0,1]
         sand_ratio
@@ -59,23 +56,23 @@ classdef GndParams < handle
     
     methods
         
-        function initialize(obj, layer_depth_m, sand_ratio, clay_ratio, rhob_gcm3, diel_model_id )
+        function initialize(obj, gnd_structure_id, sand_ratio, clay_ratio, rhob_gcm3, diel_model_id )
             % INITIALIZE - Initializes all the properties
+                
+            obj.gnd_structure_id = gnd_structure_id;
             
-            % If the ground is multi-layered
-            if ~isempty( layer_depth_m )
-                
-                obj.layer_depth_m = layer_depth_m;
-                obj.num_layers = length(layer_depth_m);
-                
-            else
-                obj.num_layers = 1;
-            end
-                
             obj.sand_ratio = sand_ratio;
+            
             obj.clay_ratio = clay_ratio;
+            
             obj.rhob_gcm3 = rhob_gcm3;  
+            
             obj.diel_model_id = diel_model_id;
+            
+        end
+        
+        function out = get.gnd_structure_id(obj)
+            out = obj.gnd_structure_id;
         end
         
         function out = get.diel_model_id(obj)
@@ -88,14 +85,6 @@ classdef GndParams < handle
         
         function out = get.clay_ratio(obj)
             out = obj.clay_ratio;
-        end
-        
-        function out = get.layer_depth_m(obj)
-            out = obj.layer_depth_m;
-        end
-        
-        function out = get.num_layers(obj)
-            out = obj.num_layers;
         end
         
         function out = get.rhob_gcm3(obj)

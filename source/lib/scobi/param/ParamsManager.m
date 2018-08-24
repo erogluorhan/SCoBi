@@ -204,17 +204,18 @@ classdef ParamsManager < handle
         %% GROUND PARAMETERS
         gndParams = GndParams.getInstance;
         
-        inputParamsStruct.layer_depth_m = gndParams.layer_depth_m;
         inputParamsStruct.sand_ratio = gndParams.sand_ratio;
         inputParamsStruct.clay_ratio = gndParams.clay_ratio;
         inputParamsStruct.rhob_gcm3 = gndParams.rhob_gcm3;
         inputParamsStruct.diel_model_id = gndParams.diel_model_id;
+        inputParamsStruct.gnd_structure_id = gndParams.gnd_structure_id;
                     
         % If ground is multi-layered
-        if gndParams.num_layers > 1
+        if gndParams.gnd_structure_id == Constants.id_gnd_multi_layered
 
             gndMLParams = GndMLParams.getInstance;
         
+            inputParamsStruct.layer_depth_m = gndMLParams.layer_depth_m;
             inputParamsStruct.delZ_m = gndMLParams.delZ_m;
             inputParamsStruct.zA_m = gndMLParams.zA_m;
             inputParamsStruct.zB_m = gndMLParams.zB_m;
@@ -390,18 +391,18 @@ classdef ParamsManager < handle
             
             %% GET GLOBAL PARAMETERS
             % Ground Parameters
-            num_gnd_layers = GndParams.getInstance.num_layers;
+            gnd_structure_id = GndParams.getInstance.gnd_structure_id;
             
 
             % If ground is single-layered
-            if num_gnd_layers == 1
+            if gnd_structure_id == Constants.id_gnd_single_layered
                 
                 dispMsg = '';
                 result = Constants.need_for_run.NO;
                 return
             
             % Else, it is multi-layered
-            else
+            elseif gnd_structure_id == Constants.id_gnd_multi_layered
             
             dispMsg = 'Multilayer Reflectivities';
             result = Constants.need_for_run.FULL;
@@ -460,18 +461,18 @@ classdef ParamsManager < handle
             
             %% GET GLOBAL PARAMETERS
             % Ground Parameters
-            num_gnd_layers = GndParams.getInstance.num_layers;
+            gnd_structure_id = GndParams.getInstance.gnd_structure_id;
             
-                        
+
             % If ground is single-layered, skip
-            if num_gnd_layers == 1
+            if gnd_structure_id == Constants.id_gnd_single_layered
                 
                 dispMsg = 'MultiLayer Dielectric Profiles - SKIPPED - Single-layered ground!';
                 result = Constants.need_for_run.NO;
                 return
             
             % Else, it is SCoBi-ML
-            else
+            elseif gnd_structure_id == Constants.id_gnd_multi_layered
 
             dispMsg = 'MultiLayer Dielectric Profiles';
             result = Constants.need_for_run.FULL;
@@ -663,18 +664,19 @@ classdef ParamsManager < handle
         hr_m = RxParams.getInstance.hr_m;
         pol_Rx = RxParams.getInstance.pol_Rx;
         % Ground Parameters
-        num_gnd_layers = GndParams.getInstance.num_layers;
+        gnd_structure_id = GndParams.getInstance.gnd_structure_id;
+        gnd_structure = Constants.gnd_structures{ 1, gnd_structure_id };
         diel_model_id = GndParams.getInstance.diel_model_id;
         diel_model = Constants.diel_models{ 1, diel_model_id };
         
         
-        varNames = {'SimName', 'NumGndLayers', 'SimMode', 'GroundCover', 'TxFreq_MHz', 'TxPol', 'RxAltitude_m', 'RxPol', 'DielModel'};
+        varNames = {'SimName', 'GndStructure', 'SimMode', 'GroundCover', 'TxFreq_MHz', 'TxPol', 'RxAltitude_m', 'RxPol', 'DielModel'};
                 
         % Open master inputs file to write this sim into it
         % If this is the first time master inputs file is created
         if ~exist( masterSimInputFullFile, 'file' )
             
-            T = table( string(sim_name), num_gnd_layers, string(sim_mode), string(gnd_cover), f_MHz, string(pol_Tx), hr_m, string(pol_Rx), string(diel_model), 'VariableNames', varNames );
+            T = table( string(sim_name), string(gnd_structure), string(sim_mode), string(gnd_cover), f_MHz, string(pol_Tx), hr_m, string(pol_Rx), string(diel_model), 'VariableNames', varNames );
                         
         % Else, the master input file exists
         else
@@ -685,7 +687,7 @@ classdef ParamsManager < handle
                 
                 [numRows, ~] = size(T);
                 
-                newRow = table( string(sim_name), num_gnd_layers, string(sim_mode), string(gnd_cover), f_MHz, string(pol_Tx), hr_m, string(pol_Rx), string(diel_model), 'VariableNames', varNames  );
+                newRow = table( string(sim_name), string(gnd_structure), string(sim_mode), string(gnd_cover), f_MHz, string(pol_Tx), hr_m, string(pol_Rx), string(diel_model), 'VariableNames', varNames  );
                 
                 T = [ T; newRow ];
                 

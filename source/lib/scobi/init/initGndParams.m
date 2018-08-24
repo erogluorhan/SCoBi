@@ -5,13 +5,14 @@ function initGndParams( inputStruct )
 % Get the string diel_model and convert it to an integer index
 diel_model_id = findElementIdInCell( Constants.diel_models, inputStruct.diel_model );
 
+% Get the ground kayer structure: Single or Multi-layered
+gnd_structure_id = findElementIdInCell( Constants.gnd_structures, inputStruct.gnd_structure );
+
 % Get the configuration inputs file
 configInputFullFile = inputStruct.config_inputs_file;
 
 % Read file
 [num, ~, ~] = xlsread( configInputFullFile, 2);
-
-[~, num_gnd_params] = size(num);
 
 ind = 0;
 
@@ -19,7 +20,7 @@ ind = 0;
 layer_depth_m = [];
 % If number of greater than standard single ground parameter numbsers,
 % ground is multi-layer
-if num_gnd_params > Constants.num_gnd_single_params
+if gnd_structure_id == Constants.id_gnd_multi_layered
     
     ind = ind + 1;
     layer_depth_m = num(:, ind);
@@ -43,13 +44,16 @@ rhob_gcm3 = num(:, ind);
 rhob_gcm3( isnan(rhob_gcm3) ) = []; 
 
 % Initialize Ground Parameters
-GndParams.getInstance.initialize( layer_depth_m, sand_ratio, clay_ratio, rhob_gcm3, diel_model_id );
+GndParams.getInstance.initialize( gnd_structure_id, sand_ratio, clay_ratio, rhob_gcm3, diel_model_id );
 
 
 %% SPECIFIC MULTI-LAYERED GROUND PARAMETERS, IF ANY
 % If number of greater than standard single ground parameter numbsers,
 % ground is multi-layer
-if num_gnd_params > Constants.num_gnd_single_params
+if gnd_structure_id == Constants.id_gnd_multi_layered    
+    
+    % Flags to calculate several dielectric profile fit functions
+    calc_diel_profile_fit_functions = inputStruct.calc_diel_profile_fit_functions;  
     
     % Initialize workspace for ground-multilayer
     initWSMultilayer();
@@ -70,8 +74,8 @@ if num_gnd_params > Constants.num_gnd_single_params
     zB_m( isnan(zB_m) ) = []; 
 
     % Initialize Ground Parameters
-    GndMLParams.getInstance.initialize( layer_depth_m, delZ_m, zA_m, zB_m );
-    
+    GndMLParams.getInstance.initialize( layer_depth_m, delZ_m, zA_m, zB_m, ...
+        calc_diel_profile_fit_functions );
 end
 
 end

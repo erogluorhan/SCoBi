@@ -6,7 +6,7 @@ function configInputFullFile = initConfigParams( inputStruct )
 % Simulation Settings
 sim_mode_id = SimSettings.getInstance.sim_mode_id;
 % Ground Parameters
-num_gnd_layers = GndParams.getInstance.num_layers;
+gnd_structure_id = GndParams.getInstance.gnd_structure_id;
 
 
 % Get the configuration inputs full file path and name
@@ -62,6 +62,16 @@ ind = ind + 1;
 RMSH_list_cm = num(:, ind);       
 RMSH_list_cm(any(isnan(RMSH_list_cm), 2), :) = [];
 
+if gnd_structure_id == Constants.id_gnd_single_layered
+    
+    num_gnd_layers = 1;
+    
+elseif gnd_structure_id == Constants.id_gnd_multi_layered
+   
+    %% GET GLOBAL PARAMETERS
+    num_gnd_layers = GndMLParams.getInstance.num_layers; 
+    
+end
 % Volumetric soil moisture
 ind = ind + 1;
 VSM_list_cm3cm3 = num(:, ind : ind + (num_gnd_layers - 1) );
