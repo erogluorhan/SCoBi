@@ -5,7 +5,7 @@ function [fig1, fig2] = plotSMdata
 % Simulation Settings
 draw_live_plots = SimSettings.getInstance.draw_live_plots;
 % Ground Parameters
-layer_depth_m = GndParams.getInstance.layer_depth_m;
+layer_depth_m = GndMLParams.getInstance.layer_depth_m;
 layer_depth_cm = layer_depth_m * Constants.m2cm;
 % Configuration Parameters
 DoYs = ConfigParams.getInstance.DoYs;

@@ -9,6 +9,12 @@ classdef GndMLParams < handle
     
     properties (SetAccess = private, GetAccess = public)
         
+        % Used when ground is multi-layered
+        layer_depth_m
+        
+        % Calculated by using layer_depth
+        num_layers
+        
         % Layer discretization
         delZ_m
         
@@ -29,6 +35,9 @@ classdef GndMLParams < handle
         
         % Layer profile
         z_m
+        
+        % Flags to calculate several dielectric profile  fitting functions
+        calc_diel_profile_fit_functions
         
     end
     
@@ -58,8 +67,13 @@ classdef GndMLParams < handle
     
     methods        
         
-        function initialize(obj, gnd_layer_depth_m, delZ_m, zA_m, zB_m )
+        function initialize(obj, layer_depth_m, ...
+                delZ_m, zA_m, zB_m, calc_diel_profile_fit_functions )
             % INITIALIZE - Initializes all the properties
+                
+            obj.layer_depth_m = layer_depth_m;
+            
+            obj.num_layers = length(layer_depth_m);
                         
             obj.delZ_m = delZ_m;
             
@@ -67,19 +81,34 @@ classdef GndMLParams < handle
             
             obj.zB_m = zB_m;
             
-            obj.layer_bottom_m = [0; gnd_layer_depth_m(1 : end - 1) + diff(gnd_layer_depth_m) / 2 ] ;
+            obj.layer_bottom_m = [0; layer_depth_m(1 : end - 1) + diff(layer_depth_m) / 2 ] ;
             
             obj.layer_thickness_m = diff( obj.layer_bottom_m );
             
             obj.zS_m = obj.zA_m + obj.layer_bottom_m(end) + obj.zB_m ;
 
             obj.z_m = (0 : obj.delZ_m : obj.zS_m)';
+            
+            obj.calc_diel_profile_fit_functions = calc_diel_profile_fit_functions;
                       
         end 
          
         
+        function out = get.calc_diel_profile_fit_functions(obj)
+            out = obj.calc_diel_profile_fit_functions;        
+        end
+         
+        
         function out = get.delZ_m(obj)
             out = obj.delZ_m;        
+        end
+        
+        function out = get.layer_depth_m(obj)
+            out = obj.layer_depth_m;
+        end
+        
+        function out = get.num_layers(obj)
+            out = obj.num_layers;
         end
          
         

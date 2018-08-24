@@ -58,7 +58,15 @@ end
 
 
 %% GUI: START THE SELECTED SIMULATOR'S GUI
-inputStruct = startSelectedGUI( simulator_id );
+% TO-DO: Check this!
+inputStruct = [];
+
+% If the OS is not UNIX OR it is MAC and Matlab version below 7.14
+if (~isunix || (ismac && verLessThan('matlab', '7.14')))
+        
+    [simulator_id, inputStruct ] = gui_SCoBi(simulator_id);
+    
+end
 
 % If no output from GUI, terminate program
 if (isempty(inputStruct))

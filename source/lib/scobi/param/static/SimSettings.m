@@ -87,8 +87,6 @@ classdef SimSettings < handle
             currentTime = strrep( currentTime, ':', '_' );
             obj.sim_name = strcat( obj.campaign, '-', currentTime );
             
-            obj.sim_name = obj.campaign;
-            
             obj.simulator_id = simulator_id;
             obj.sim_mode_id = sim_mode_id;
             obj.gnd_cover_id = gnd_cover_id;

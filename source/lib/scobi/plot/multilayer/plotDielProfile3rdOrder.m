@@ -5,7 +5,7 @@ function plotDielProfile3rdOrder( fig, eps_diel_z3rd, z )
 % Simulation Settings
 draw_live_plots = SimSettings.getInstance.draw_live_plots;
 % Ground Parameters
-gnd_layer_depth_m = GndParams.getInstance.layer_depth_m;
+gnd_layer_depth_m = GndMLParams.getInstance.layer_depth_m;
 % Ground Dynamic Params
 eps_g = GndDynParams.getInstance.eps_g;
 % Ground-ML Parameters

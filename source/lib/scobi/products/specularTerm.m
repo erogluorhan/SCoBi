@@ -36,7 +36,9 @@ e_t2 = TxParams.getInstance.e_t2 ;
 % Configuration Parameters
 DoYs = ConfigParams.getInstance.DoYs;
 % Ground Parameters
-num_gnd_layers = GndParams.getInstance.num_layers;
+gnd_structure_id = GndParams.getInstance.gnd_structure_id;
+% Ground Multi-layer Parameters
+calc_diel_profile_fit_functions = GndMLParams.getInstance.calc_diel_profile_fit_functions;
 % Bistatic Dynamic Parameters
 AllPoints_m = BistaticDynParams.getInstance.AllPoints_m;
 AngS2R_rf = BistaticDynParams.getInstance.AngS2R_rf; % SP->Rx Rotation Angle
@@ -123,7 +125,7 @@ U_sr = calc_Muller(u_sr) ;
 num_diel_profiles = 1;
 
 % For multiple ground layers
-if num_gnd_layers > 1
+if gnd_structure_id == Constants.id_gnd_multi_layered
     
     % Number of dielectric profiles depends on number of ground layers.
     [~, num_diel_profiles] = size( Constants.diel_profiles );
@@ -135,31 +137,35 @@ end
 
 for ii = 1 : num_diel_profiles
     
-    % Field
-    % Vegetation
-    b_coh1v(:,ii) = g_r * u_sr * r_sv{ii,1} * u_ts * g_t * e_t1 ;
-    b_coh2v(:,ii) = g_r * u_sr * r_sv{ii,1} * u_ts * g_t * e_t2 ;
-    b0_coh1v(:,ii) = g_r0 * u_sr * r_sv{ii,1} * u_ts * g_t * e_t1 ;
-    b0_coh2v(:,ii) = g_r0 * u_sr * r_sv{ii,1} * u_ts * g_t * e_t2 ;
+     if gnd_structure_id == Constants.id_gnd_single_layered ...
+            || ( gnd_structure_id == Constants.id_gnd_multi_layered && calc_diel_profile_fit_functions(ii, 1) )
+        % Field
+        % Vegetation
+        b_coh1v(:,ii) = g_r * u_sr * r_sv{ii,1} * u_ts * g_t * e_t1 ;
+        b_coh2v(:,ii) = g_r * u_sr * r_sv{ii,1} * u_ts * g_t * e_t2 ;
+        b0_coh1v(:,ii) = g_r0 * u_sr * r_sv{ii,1} * u_ts * g_t * e_t1 ;
+        b0_coh2v(:,ii) = g_r0 * u_sr * r_sv{ii,1} * u_ts * g_t * e_t2 ;
 
-    % Bare-soil
-    b_coh1b(:,ii) = g_r * u_sr * r_sb{ii,1} * u_ts * g_t * e_t1 ;
-    b_coh2b(:,ii) = g_r * u_sr * r_sb{ii,1} * u_ts * g_t * e_t2 ;
-    b0_coh1b(:,ii) = g_r0 * u_sr * r_sb{ii,1} * u_ts * g_t * e_t1 ;
-    b0_coh2b(:,ii) = g_r0 * u_sr * r_sb{ii,1} * u_ts * g_t * e_t2 ;
+        % Bare-soil
+        b_coh1b(:,ii) = g_r * u_sr * r_sb{ii,1} * u_ts * g_t * e_t1 ;
+        b_coh2b(:,ii) = g_r * u_sr * r_sb{ii,1} * u_ts * g_t * e_t2 ;
+        b0_coh1b(:,ii) = g_r0 * u_sr * r_sb{ii,1} * u_ts * g_t * e_t1 ;
+        b0_coh2b(:,ii) = g_r0 * u_sr * r_sb{ii,1} * u_ts * g_t * e_t2 ;
 
-    % Power
-    % Vegetation
-    P_coh1v(:,ii) = G_r * U_sr * R_sv{ii,1} * U_ts * G_t * E_t1 ;
-    P_coh2v(:,ii) = G_r * U_sr * R_sv{ii,1} * U_ts * G_t * E_t2 ;
-    P0_coh1v(:,ii) = G_r0 * U_sr * R_sv{ii,1} * U_ts * G_t * E_t1 ;
-    P0_coh2v(:,ii) = G_r0 * U_sr * R_sv{ii,1} * U_ts * G_t * E_t2 ;
+        % Power
+        % Vegetation
+        P_coh1v(:,ii) = G_r * U_sr * R_sv{ii,1} * U_ts * G_t * E_t1 ;
+        P_coh2v(:,ii) = G_r * U_sr * R_sv{ii,1} * U_ts * G_t * E_t2 ;
+        P0_coh1v(:,ii) = G_r0 * U_sr * R_sv{ii,1} * U_ts * G_t * E_t1 ;
+        P0_coh2v(:,ii) = G_r0 * U_sr * R_sv{ii,1} * U_ts * G_t * E_t2 ;
 
-    % Bare-soil
-    P_coh1b(:,ii) = G_r * U_sr * R_sb{ii,1} * U_ts * G_t * E_t1 ;
-    P_coh2b(:,ii) = G_r * U_sr * R_sb{ii,1} * U_ts * G_t * E_t2 ;
-    P0_coh1b(:,ii) = G_r0 * U_sr * R_sb{ii,1} * U_ts * G_t * E_t1 ;
-    P0_coh2b(:,ii) = G_r0 * U_sr * R_sb{ii,1} * U_ts * G_t * E_t2 ;
+        % Bare-soil
+        P_coh1b(:,ii) = G_r * U_sr * R_sb{ii,1} * U_ts * G_t * E_t1 ;
+        P_coh2b(:,ii) = G_r * U_sr * R_sb{ii,1} * U_ts * G_t * E_t2 ;
+        P0_coh1b(:,ii) = G_r0 * U_sr * R_sb{ii,1} * U_ts * G_t * E_t1 ;
+        P0_coh2b(:,ii) = G_r0 * U_sr * R_sb{ii,1} * U_ts * G_t * E_t2 ;
+        
+     end
 
 end
 
@@ -204,35 +210,40 @@ filename_bare_02 = 'Bare02';
 
 for ii = 1 : num_diel_profiles
     
-    % Field: 2 X 1
-    if gnd_cover_id == Constants.id_veg_cover
-        
-        writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_veg_1, sim_counter, b_coh1v(:,ii) )
-        writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_veg_2, sim_counter, b_coh2v(:,ii) )
-        writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_veg_01, sim_counter, b0_coh1v(:,ii) )
-        writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_veg_02, sim_counter, b0_coh2v(:,ii) )
+    if gnd_structure_id == Constants.id_gnd_single_layered ...
+            || ( gnd_structure_id == Constants.id_gnd_multi_layered && calc_diel_profile_fit_functions(ii, 1) )
+    
+        % Field: 2 X 1
+        if gnd_cover_id == Constants.id_veg_cover
 
+            writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_veg_1, sim_counter, b_coh1v(:,ii) )
+            writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_veg_2, sim_counter, b_coh2v(:,ii) )
+            writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_veg_01, sim_counter, b0_coh1v(:,ii) )
+            writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_veg_02, sim_counter, b0_coh2v(:,ii) )
+
+        end
+
+        writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_bare_1, sim_counter, b_coh1b(:,ii) )
+        writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_bare_2, sim_counter, b_coh2b(:,ii) )
+        writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_bare_01, sim_counter, b0_coh1b(:,ii) )
+        writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_bare_02, sim_counter, b0_coh2b(:,ii) )
+
+        % Power: 4 X 1
+        if gnd_cover_id == Constants.id_veg_cover
+
+            writeVarIncremental(pathname_reflectivity{1,ii}, filename_veg_1, sim_counter, P_coh1v(:,ii) );
+            writeVarIncremental(pathname_reflectivity{1,ii}, filename_veg_2, sim_counter, P_coh2v(:,ii));
+            writeVarIncremental(pathname_reflectivity{1,ii}, filename_veg_01, sim_counter, P0_coh1v(:,ii) );
+            writeVarIncremental(pathname_reflectivity{1,ii}, filename_veg_02, sim_counter, P0_coh2v(:,ii) );
+
+        end
+
+        writeVarIncremental(pathname_reflectivity{1,ii}, filename_bare_1, sim_counter, P_coh1b(:,ii) );
+        writeVarIncremental(pathname_reflectivity{1,ii}, filename_bare_2, sim_counter, P_coh2b(:,ii) );
+        writeVarIncremental(pathname_reflectivity{1,ii}, filename_bare_01, sim_counter, P0_coh1b(:,ii) );
+        writeVarIncremental(pathname_reflectivity{1,ii}, filename_bare_02, sim_counter, P0_coh2b(:,ii) );
+    
     end
-
-    writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_bare_1, sim_counter, b_coh1b(:,ii) )
-    writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_bare_2, sim_counter, b_coh2b(:,ii) )
-    writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_bare_01, sim_counter, b0_coh1b(:,ii) )
-    writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_bare_02, sim_counter, b0_coh2b(:,ii) )
-
-    % Power: 4 X 1
-    if gnd_cover_id == Constants.id_veg_cover
-        
-        writeVarIncremental(pathname_reflectivity{1,ii}, filename_veg_1, sim_counter, P_coh1v(:,ii) );
-        writeVarIncremental(pathname_reflectivity{1,ii}, filename_veg_2, sim_counter, P_coh2v(:,ii));
-        writeVarIncremental(pathname_reflectivity{1,ii}, filename_veg_01, sim_counter, P0_coh1v(:,ii) );
-        writeVarIncremental(pathname_reflectivity{1,ii}, filename_veg_02, sim_counter, P0_coh2v(:,ii) );
-
-    end
-
-    writeVarIncremental(pathname_reflectivity{1,ii}, filename_bare_1, sim_counter, P_coh1b(:,ii) );
-    writeVarIncremental(pathname_reflectivity{1,ii}, filename_bare_2, sim_counter, P_coh2b(:,ii) );
-    writeVarIncremental(pathname_reflectivity{1,ii}, filename_bare_01, sim_counter, P0_coh1b(:,ii) );
-    writeVarIncremental(pathname_reflectivity{1,ii}, filename_bare_02, sim_counter, P0_coh2b(:,ii) );
     
 end
 
@@ -253,7 +264,7 @@ dir_afsa = SimulationFolders.getInstance.afsa;
 dim_layers_m = VegParams.getInstance.dim_layers_m;
 num_veg_layers = VegParams.getInstance.num_layers;
 % Ground Parameters
-num_gnd_layers = GndParams.getInstance.num_layers;
+gnd_structure_id = GndParams.getInstance.gnd_structure_id;
 % Ground Dynamic Paramaters
 h = GndDynParams.getInstance.h;   % Effective roughness parameters
 eps_g = GndDynParams.getInstance.eps_g;   % Dielectric permittivity
@@ -294,7 +305,7 @@ t_sb = [1 0; 0 1] ;
 
 %% GROUND REFLECTION MATRIX
 % If single-layered ground
-if num_gnd_layers == 1
+if gnd_structure_id == Constants.id_gnd_single_layered
     
     ths = degtorad(thsd) ;
     [RGHIF, RGVIF, ~, ~] = reflectionCoeffSingle(ths, ths, eps_g, h) ;
@@ -311,19 +322,32 @@ if num_gnd_layers == 1
     R_sb{1,1} = calc_Muller(r_sb{1,1}) ;
 
 % Else if multi-layered ground
-else
+elseif gnd_structure_id == Constants.id_gnd_multi_layered
+    
+    %% GET GLOBAL PARAMETERS
+    calc_diel_profile_fit_functions = GndMLParams.getInstance.calc_diel_profile_fit_functions;
+
     
     [r_g_cell] = reflectionCoeffsML();
     
     num_diel_profiles = length(r_g_cell);
     
+    r_sv = cell(num_diel_profiles, 1);
+    r_sb = cell(num_diel_profiles, 1);
+    R_sv = cell(num_diel_profiles, 1);
+    R_sb = cell(num_diel_profiles, 1);
+    
     for ii = 1 : num_diel_profiles
         
-        r_sv{ii,1} = t_sv * r_g_cell{ii,1} * t_sv ;
-        r_sb{ii,1} = t_sb * r_g_cell{ii,1} * t_sb ;
-        % 4 X 4
-        R_sv{ii,1} = calc_Muller(r_sv{ii,1});
-        R_sb{ii,1} = calc_Muller(r_sb{ii,1});
+        if calc_diel_profile_fit_functions(ii, 1)
+            
+            r_sv{ii,1} = t_sv * r_g_cell{ii,1} * t_sv ;
+            r_sb{ii,1} = t_sb * r_g_cell{ii,1} * t_sb ;
+            % 4 X 4
+            R_sv{ii,1} = calc_Muller(r_sv{ii,1});
+            R_sb{ii,1} = calc_Muller(r_sb{ii,1});
+            
+        end
         
     end
 

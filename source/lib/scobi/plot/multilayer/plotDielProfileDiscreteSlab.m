@@ -5,7 +5,7 @@ function plotDielProfileDiscreteSlab( fig, eps_diel_zs, z )
 % Simulation Settings
 draw_live_plots = SimSettings.getInstance.draw_live_plots;
 % Ground Parameters
-gnd_layer_depth_m = GndParams.getInstance.layer_depth_m;
+gnd_layer_depth_m = GndMLParams.getInstance.layer_depth_m;
 % Ground-ML Parameters
 zA_m = GndMLParams.getInstance.zA_m;
 % Ground Dynamic Params

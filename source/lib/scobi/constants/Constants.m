@@ -94,6 +94,11 @@ classdef Constants
         id_diel_3rd_order = 4;
         diel_profiles = {'Discrete-slab', 'Logistic', '2nd-order', '3rd-order'};
         
+        % Ground layer structure
+        id_gnd_single_layered = 1;
+        id_gnd_multi_layered = 2;
+        gnd_structures = {'Single-layered', 'Multi-layered'};
+        
         % Receiver antenna orientations
         id_GUI_save = 1;
         id_GUI_save_as = 2;

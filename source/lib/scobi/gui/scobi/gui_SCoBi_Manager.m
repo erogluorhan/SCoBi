@@ -94,6 +94,24 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
         end
 
 
+        % Check if gnd_structure value is Single-layered
+        function result = is_popup_gnd_structure_single_layered(obj)
+            
+            isOn = obj.isEnabled( obj.uiIDs.popup_gnd_structure );
+            result = isOn && (obj.getElVal(obj.uiIDs.popup_gnd_structure) == Constants.id_gnd_single_layered );
+            
+        end
+
+
+        % Check if gnd_structure value is Multi-layered
+        function result = is_popup_gnd_structure_multi_layered(obj)
+            
+            isOn = obj.isEnabled( obj.uiIDs.popup_gnd_structure );
+            result = isOn && (obj.getElVal(obj.uiIDs.popup_gnd_structure) == Constants.id_gnd_multi_layered );
+            
+        end
+
+
         % Check if orientation_Rx value is Fixed
         function result = is_popup_orientation_Rx_fixed(obj)
             
@@ -150,7 +168,9 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
         
         function funout = outputFun(obj)
             
-            funout{1} = obj.inputStruct;
+            funout{1} = obj.simulator_id;
+            
+            funout{2} = obj.inputStruct;
             
         end
         
@@ -332,8 +352,76 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
               
           end
           
+          % If gnd_structure popup value is changed            
+          if sum(intersect(idEl, obj.uiIDs.popup_gnd_structure)) > 0                
+                  
+              % If selected gnd_structure is Single-layered
+              if obj.is_popup_gnd_structure_single_layered()
+
+                  obj.setElStatus(obj.uiGroups.on_popup_gnd_structure_single_layered, 1, 0);  
+                  obj.setElStatus(obj.uiGroups.on_popup_gnd_structure_multi_layered, 0, 0); 
+                  
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_gnd_structure_single_layered, 'on' );
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_gnd_structure_multi_layered, 'off' );                 
+
+              % Else if selected gnd_structure is Multi-layered
+              elseif obj.is_popup_gnd_structure_multi_layered()
+
+                  obj.setElStatus(obj.uiGroups.on_popup_gnd_structure_single_layered, 0, 0);  
+                  obj.setElStatus(obj.uiGroups.on_popup_gnd_structure_multi_layered, 1, 0); 
+                  
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_gnd_structure_single_layered, 'off' );
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_gnd_structure_multi_layered, 'on' );
+
+              else
+
+                  % TO-DO: Handle Exception?
+
+              end
+              
+              obj.updateGUI();
+              
+          end
+          
             
-          %% PUSH BUTTONS                        
+          %% PUSH BUTTONS               
+            % on Forest button
+            if sum(intersect(idEl, obj.uiIDs.pb_Forest)) > 0
+                    
+                obj.init( obj.handles, Constants.id_sim_forest );
+                
+            end
+            
+            % on Agriculture button
+            if sum(intersect(idEl, obj.uiIDs.pb_Agriculture)) > 0
+                    
+                obj.init( obj.handles, Constants.id_sim_agriculture );
+                
+            end
+            
+            % on Root-zone button
+            if sum(intersect(idEl, obj.uiIDs.pb_Root_zone)) > 0
+                    
+                obj.init( obj.handles, Constants.id_sim_root_zone );
+                
+            end
+            
+            % on Soil button
+            if sum(intersect(idEl, obj.uiIDs.pb_Soil)) > 0
+                    
+                obj.init( obj.handles, Constants.id_sim_soil );
+                
+            end
+            
+            % on the other simulation buttons
+            if sum(intersect(idEl, obj.uiIDs.pb_Snow)) > 0 ...
+                   || sum(intersect(idEl, obj.uiIDs.pb_Topography)) > 0 ...
+                   || sum(intersect(idEl, obj.uiIDs.pb_Permafrost)) > 0
+                    
+                waitfor(msgbox('WARNING: This simulation mode has not yet been implemented!'));
+                
+            end
+            
             % on Load Settings
             if sum(intersect(idEl, obj.uiIDs.pb_load_inputs)) > 0
 	
@@ -466,6 +554,7 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
             obj.init_popup_pol_Rx();
             obj.init_popup_ant_pat_Rx();
             obj.init_popup_diel_model();
+            obj.init_popup_gnd_structure();
         end
 
         
@@ -508,6 +597,20 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
             value = min(1,max(length(str), value));
             set(obj.handles.popup_gnd_cover,'Value', value);
             set(obj.handles.popup_gnd_cover,'String', str);
+        end
+
+        
+        % Fill the popup_gnd_structure
+        function init_popup_gnd_structure(obj, str)
+            
+            if nargin < 2
+                str = Constants.gnd_structures;
+            end
+            
+            value = get(obj.handles.popup_gnd_structure,'Value');
+            value = min(1,max(length(str), value));
+            set(obj.handles.popup_gnd_structure,'Value', value);
+            set(obj.handles.popup_gnd_structure,'String', str);
         end
 
         
@@ -599,6 +702,15 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
           i = i+1;        id.text_title = i;                pointers(i) = obj.handles.text_title;
           i = i+1;        id.text_description = i;          pointers(i) = obj.handles.text_description;
           
+          
+          i = i+1;        id.pb_SCoBi_Illustration = i;     pointers(i) = obj.handles.pb_SCoBi_Illustration;  
+          i = i+1;        id.pb_Forest = i;                 pointers(i) = obj.handles.pb_Forest; 
+          i = i+1;        id.pb_Snow = i;                   pointers(i) = obj.handles.pb_Snow;   
+          i = i+1;        id.pb_Soil = i;                   pointers(i) = obj.handles.pb_Soil;   
+          i = i+1;        id.pb_Topography = i;             pointers(i) = obj.handles.pb_Topography;   
+          i = i+1;        id.pb_Root_zone = i;              pointers(i) = obj.handles.pb_Root_zone;   
+          i = i+1;        id.pb_Permafrost = i;             pointers(i) = obj.handles.pb_Permafrost;   
+          i = i+1;        id.pb_Agriculture = i;            pointers(i) = obj.handles.pb_Agriculture;     
           i = i+1;        id.pb_load_inputs = i;            pointers(i) = obj.handles.pb_load_inputs;          
           i = i+1;        id.pb_save_inputs = i;            pointers(i) = obj.handles.pb_save_inputs;        
           i = i+1;        id.pb_SCoBi = i;                  pointers(i) = obj.handles.pb_SCoBi;       
@@ -703,8 +815,18 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
           %% GROUND INPUTS PANEL ELEMENTS               
           i = i+1;        id.text_diel_model = i;           pointers(i) = obj.handles.text_diel_model;  
           i = i+1;        id.popup_diel_model = i;          pointers(i) = obj.handles.popup_diel_model;
+          i = i+1;        id.text_gnd_structure = i;        pointers(i) = obj.handles.text_gnd_structure;
+          i = i+1;        id.popup_gnd_structure = i;       pointers(i) = obj.handles.popup_gnd_structure;          
+          i = i+1;        id.panel_diel_profiles = i;       pointers(i) = obj.handles.panel_diel_profiles;
+          i = i+1;        id.cb_discrete_slab = i;          pointers(i) = obj.handles.cb_discrete_slab;
+          i = i+1;        id.cb_logistic_regression = i;    pointers(i) = obj.handles.cb_logistic_regression;
+          i = i+1;        id.cb_2nd_order = i;              pointers(i) = obj.handles.cb_2nd_order;
+          i = i+1;        id.cb_3rd_order = i;              pointers(i) = obj.handles.cb_3rd_order;
+          i = i+1;        id.text_gnd_structure_single_layered = i;      pointers(i) = obj.handles.text_gnd_structure_single_layered;
+          
             
-          groupIDs.gnd_inputs = [id.panel_gnd_inputs id.text_diel_model : id.popup_diel_model];
+          groupIDs.gnd_inputs = [id.panel_gnd_inputs id.text_diel_model : id.popup_gnd_structure];
+          groupIDs.gnd_multi_layered_inputs = id.panel_diel_profiles : id.cb_3rd_order;
           
           
           %% INPUT FILES PANEL ELEMENTS
@@ -762,6 +884,11 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
                                                        id.edit_ant_pat_Rx_file ...
                                                        id.pb_ant_pat_Rx_file ];
           groupIDs.visibility_on_popup_ant_pat_Rx_user_defined = id.text_ant_pat_Rx_user_defined;
+                            
+          
+          % On gnd_structure change        
+          groupIDs.on_popup_gnd_structure_multi_layered = groupIDs.gnd_multi_layered_inputs;
+          groupIDs.on_popup_gnd_structure_single_layered = id.text_gnd_structure_single_layered;
                                       
           
           groupIDs.input_files = [id.panel_input_files, ...
@@ -855,6 +982,26 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
                   
                   obj.setGuiElVisibility( obj.uiGroups.on_popup_ant_pat_Rx_GG, 'on' );
                   obj.setGuiElVisibility( obj.uiGroups.visibility_on_popup_ant_pat_Rx_user_defined, 'off' ); 
+            end
+              
+            
+            % popup_gnd_structure
+            if obj.is_popup_gnd_structure_single_layered()
+
+                  obj.setElStatus(obj.uiGroups.on_popup_gnd_structure_single_layered, 1, 0);
+                  obj.setElStatus(obj.uiGroups.on_popup_gnd_structure_multi_layered, 0, 0);
+                  
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_gnd_structure_single_layered, 'on' );
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_gnd_structure_multi_layered, 'off' );
+                  
+            elseif obj.is_popup_gnd_structure_multi_layered()
+
+                  obj.setElStatus(obj.uiGroups.on_popup_gnd_structure_single_layered, 0, 0);
+                  obj.setElStatus(obj.uiGroups.on_popup_gnd_structure_multi_layered, 1, 0);
+                  
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_gnd_structure_single_layered, 'off' );
+                  obj.setGuiElVisibility( obj.uiGroups.on_popup_gnd_structure_multi_layered, 'on' );
+                  
             end
             
         end
@@ -1042,6 +1189,20 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
             obj.init_popup_diel_model();
             obj.setElVal(obj.uiIDs.popup_diel_model, Constants.id_diel_dobson, 0);
             
+            obj.init_popup_gnd_structure();
+            obj.setElVal(obj.uiIDs.popup_gnd_structure, Constants.id_gnd_single_layered, 0);            
+            
+            % Flag to calculate Discrete-slab for dielectric profile 
+            obj.setElVal(obj.uiIDs.cb_discrete_slab, 0, 0);            
+            
+            % Flag to calculate Logistic regression for dielectric profile 
+            obj.setElVal(obj.uiIDs.cb_logistic_regression, 0, 0);            
+            
+            % Flag to calculate 2nd-order poly-fit for dielectric profile 
+            obj.setElVal(obj.uiIDs.cb_2nd_order, 0, 0);            
+            
+            % Flag to calculate 3rd order poly-fit for dielectric profile 
+            obj.setElVal(obj.uiIDs.cb_3rd_order, 0, 0);
             
             %% INPUT FILES  
             obj.setElVal(obj.uiIDs.edit_config_inputs_file, '', 0);     
@@ -1214,6 +1375,26 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
             diel_model_id = findElementIdInCell( Constants.diel_models, inputStruct.diel_model );
             obj.setElVal(obj.uiIDs.popup_diel_model, diel_model_id, 0);
             
+            obj.init_popup_gnd_structure();
+            gnd_structure_id = findElementIdInCell( Constants.gnd_structures, inputStruct.gnd_structure );
+            obj.setElVal(obj.uiIDs.popup_gnd_structure, gnd_structure_id, 0);            
+            
+            if gnd_structure_id == Constants.id_gnd_multi_layered
+                
+                % Flag to calculate Discrete-slab for dielectric profile 
+                obj.setElVal(obj.uiIDs.cb_discrete_slab, inputStruct.calc_diel_profile_fit_functions(Constants.id_diel_slab,1), 0);            
+
+                % Flag to calculate Logistic regression for dielectric profile 
+                obj.setElVal(obj.uiIDs.cb_logistic_regression, inputStruct.calc_diel_profile_fit_functions(Constants.id_diel_logistic,1), 0);            
+
+                % Flag to calculate 2nd-order poly-fit for dielectric profile 
+                obj.setElVal(obj.uiIDs.cb_2nd_order, inputStruct.calc_diel_profile_fit_functions(Constants.id_diel_2nd_order,1), 0);            
+
+                % Flag to calculate 3rd order poly-fit for dielectric profile 
+                obj.setElVal(obj.uiIDs.cb_3rd_order, inputStruct.calc_diel_profile_fit_functions(Constants.id_diel_3rd_order,1), 0);
+                
+            end
+            
             
             %% INPUT FILES  
             obj.setElVal(obj.uiIDs.edit_config_inputs_file, inputStruct.config_inputs_file, 0);     
@@ -1320,6 +1501,22 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
         %% GROUND INPUTS PANEL ELEMENTS
         diel_model_id       = obj.getElVal(obj.uiIDs.popup_diel_model);
         inputStruct.diel_model	= Constants.diel_models{ 1, diel_model_id };
+
+        gnd_structure_id            = obj.getElVal(obj.uiIDs.popup_gnd_structure);
+        inputStruct.gnd_structure	= Constants.gnd_structures{ 1, gnd_structure_id };
+
+        % If receiver antenna pattern is Generalized-Gaussian, then 
+        % assign GG params
+        if gnd_structure_id == Constants.id_gnd_multi_layered
+
+            calc_diel_profile_fit_functions(Constants.id_diel_slab,1) = obj.getElVal(obj.uiIDs.cb_discrete_slab);
+            calc_diel_profile_fit_functions(Constants.id_diel_logistic,1) = obj.getElVal(obj.uiIDs.cb_logistic_regression);
+            calc_diel_profile_fit_functions(Constants.id_diel_2nd_order,1) = obj.getElVal(obj.uiIDs.cb_2nd_order);
+            calc_diel_profile_fit_functions(Constants.id_diel_3rd_order,1) = obj.getElVal(obj.uiIDs.cb_3rd_order);
+            
+            inputStruct.calc_diel_profile_fit_functions = calc_diel_profile_fit_functions;
+
+        end
 
 
         %% INPUT FILES PANEL ELEMENTS
