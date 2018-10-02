@@ -5,6 +5,7 @@ classdef Directories < handle
     
     
     properties (SetAccess = private, GetAccess = public)
+        
         main_dir
         
         scobi        
