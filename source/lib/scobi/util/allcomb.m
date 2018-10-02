@@ -90,7 +90,18 @@ function A = allcomb(varargin)
 % 4.2 (apr 2018) fixed some grammar mistakes in the help and comments
 
 narginchk(1,Inf) ;
-NC = nargin ;
+
+NC = 0;
+jj = 0;
+for ii = 1 : nargin
+    [~, cols] = size( varargin{1,ii} );
+    NC = NC + cols ;
+    
+    for kk = 1 : cols
+        jj = jj + 1;
+        args{1, jj} = varargin{1,ii}(:,kk) ;
+    end
+end
 
 % check if we should flip the order
 if ischar(varargin{end}) && (strcmpi(varargin{end}, 'matlab') || strcmpi(varargin{end}, 'john'))
@@ -102,7 +113,7 @@ else
     ii = NC:-1:1 ;
 end
 
-args = varargin(1:NC) ;
+% args = varargin(1:NC) ;
 
 if any(cellfun('isempty', args)) % check for empty inputs
     warning('ALLCOMB:EmptyInput','One of more empty inputs result in an empty output.') ;
