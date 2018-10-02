@@ -178,7 +178,15 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
         % EVENT MANAGER
         % When an element is modified in the GUI, this must be called!
         % Sync the internal copy of the interface with the GUI
-        function syncFromGUI(obj, idEl)            
+        function syncFromGUI(obj, idEl)   
+            
+            
+            %% GET GLOBAL DIRECTORIES
+            dir_input_sys = Directories.getInstance.input_sys;
+            dir_input_config = Directories.getInstance.input_config;
+            dir_input_ant_pat_Rx = Directories.getInstance.input_ant_pat_Rx;
+            dir_input_veg = Directories.getInstance.input_veg;
+            
             
             if (nargin == 1)
                 idEl = obj.uiIDs.popup_sim_mode;
@@ -425,7 +433,7 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
             % on Load Settings
             if sum(intersect(idEl, obj.uiIDs.pb_load_inputs)) > 0
 	
-                filter = {'*.mat'};
+                filter = {strcat(dir_input_sys, '\*.mat')};
                 [file, path] = uigetfile(filter, 'Load GUI From Input File');
                 
                 
@@ -466,7 +474,7 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
             % on Browse Configuration Inputs File
             if sum(intersect(idEl, obj.uiIDs.pb_config_inputs_file)) > 0
 	
-                filter = {'*.xlsx'};
+                filter = {strcat(dir_input_config, '\*.xlsx')};
                 [file, path] = uigetfile(filter, 'Load Configuration Inputs File');
                 
                 
@@ -484,7 +492,7 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
             % on Browse Antenna Pattern Inputs File
             if sum(intersect(idEl, obj.uiIDs.pb_ant_pat_Rx_file)) > 0
 	
-                filter = {'*.xlsx'};
+                filter = {strcat(dir_input_ant_pat_Rx, '\*.xlsx')};
                 [file, path] = uigetfile(filter, 'Load Antenna Pattern Inputs File');
                 
                 
@@ -502,7 +510,7 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
             % on Browse Antenna Pattern Inputs File
             if sum(intersect(idEl, obj.uiIDs.pb_veg_inputs_file)) > 0
 	
-                filter = {'*.xlsx'};
+                filter = {strcat(dir_input_veg, '\*.xlsx')};
                 [file, path] = uigetfile(filter, 'Load Vegetation Inputs File');
                 
                 
@@ -699,7 +707,6 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
           %% MAIN PANEL  
           i = 1;          id.panel_main = i;                pointers(i) = obj.handles.panel_main;
             
-          i = i+1;        id.text_title = i;                pointers(i) = obj.handles.text_title;
           i = i+1;        id.text_description = i;          pointers(i) = obj.handles.text_description;
           
           
@@ -1424,6 +1431,10 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
         % savingResult: 0 - Didn't save. Not good to go
         % savingResult: 1 - Saved. Good to go
         % savingResult: 2 - Didn't save, but good to go
+        
+        
+        %% GET GLOBAL DIRECTORIES
+        dir_input_sys = Directories.getInstance.input_sys;
      
             
         %% SIMULATION SETTINGS PANEL ELEMENTS
@@ -1541,7 +1552,7 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
         if ( saveOption == Constants.id_GUI_save && ~isequaln( obj.inputStruct, inputStruct ) ) ...
             || saveOption == Constants.id_GUI_save_as
 
-            filter = {'*.mat'};
+            filter = {strcat(dir_input_sys, '\*.mat')};
             [file, path] = uiputfile(filter, 'Save Input File');
 
             % If file and path are not empty

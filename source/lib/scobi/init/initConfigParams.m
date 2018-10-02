@@ -138,8 +138,8 @@ elseif sim_mode_id == Constants.id_snapshot
     
     th0_Tx_list_deg = combinations(:, 1);
     ph0_Tx_list_deg = combinations(:, 2);
-    VSM_list_cm3cm3 = combinations(:, 3);
-    RMSH_list_cm = combinations(:, 4);
+    VSM_list_cm3cm3 = combinations(:, 3:(3+num_gnd_layers-1));
+    RMSH_list_cm = combinations(:, end);
     
 end
 

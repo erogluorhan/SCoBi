@@ -38,7 +38,10 @@ DoYs = ConfigParams.getInstance.DoYs;
 % Ground Parameters
 gnd_structure_id = GndParams.getInstance.gnd_structure_id;
 % Ground Multi-layer Parameters
-calc_diel_profile_fit_functions = GndMLParams.getInstance.calc_diel_profile_fit_functions;
+calc_diel_profile_fit_functions = [];
+if gnd_structure_id == Constants.id_gnd_multi_layered
+    calc_diel_profile_fit_functions = GndMLParams.getInstance.calc_diel_profile_fit_functions;
+end
 % Bistatic Dynamic Parameters
 AllPoints_m = BistaticDynParams.getInstance.AllPoints_m;
 AngS2R_rf = BistaticDynParams.getInstance.AngS2R_rf; % SP->Rx Rotation Angle
@@ -135,37 +138,69 @@ end
 % P = 4 x 1
 % b = 2 x 1
 
-for ii = 1 : num_diel_profiles
+if gnd_structure_id == Constants.id_gnd_single_layered
+
+    % Field
+    % Vegetation
+    b_coh1v = g_r * u_sr * r_sv{1,1} * u_ts * g_t * e_t1 ;
+    b_coh2v = g_r * u_sr * r_sv{1,1} * u_ts * g_t * e_t2 ;
+    b0_coh1v = g_r0 * u_sr * r_sv{1,1} * u_ts * g_t * e_t1 ;
+    b0_coh2v = g_r0 * u_sr * r_sv{1,1} * u_ts * g_t * e_t2 ;
+
+    % Bare-soil
+    b_coh1b = g_r * u_sr * r_sb{1,1} * u_ts * g_t * e_t1 ;
+    b_coh2b = g_r * u_sr * r_sb{1,1} * u_ts * g_t * e_t2 ;
+    b0_coh1b = g_r0 * u_sr * r_sb{1,1} * u_ts * g_t * e_t1 ;
+    b0_coh2b = g_r0 * u_sr * r_sb{1,1} * u_ts * g_t * e_t2 ;
+
+    % Power
+    % Vegetation
+    P_coh1v = G_r * U_sr * R_sv{1,1} * U_ts * G_t * E_t1 ;
+    P_coh2v = G_r * U_sr * R_sv{1,1} * U_ts * G_t * E_t2 ;
+    P0_coh1v = G_r0 * U_sr * R_sv{1,1} * U_ts * G_t * E_t1 ;
+    P0_coh2v = G_r0 * U_sr * R_sv{1,1} * U_ts * G_t * E_t2 ;
+
+    % Bare-soil
+    P_coh1b = G_r * U_sr * R_sb{1,1} * U_ts * G_t * E_t1 ;
+    P_coh2b = G_r * U_sr * R_sb{1,1} * U_ts * G_t * E_t2 ;
+    P0_coh1b = G_r0 * U_sr * R_sb{1,1} * U_ts * G_t * E_t1 ;
+    P0_coh2b = G_r0 * U_sr * R_sb{1,1} * U_ts * G_t * E_t2 ;
     
-     if gnd_structure_id == Constants.id_gnd_single_layered ...
-            || ( gnd_structure_id == Constants.id_gnd_multi_layered && calc_diel_profile_fit_functions(ii, 1) )
-        % Field
-        % Vegetation
-        b_coh1v(:,ii) = g_r * u_sr * r_sv{ii,1} * u_ts * g_t * e_t1 ;
-        b_coh2v(:,ii) = g_r * u_sr * r_sv{ii,1} * u_ts * g_t * e_t2 ;
-        b0_coh1v(:,ii) = g_r0 * u_sr * r_sv{ii,1} * u_ts * g_t * e_t1 ;
-        b0_coh2v(:,ii) = g_r0 * u_sr * r_sv{ii,1} * u_ts * g_t * e_t2 ;
+elseif gnd_structure_id == Constants.id_gnd_multi_layered 
 
-        % Bare-soil
-        b_coh1b(:,ii) = g_r * u_sr * r_sb{ii,1} * u_ts * g_t * e_t1 ;
-        b_coh2b(:,ii) = g_r * u_sr * r_sb{ii,1} * u_ts * g_t * e_t2 ;
-        b0_coh1b(:,ii) = g_r0 * u_sr * r_sb{ii,1} * u_ts * g_t * e_t1 ;
-        b0_coh2b(:,ii) = g_r0 * u_sr * r_sb{ii,1} * u_ts * g_t * e_t2 ;
+    for ii = 1 : num_diel_profiles
+    
+         if calc_diel_profile_fit_functions(ii, 1)
+            
+            % Field
+            % Vegetation
+            b_coh1v(:,ii) = g_r * u_sr * r_sv{ii,1} * u_ts * g_t * e_t1 ;
+            b_coh2v(:,ii) = g_r * u_sr * r_sv{ii,1} * u_ts * g_t * e_t2 ;
+            b0_coh1v(:,ii) = g_r0 * u_sr * r_sv{ii,1} * u_ts * g_t * e_t1 ;
+            b0_coh2v(:,ii) = g_r0 * u_sr * r_sv{ii,1} * u_ts * g_t * e_t2 ;
 
-        % Power
-        % Vegetation
-        P_coh1v(:,ii) = G_r * U_sr * R_sv{ii,1} * U_ts * G_t * E_t1 ;
-        P_coh2v(:,ii) = G_r * U_sr * R_sv{ii,1} * U_ts * G_t * E_t2 ;
-        P0_coh1v(:,ii) = G_r0 * U_sr * R_sv{ii,1} * U_ts * G_t * E_t1 ;
-        P0_coh2v(:,ii) = G_r0 * U_sr * R_sv{ii,1} * U_ts * G_t * E_t2 ;
+            % Bare-soil
+            b_coh1b(:,ii) = g_r * u_sr * r_sb{ii,1} * u_ts * g_t * e_t1 ;
+            b_coh2b(:,ii) = g_r * u_sr * r_sb{ii,1} * u_ts * g_t * e_t2 ;
+            b0_coh1b(:,ii) = g_r0 * u_sr * r_sb{ii,1} * u_ts * g_t * e_t1 ;
+            b0_coh2b(:,ii) = g_r0 * u_sr * r_sb{ii,1} * u_ts * g_t * e_t2 ;
 
-        % Bare-soil
-        P_coh1b(:,ii) = G_r * U_sr * R_sb{ii,1} * U_ts * G_t * E_t1 ;
-        P_coh2b(:,ii) = G_r * U_sr * R_sb{ii,1} * U_ts * G_t * E_t2 ;
-        P0_coh1b(:,ii) = G_r0 * U_sr * R_sb{ii,1} * U_ts * G_t * E_t1 ;
-        P0_coh2b(:,ii) = G_r0 * U_sr * R_sb{ii,1} * U_ts * G_t * E_t2 ;
-        
-     end
+            % Power
+            % Vegetation
+            P_coh1v(:,ii) = G_r * U_sr * R_sv{ii,1} * U_ts * G_t * E_t1 ;
+            P_coh2v(:,ii) = G_r * U_sr * R_sv{ii,1} * U_ts * G_t * E_t2 ;
+            P0_coh1v(:,ii) = G_r0 * U_sr * R_sv{ii,1} * U_ts * G_t * E_t1 ;
+            P0_coh2v(:,ii) = G_r0 * U_sr * R_sv{ii,1} * U_ts * G_t * E_t2 ;
+
+            % Bare-soil
+            P_coh1b(:,ii) = G_r * U_sr * R_sb{ii,1} * U_ts * G_t * E_t1 ;
+            P_coh2b(:,ii) = G_r * U_sr * R_sb{ii,1} * U_ts * G_t * E_t2 ;
+            P0_coh1b(:,ii) = G_r0 * U_sr * R_sb{ii,1} * U_ts * G_t * E_t1 ;
+            P0_coh2b(:,ii) = G_r0 * U_sr * R_sb{ii,1} * U_ts * G_t * E_t2 ;
+
+         end
+
+    end
 
 end
 
