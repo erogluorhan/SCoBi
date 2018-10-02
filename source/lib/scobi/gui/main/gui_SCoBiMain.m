@@ -22,7 +22,7 @@ function varargout = gui_SCoBiMain(varargin)
 
 % Edit the above text to modify the response to help gui_SCoBiMain
 
-% Last Modified by GUIDE v2.5 17-Aug-2018 15:50:46
+% Last Modified by GUIDE v2.5 02-Oct-2018 11:11:38
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -186,3 +186,10 @@ function pb_SCoBi_Soil_Callback(hObject, eventdata, handles)
 
 global scobiMainGUI
 scobiMainGUI.syncFromGUI( scobiMainGUI.uiIDs.pb_SCoBi_Soil );
+
+
+% --- Executes on button press in pb_SCoBi_Wetland.
+function pb_SCoBi_Wetland_Callback(hObject, eventdata, handles)
+% hObject    handle to pb_SCoBi_Wetland (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)

@@ -1,10 +1,11 @@
-# Folders
+# Folder ignores
 source/sims/*
 source/input/obsolete/*
 source/lib/scobi_veg/analysis/*
 
 
-# Files
+
+# File ignores
 design/UML-EA/*.ldb
 
 source/input/sys/sysInput-Paulownia-PAPER_PBAND*

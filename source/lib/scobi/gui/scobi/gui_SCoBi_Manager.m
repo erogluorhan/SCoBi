@@ -654,7 +654,9 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
         function init_popup_pol_Rx(obj, str)
             
             if nargin < 2
-                str = Constants.polarizations;
+                % Do not show polarization H and V since X and Y stands for
+                % them
+                str = Constants.polarizations(1, Constants.id_pol_R : Constants.id_pol_Y);
             end
             
             value = get(obj.handles.popup_pol_Rx,'Value');
@@ -668,7 +670,9 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
         function init_popup_pol_Tx(obj, str)
             
             if nargin < 2
-                str = Constants.polarizations;
+                % Do not show polarization H and V since X and Y stands for
+                % them
+                str = Constants.polarizations(1, Constants.id_pol_R : Constants.id_pol_Y);
             end
             
             value = get(obj.handles.popup_pol_Tx,'Value');
