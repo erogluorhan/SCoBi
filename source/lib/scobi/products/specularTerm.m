@@ -295,9 +295,8 @@ dir_afsa = SimulationFolders.getInstance.afsa;
 
 
 %% GET GLOBAL PARAMETERS
-% Vegetation Parameters
-dim_layers_m = VegParams.getInstance.dim_layers_m;
-num_veg_layers = VegParams.getInstance.num_layers;
+% Simulation Settings
+gnd_cover_id = SimSettings.getInstance.gnd_cover_id;
 % Ground Parameters
 gnd_structure_id = GndParams.getInstance.gnd_structure_id;
 % Ground Dynamic Paramaters
@@ -325,14 +324,26 @@ dKz_s = squeeze(dKz(:, ANGDEG == round(thsd), :)) ;
 ArgH = 0 ;
 ArgV = 0 ;
 
-for ii = 1 : num_veg_layers
+% If ground cover is Vegetation-cover
+if gnd_cover_id == Constants.id_veg_cover
     
-    ArgH = ArgH + dKz_s(1, ii) * dim_layers_m(ii, 1) ;
-    ArgV = ArgV + dKz_s(2, ii) * dim_layers_m(ii, 1) ;
+    
+    %% GET GLOBAL PARAMETERS
+    % Vegetation Parameters
+    dim_layers_m = VegParams.getInstance.dim_layers_m;
+    num_veg_layers = VegParams.getInstance.num_layers;                  
+    
+    % Calculate the attenuation
+    for ii = 1 : num_veg_layers
+
+        ArgH = ArgH + dKz_s(1, ii) * dim_layers_m(ii, 1) ;
+        ArgV = ArgV + dKz_s(2, ii) * dim_layers_m(ii, 1) ;
+
+    end
     
 end
 
-% vegetation transmissivity
+% vegetation transmissivity, if any
 t_sv = [exp(+1i * ArgV) 0; 0 exp(+1i * ArgH)] ;
 % unity transmissivity for bare soil
 t_sb = [1 0; 0 1] ;
