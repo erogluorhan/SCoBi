@@ -34,12 +34,6 @@ function runSCoBi
 
 
 %% WORKSPACE MANAGEMENT
-% Add the common "scobi" directory to the path to start running SCoBi
-addpath( genpath( strcat(pwd, '/scobi') ) );
-
-% Add "input" directory to the path
-addpath( genpath( Directories.getInstance.input ) );
-
 % Reset workspace
 resetWS();
 
@@ -115,3 +109,36 @@ else
 end
 
 end 
+
+
+% Reset the workspace
+function resetWS
+
+% Restore search path to defaults
+restoredefaultpath
+
+% Add the common "scobi" directory to the path to start running SCoBi
+addpath( genpath( strcat(pwd, '/scobi') ) );
+
+% Add "input" directory to the path
+addpath( genpath( Directories.getInstance.input ) );
+
+
+% Store current debug breakpoints before doing clear all
+myBreakpoints = dbstatus;
+save('myBreakpoints.mat', 'myBreakpoints');
+
+% Clear all the workspace
+clear all;
+clc ;
+
+% Restore debug breakpoints
+load('myBreakpoints.mat');
+dbstop(myBreakpoints);
+clear myBreakpoints;
+
+if ( exist('myBreakpoints.mat','file') ) 
+    delete('myBreakpoints.mat'); 
+end
+
+end

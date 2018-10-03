@@ -156,6 +156,11 @@ methods
 
     function makeStaticDirs(obj)
 
+        
+        %% GET GLOBAL PARAMETERS
+        % Ground Parameters
+        gnd_structure_id = GndParams.getInstance.gnd_structure_id;
+        
 
         %% Simulations main directory
         if ~exist(obj.sims_main_dir, 'dir')
@@ -213,23 +218,27 @@ methods
         end
     
         % Products for multiple dielectric profiles
-        diel_profiles = Constants.diel_profiles;
-        [~, num_diel_profiles] = size( diel_profiles );
-
-        for ii = 1 : num_diel_profiles
-
-            if ~exist(obj.products_specular_reff_coeff_diel_profiles{1, ii}, 'dir')
+        if gnd_structure_id == Constants.id_gnd_multi_layered
             
-                mkdir(obj.products_specular_reff_coeff_diel_profiles{1, ii})
-            
+            diel_profiles = Constants.diel_profiles;
+            [~, num_diel_profiles] = size( diel_profiles );
+
+            for ii = 1 : num_diel_profiles
+
+                if ~exist(obj.products_specular_reff_coeff_diel_profiles{1, ii}, 'dir')
+
+                    mkdir(obj.products_specular_reff_coeff_diel_profiles{1, ii})
+
+                end
+
+                if ~exist(obj.products_specular_reflectivity_diel_profiles{1, ii}, 'dir')
+
+                    mkdir(obj.products_specular_reflectivity_diel_profiles{1, ii})
+
+                end
+
             end
-
-            if ~exist(obj.products_specular_reflectivity_diel_profiles{1, ii}, 'dir')
             
-                mkdir(obj.products_specular_reflectivity_diel_profiles{1, ii})
-            
-            end
-        
         end
 
         % Figure
