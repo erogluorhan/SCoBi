@@ -219,6 +219,7 @@ classdef ParamsManager < handle
             inputParamsStruct.delZ_m = gndMLParams.delZ_m;
             inputParamsStruct.zA_m = gndMLParams.zA_m;
             inputParamsStruct.zB_m = gndMLParams.zB_m;
+            inputParamsStruct.calc_diel_profile_fit_functions = gndMLParams.calc_diel_profile_fit_functions;
 
         end
 
@@ -480,6 +481,164 @@ classdef ParamsManager < handle
             end            
             
         end
+        
+        
+        function initAllInputParamsFromInputParamsStruct( inputParamsStruct )
+
+            
+        %% SIMULATION SETTINGS
+        % Simulation Settings        
+        version = inputParamsStruct.version;
+        sim_name = inputParamsStruct.sim_name;
+        campaign = inputParamsStruct.campaign;
+        simulator_id = inputParamsStruct.simulator_id;
+        sim_mode_id = inputParamsStruct.sim_mode_id;
+        gnd_cover_id = inputParamsStruct.gnd_cover_id;
+        
+        if gnd_cover_id == Constants.id_veg_cover
+            
+            write_attenuation = inputParamsStruct.write_attenuation;
+            
+        end
+        
+        include_in_master_sim_file = inputParamsStruct.include_in_master_sim_file;
+        draw_live_plots = inputParamsStruct.draw_live_plots;
+        
+        % Initialize
+        SimSettings.getInstance.initialize( campaign, simulator_id, sim_mode_id, gnd_cover_id, write_attenuation, ...
+                include_in_master_sim_file, draw_live_plots );
+        
+        
+        %% TRASNMITTER PARAMETERS
+        f_MHz = inputParamsStruct.f_MHz;
+        r_Tx_m = inputParamsStruct.r_Tx_m;
+        EIRP_dB = inputParamsStruct.EIRP_dB;
+        pol_Tx = inputParamsStruct.pol_Tx;
+        
+        % Initialize
+        TxParams.getInstance.initialize( f_MHz, r_Tx_m, EIRP_dB, pol_Tx );
+            
+        
+        %% RECEIVER PARAMETERS        
+        hr_m = inputParamsStruct.hr_m;
+        G0r_dB = inputParamsStruct.G0r_dB;
+        pol_Rx = inputParamsStruct.pol_Rx;
+        ant_pat_Rx_id = inputParamsStruct.ant_pat_Rx_id;   
+        ant_pat_struct_Rx = inputParamsStruct.ant_pat_struct_Rx;
+        ant_pat_res_deg = inputParamsStruct.ant_pat_res_deg;
+        orientation_Rx_id = inputParamsStruct.orientation_Rx_id;
+        
+        th0_Rx_deg = [];
+        ph0_Rx_deg = [];
+        if orientation_Rx_id == Constants.id_Rx_fixed
+            
+            th0_Rx_deg = inputParamsStruct.th0_Rx_deg;
+            ph0_Rx_deg = inputParamsStruct.ph0_Rx_deg;  
+            
+        end
+
+        % If receiver antenna pattern is Generalized-Gaussian
+        if ant_pat_Rx_id == Constants.id_Rx_GG
+            
+            hpbw_deg = inputParamsStruct.hpbw_deg;
+            SLL_dB = inputParamsStruct.SLL_dB;
+            XPL_dB = inputParamsStruct.XPL_dB;
+            
+            % Initialize
+            RxGGParams.getInstance.initialize( hpbw_deg, SLL_dB, XPL_dB );
+
+        elseif ant_pat_Rx_id == Constants.id_Rx_user_defined
+            
+            ant_pat_fullfilename = inputParamsStruct.ant_pat_fullfilename;
+            
+            % Initialize
+            RxUserDefinedParams.getInstance.initialize( ant_pat_fullfilename );
+
+        % Else if Antenna pattern is Cosine to the power n
+        elseif ant_pat_Rx_id == Constants.id_Rx_cos_pow_n 
+
+            % Should be implemented when this pattern added
+
+        end
+        
+        % Initialize
+        RxParams.getInstance.initialize( hr_m, G0r_dB, pol_Rx, ant_pat_Rx_id, ...
+                ant_pat_struct_Rx, ant_pat_res_deg, orientation_Rx_id, ...
+                th0_Rx_deg, ph0_Rx_deg );
+
+        
+        %% GROUND PARAMETERS        
+        sand_ratio = inputParamsStruct.sand_ratio;
+        clay_ratio = inputParamsStruct.clay_ratio;
+        rhob_gcm3 = inputParamsStruct.rhob_gcm3;
+        diel_model_id = inputParamsStruct.diel_model_id;
+        gnd_structure_id = inputParamsStruct.gnd_structure_id;
+                    
+        % If ground is multi-layered
+        if gnd_structure_id == Constants.id_gnd_multi_layered
+            
+            addpath( genpath( Directories.getInstance.multi_layer ) );
+        
+            layer_depth_m = inputParamsStruct.layer_depth_m;
+            delZ_m = inputParamsStruct.delZ_m;
+            zA_m = inputParamsStruct.zA_m;
+            zB_m = inputParamsStruct.zB_m;
+            calc_diel_profile_fit_functions = inputParamsStruct.calc_diel_profile_fit_functions;
+            
+            % Initialize
+            GndMLParams.getInstance.initialize( layer_depth_m, delZ_m, zA_m, zB_m, calc_diel_profile_fit_functions );
+
+        end
+        
+        % Initialize
+        GndParams.getInstance.initialize( gnd_structure_id, sand_ratio, clay_ratio, rhob_gcm3, diel_model_id );
+
+        
+        %% CONFIGURATION PARAMETERS 
+        DoYs = [];
+        
+        if sim_mode_id == Constants.id_time_series
+        
+            DoYs = inputParamsStruct.DoYs;
+            
+        end
+        
+        th0_Tx_list_deg = inputParamsStruct.th0_Tx_list_deg;
+        ph0_Tx_list_deg = inputParamsStruct.ph0_Tx_list_deg;
+        VSM_list_cm3cm3 = inputParamsStruct.VSM_list_cm3cm3;
+        RMSH_list_cm = inputParamsStruct.RMSH_list_cm;
+
+        % Initialize
+        ConfigParams.getInstance.initialize( DoYs, th0_Tx_list_deg, ph0_Tx_list_deg, VSM_list_cm3cm3, RMSH_list_cm );
+        
+        %% VEGETATION PARAMETERS
+        % If ground cover is Vegetation, then Vegetation Parameters are set
+        if gnd_cover_id == Constants.id_veg_cover
+            
+            addpath( genpath( Directories.getInstance.vegetation ) );
+            
+            dim_layers_m = inputParamsStruct.dim_layers_m;
+            num_layers = inputParamsStruct.num_layers;
+            TYPKND = inputParamsStruct.TYPKND;
+            num_types = inputParamsStruct.num_types;
+            num_kinds = inputParamsStruct.num_kinds;
+            LTK = inputParamsStruct.LTK;
+            dsty = inputParamsStruct.dsty;
+            dim1_m = inputParamsStruct.dim1_m;
+            dim2_m = inputParamsStruct.dim2_m;
+            dim3_m = inputParamsStruct.dim3_m;
+            epsr = inputParamsStruct.epsr;
+            parm1_deg = inputParamsStruct.parm1_deg;
+            parm2_deg = inputParamsStruct.parm2_deg;
+                        
+            % Initialize
+            VegParams.getInstance.initialize( dim_layers_m, num_layers, ...
+                       TYPKND, num_types, num_kinds, LTK, dsty, dim1_m, ...
+                       dim2_m, dim3_m, epsr, parm1_deg, parm2_deg );
+
+        end
+            
+        end  
         
         
         function saveInputParams

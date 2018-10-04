@@ -88,7 +88,27 @@ classdef VegParams < handle
     
     methods
         
-        function initialize(obj, dim_layers_m, particleIDs, particlesCell, layersCell )
+        function initialize( obj, dim_layers_m, num_layers, TYPKND, ...
+                       num_types, num_kinds, LTK, dsty, dim1_m, dim2_m, ...
+                       dim3_m, epsr, parm1_deg, parm2_deg )
+      
+            obj.dim_layers_m = dim_layers_m;
+            obj.num_layers = num_layers;
+            obj.TYPKND = TYPKND;
+            obj.num_types = num_types;
+            obj.num_kinds = num_kinds;
+            obj.LTK = LTK;
+            obj.dsty = dsty;
+            obj.dim1_m = dim1_m;
+            obj.dim2_m = dim2_m;
+            obj.dim3_m = dim3_m;
+            obj.epsr = epsr;
+            obj.parm1_deg = parm1_deg;
+            obj.parm2_deg = parm2_deg;
+                   
+        end
+        
+        function setup(obj, dim_layers_m, particleIDs, particlesCell, layersCell )
             % INITIALIZE - Initializes all the properties from input file  
             
             obj.dim_layers_m = dim_layers_m;

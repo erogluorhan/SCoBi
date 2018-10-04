@@ -128,7 +128,7 @@ for ii = 1 : num_veg_layers
 end
 
 % Initialize Vegetation Parameters
-VegParams.getInstance.initialize( dim_layers_m, particleIDs, particlesCell, layersCell );
+VegParams.getInstance.setup( dim_layers_m, particleIDs, particlesCell, layersCell );
 
 end
 

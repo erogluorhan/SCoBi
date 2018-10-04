@@ -19,6 +19,8 @@ classdef Directories < handle
         input_sys
         input_ant_pat_Rx
         input_veg
+        
+        sims_main
             
     end
     
@@ -78,6 +80,10 @@ classdef Directories < handle
             obj.scobi_gui_scobi = fullfile( scobi_gui, 'scobi');
 
             obj.scobi_gui_last_input = fullfile( scobi_gui, 'last_input');
+
+            
+            %% GUI DIRECTORIES
+            obj.sims_main = fullfile( obj.main_dir, 'sims');
             
         end
         
@@ -119,6 +125,10 @@ classdef Directories < handle
         
         function out = get.scobi_gui_last_input(obj)
             out = obj.scobi_gui_last_input;
+        end
+        
+        function out = get.sims_main(obj)
+            out = obj.sims_main;
         end
     end
     
