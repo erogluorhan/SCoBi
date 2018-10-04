@@ -19,7 +19,7 @@ lambda_m = Constants.c / f_Hz ;     % Wavelength
 
 % Angle of Incidence of incoming signal
 % TxParams.getInstance.el0_Tx_deg = 36.3287 ;        % Elevation angle
-th0_Tx_rad = degtorad(th0_Tx_deg) ;
+th0_Tx_rad = deg2rad(th0_Tx_deg) ;
 
 % Transmitter/Reciever ground range
 Dist_m = ht_m * tan(th0_Tx_rad) ;

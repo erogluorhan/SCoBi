@@ -10,14 +10,14 @@ sim_counter = ParamsManager.sim_counter;
 % Configuration Parameters
 th0_Tx_list_deg = ConfigParams.getInstance.th0_Tx_list_deg;
 th0_Tx_deg = th0_Tx_list_deg( sim_counter );
-th0_Tx_rad = degtorad(th0_Tx_deg) ;
+th0_Tx_rad = deg2rad(th0_Tx_deg) ;
 ph0_Tx_list_deg = ConfigParams.getInstance.ph0_Tx_list_deg;
 ph0_Tx_deg = ph0_Tx_list_deg( sim_counter );
 
 %% Incoming Signal
 % Azimuth Angle (in standard spherical coords) of incoming signal
 ph0in_Tx_deg = 90 - ph0_Tx_deg + 180 ;  % 180 degrees added to face transmitter and receiver aligned to each other.
-ph0in_Tx_rad = degtorad(ph0in_Tx_deg) ;
+ph0in_Tx_rad = deg2rad(ph0in_Tx_deg) ;
 
 
 %% TRANSMITTER ANTENNA ROTATION MATRICES
