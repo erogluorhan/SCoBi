@@ -210,10 +210,10 @@ classdef RxGGParams < handle
             
             
             ant_pat_th_range_deg = Constants.ant_pat_th_range_deg;
-            ant_pat_th_range_rad = degtorad( ant_pat_th_range_deg );
+            ant_pat_th_range_rad = deg2rad( ant_pat_th_range_deg );
             
             ant_pat_ph_range_deg = Constants.ant_pat_ph_range_deg;
-            ant_pat_ph_range_rad = degtorad( ant_pat_ph_range_deg );
+            ant_pat_ph_range_rad = deg2rad( ant_pat_ph_range_deg );
 
             % Beamwidth
             % ths_deg = 12, 6, 3
@@ -232,7 +232,7 @@ classdef RxGGParams < handle
 
             % Angle span (Beamwidth)
             % ths_deg = 12 ;                     
-            ths_rad = degtorad(ths_deg) ; 
+            ths_rad = deg2rad(ths_deg) ; 
 
             % Generalized Gaussian Pattern parameters
             alpha = 0.2 ; % 0.5 ;  % sidelobe width                 

@@ -13,21 +13,21 @@ r_Tx_m = TxParams.getInstance.r_Tx_m;
 % Configuration Parameters
 th0_Tx_list_deg = ConfigParams.getInstance.th0_Tx_list_deg;
 th0_Tx_deg = th0_Tx_list_deg( sim_counter );   % Currrent theta ( Incidence Angle )
-th0_Tx_rad = degtorad(th0_Tx_deg) ;
+th0_Tx_rad = deg2rad(th0_Tx_deg) ;
 el0_Tx_deg = 90 - th0_Tx_deg;
-el0_Tx_rad = degtorad(el0_Tx_deg) ;
+el0_Tx_rad = deg2rad(el0_Tx_deg) ;
 ph0_Tx_list_deg = ConfigParams.getInstance.ph0_Tx_list_deg;
 ph0_Tx_deg = ph0_Tx_list_deg( ParamsManager.sim_counter );   % Current phi (Azimuth Angle (standard spherical coords) of transmitter's position)
 ph0_Tx_deg = 90 - ph0_Tx_deg ;                            % If it was the incoming signal's azimuth, we would add 180 degrees
-ph0_Tx_rad = degtorad(ph0_Tx_deg) ;
+ph0_Tx_rad = deg2rad(ph0_Tx_deg) ;
 % Receiver Parameters
 hr_m = RxParams.getInstance.hr_m;                   % Receiver altitude
 ant_pat_Rx_id = RxParams.getInstance.ant_pat_Rx_id; % Receiver antenna pattern generation method (Look at Constants.Rx_ant_pats)
 th0_Rx_deg = RxParams.getInstance.th0_Rx_deg;       % Antenna Looking Angle (angle of Incidence)
-th0_Rx_rad = degtorad(th0_Rx_deg) ;
+th0_Rx_rad = deg2rad(th0_Rx_deg) ;
 ph0_Rx_deg = RxParams.getInstance.ph0_Rx_deg;       % Azimuth Angle of Receiver position
 ph0_Rx_deg = 90 - ph0_Rx_deg;
-ph0_Rx_rad = degtorad(ph0_Rx_deg) ;
+ph0_Rx_rad = deg2rad(ph0_Rx_deg) ;
 % If recevier antenna pattern is Generalized-Gaussian, its footprint
 % ellipse will be calculated below
 if ant_pat_Rx_id == Constants.id_Rx_GG
@@ -55,9 +55,9 @@ pos_Gnd_m = [0; 0; 0] ;
 if ant_pat_Rx_id == Constants.id_Rx_GG
     % 3dB Beamwidths
     % Bthrd = 40 ;
-    Bthr_rad = degtorad(hpbw_deg) ;
+    Bthr_rad = deg2rad(hpbw_deg) ;
     % Bphrd = 40 ;
-    Bphr_rad = degtorad(hpbw_deg) ;
+    Bphr_rad = deg2rad(hpbw_deg) ;
 end
 
 

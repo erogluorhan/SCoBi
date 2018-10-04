@@ -353,7 +353,7 @@ t_sb = [1 0; 0 1] ;
 % If single-layered ground
 if gnd_structure_id == Constants.id_gnd_single_layered
     
-    ths = degtorad(thsd) ;
+    ths = deg2rad(thsd) ;
     [RGHIF, RGVIF, ~, ~] = reflectionCoeffSingle(ths, ths, eps_g, h) ;
 
     r_g = [RGVIF 0; 0 RGHIF] ;

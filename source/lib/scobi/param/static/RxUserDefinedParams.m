@@ -53,9 +53,9 @@ classdef RxUserDefinedParams < handle
         function [ant_pat_struct, ant_pat_res_deg] = calcRxAntPatMatrix(obj)
 
             ant_pat_th_range_deg = Constants.ant_pat_th_range_deg;
-            ant_pat_th_range_rad = degtorad( ant_pat_th_range_deg );
+            ant_pat_th_range_rad = deg2rad( ant_pat_th_range_deg );
             ant_pat_ph_range_deg = Constants.ant_pat_ph_range_deg;
-            ant_pat_ph_range_rad = degtorad( ant_pat_ph_range_deg );
+            ant_pat_ph_range_rad = deg2rad( ant_pat_ph_range_deg );
 
 
             %% READ ANTENNA PATTERN FILE
