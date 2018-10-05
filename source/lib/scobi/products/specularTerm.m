@@ -94,8 +94,8 @@ phrd = AngS2R_rf(2, 1) ;
 
 ant_pat_res_factor = 1 / ant_pat_res_deg;
 
-thd = round( ant_pat_res_factor * radtodeg(th)) / ant_pat_res_factor ; % rounding operation is due to accuracy concerns
-phd = round( ant_pat_res_factor * radtodeg(ph)) / ant_pat_res_factor ; % to make the angles multiples of ant_pat_res_deg
+thd = round( ant_pat_res_factor * rad2deg(th)) / ant_pat_res_factor ; % rounding operation is due to accuracy concerns
+phd = round( ant_pat_res_factor * rad2deg(ph)) / ant_pat_res_factor ; % to make the angles multiples of ant_pat_res_deg
 
 % Receiver Antenna values in the specular direction
 ind_th = thd == round( ant_pat_res_factor * thrd(1, 1)) / ant_pat_res_factor ; % round is to make it a multiple of ant_pat_res_deg
