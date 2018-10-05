@@ -118,7 +118,7 @@ if ant_pat_Rx_id == Constants.id_Rx_GG
 
     % angle of incidnce at the center of the ellipse
     thcr_rad = atan(tan(th0_Rx_rad + Bthr_rad / 2) - dar_m / hr_m / 2) ;
-    thcr_deg = radtodeg(thcr_rad) ; %#ok<NASGU>
+    thcr_deg = rad2deg(thcr_rad) ; %#ok<NASGU>
 
     % minor axis
     dbr_m = 2 * hr_m * sec(thcr_rad) * tan(Bphr_rad / 2) ;
