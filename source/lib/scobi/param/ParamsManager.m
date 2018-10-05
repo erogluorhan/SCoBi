@@ -703,7 +703,7 @@ classdef ParamsManager < handle
 
         % Write the current date time
         t = datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss Z')
-        fprintf(fileID, strcat( string(t), '\n\n' ) );
+        fprintf(fileID, strcat( char(t), '\n\n' ) );
 
 
         %% SIMULATION SETTINGS
@@ -835,8 +835,8 @@ classdef ParamsManager < handle
         % If this is the first time master inputs file is created
         if ~exist( masterSimInputFullFile, 'file' )
             
-            T = table( string(sim_name), string(gnd_structure), string(sim_mode), string(gnd_cover), f_MHz, string(pol_Tx), hr_m, string(pol_Rx), string(diel_model), 'VariableNames', varNames );
-                        
+            T = table( {char(sim_name)}, {char(gnd_structure)}, {char(sim_mode)}, {char(gnd_cover)}, f_MHz, {char(pol_Tx)}, hr_m, {char(pol_Rx)}, {char(diel_model)}, 'VariableNames', varNames );
+
         % Else, the master input file exists
         else
             
@@ -846,8 +846,8 @@ classdef ParamsManager < handle
                 
                 [numRows, ~] = size(T);
                 
-                newRow = table( string(sim_name), string(gnd_structure), string(sim_mode), string(gnd_cover), f_MHz, string(pol_Tx), hr_m, string(pol_Rx), string(diel_model), 'VariableNames', varNames  );
-                
+                newRow = table( {char(sim_name)}, {char(gnd_structure)}, {char(sim_mode)}, {char(gnd_cover)}, f_MHz, {char(pol_Tx)}, hr_m, {char(pol_Rx)}, {char(diel_model)}, 'VariableNames', varNames  );
+            
                 T = [ T; newRow ];
                 
             end
