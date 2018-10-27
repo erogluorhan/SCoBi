@@ -1,6 +1,6 @@
 % TO-DO: Check comments, copyrights, etc.
-classdef SCoBiMainGUIManager < SCoBiGUIManagers
-    %SCOBIMAINGUIMANAGER This class implements handles for GUI elements, and 
+classdef gui_SCoBiMain_Manager < SCoBiGUIManagers
+    %GUI_SCOBIMAIN_MANAGER This class implements handles for GUI elements, and 
     % performs the GUI-related functionalities    
     
     
@@ -10,7 +10,7 @@ classdef SCoBiMainGUIManager < SCoBiGUIManagers
     methods
         
         % Constructor
-        function obj = SCoBiMainGUIManager( handles )            
+        function obj = gui_SCoBiMain_Manager( handles )            
             
             % Call superclass constructor
             obj = obj@SCoBiGUIManagers( handles, -1 );
@@ -106,6 +106,20 @@ classdef SCoBiMainGUIManager < SCoBiGUIManagers
                 
             end
             
+            % on the sim: About
+            if sum(intersect(idEl, obj.uiIDs.pb_about)) > 0
+                
+                obj.openAboutDialog();
+                  
+            end
+            
+            % on the sim: Documents
+            if sum(intersect(idEl, obj.uiIDs.pb_documents)) > 0                
+                
+                obj.openDocumentsDialog();
+                  
+            end
+            
             obj.onoffUIEl();
             obj.checkUIdependencies();
         end
@@ -162,9 +176,11 @@ classdef SCoBiMainGUIManager < SCoBiGUIManagers
           i = i+1;        id.pb_SCoBi_Topography = i;       pointers(i) = obj.handles.pb_SCoBi_Topography;       
           i = i+1;        id.pb_SCoBi_Agriculture = i;      pointers(i) = obj.handles.pb_SCoBi_Agriculture;       
           i = i+1;        id.pb_SCoBi_Forest = i;           pointers(i) = obj.handles.pb_SCoBi_Forest;        
-          i = i+1;        id.pb_SCoBi_Permafrost = i;       pointers(i) = obj.handles.pb_SCoBi_Permafrost; 
+          i = i+1;        id.pb_SCoBi_Permafrost = i;       pointers(i) = obj.handles.pb_SCoBi_Permafrost;    
+          i = i+1;        id.pb_about = i;                  pointers(i) = obj.handles.pb_about;    
+          i = i+1;        id.pb_documents = i;              pointers(i) = obj.handles.pb_documents; 
           
-          groupIDs.all = id.text_title : id.pb_SCoBi_Permafrost;
+          groupIDs.all = id.text_title : id.pb_documents;
 
             
           %% Initialize object properties

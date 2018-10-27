@@ -9,7 +9,7 @@ classdef SimSettings < handle
     properties (SetAccess = private, GetAccess = public)
         
         % Simulator version, e.g. "1.0"
-        version = Constants.version;
+        version = Constants.VERSION;
         
         % Campaign name, e.g. "MSU"
         campaign
@@ -43,6 +43,7 @@ classdef SimSettings < handle
         % 1: Include
         include_in_master_sim_file
         
+        %TO-DO: Remove this.
         % Flag for drawing live plots during simulations
         draw_live_plots
     end

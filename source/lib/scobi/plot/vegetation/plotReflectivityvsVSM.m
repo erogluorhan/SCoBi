@@ -119,8 +119,8 @@ if (pol_Tx == 'X') && (pol_Tx == 'X')
         vegVV_dB = 10 * log10(squeeze(P_veg1(1, :))) ;
         vegHH_dB = 10 * log10(squeeze(P_veg2(2, :))) ;
 
-        plot(VSM_list_cm3cm3, vegVV_dB, ':sg') % co-pol VV
-        plot(VSM_list_cm3cm3, vegHH_dB, '-sg') % co-pol HH
+        plot(VSM_list_cm3cm3, vegVV_dB, ':sb') % co-pol VV
+        plot(VSM_list_cm3cm3, vegHH_dB, '-sb') % co-pol HH
     end
     
 else
@@ -137,8 +137,8 @@ else
         VegCO_dB = 10 * log10(squeeze(P_veg1(1, :))) ;
         VegX_dB = 10 * log10(squeeze(P_veg1(2, :))) ;
 
-        plot(VSM_list_cm3cm3, VegCO_dB, ':sg') % co-pol
-        plot(VSM_list_cm3cm3, VegX_dB, '-sg') % x-pol
+        plot(VSM_list_cm3cm3, VegCO_dB, ':sb') % co-pol
+        plot(VSM_list_cm3cm3, VegX_dB, '-sb') % x-pol
     end
 end
 

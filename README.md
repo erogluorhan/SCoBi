@@ -27,7 +27,7 @@ Repository contains:
       
       2) source/input should be ready.
 	  
-	  For further details about running simulations, please refer to SCoBi user's manual.
+	  For further details about running simulations, please refer to the SCoBi user's manual.
       
       IMPORTANT: When SCoBi is run, it generates the appropriate simulation outputs under "sims" directory, which MUST be IGNORED from repository commits. In other words, every developer or user of the repository should keep his/her "sims" directory LOCAL.
 
@@ -41,4 +41,4 @@ Repository contains:
       ii) Developer's Manual
       
       
-3) design: Involves the architectural design of the SCoBi software that mostly consists of UML diagrams in Enterprise Architect.
+3) design: Involves the architectural design of the SCoBi software that consists of UML diagrams created in Enterprise Architect.

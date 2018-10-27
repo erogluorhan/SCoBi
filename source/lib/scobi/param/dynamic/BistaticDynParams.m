@@ -53,9 +53,6 @@ classdef BistaticDynParams < handle
         % Transmitter Rotation about z-axis (Azimuth rotation)
         AntRotZ_Tx
         
-        % Receiver footprint ellipse [major and minor axes]
-        ellipse_FP_Rx_m
-        
         % pos_Tx_m, pos_SP_m, pos_Rx_m, pos_Gnd_m, pos_B_Rx_m, 
         % pos_FP_Rx_m, pos_FZ_m in ground (refrence) frame (G)
         AllPoints_m
@@ -101,7 +98,7 @@ classdef BistaticDynParams < handle
         
         function update(obj, rd_m, idn, isn, osp, osn, Tgt, TgtI, ...
                 Tgs, Tgr, TgrI, AntRotZ_Rx, AntRotY_Rx, AntRot_Rx, ...
-                AntRotZ_Tx, ellipse_FP_Rx_m, AllPoints_m, AngT2R_rf, ...
+                AntRotZ_Tx, AllPoints_m, AngT2R_rf, ...
                 AngS2R_rf, AngT2S_sf )
             % INITIALIZE - Initializes all the properties
             
@@ -119,7 +116,6 @@ classdef BistaticDynParams < handle
             obj.AntRotY_Rx = AntRotY_Rx;
             obj.AntRot_Rx = AntRot_Rx;
             obj.AntRotZ_Tx = AntRotZ_Tx;
-            obj.ellipse_FP_Rx_m = ellipse_FP_Rx_m;
             obj.AllPoints_m = AllPoints_m;
             obj.AngT2R_rf = AngT2R_rf;
             obj.AngS2R_rf = AngS2R_rf;
@@ -182,11 +178,7 @@ classdef BistaticDynParams < handle
         function out = get.AntRotZ_Tx(obj)
             out = obj.AntRotZ_Tx;        
         end 
-        
-        function out = get.ellipse_FP_Rx_m(obj)
-            out = obj.ellipse_FP_Rx_m;        
-        end 
-        
+                
         function out = get.AllPoints_m(obj)
             out = obj.AllPoints_m;        
         end 

@@ -42,6 +42,7 @@ classdef ParamsManager < handle
                 % Receiver Parameters
                 orientation_Rx_id = RxParams.getInstance.orientation_Rx_id;
                 
+                
                 sim_counter = value;
                 
                 th0_Tx_deg = th0_Tx_list_deg( sim_counter );
@@ -384,41 +385,7 @@ classdef ParamsManager < handle
         end
         
         
-        function [result, dispMsg] = isToCalculateMLReflectivities()
-            
-            %% GET GLOBAL DIRECTORIES
-            % TO-DO: Add folder and file existence controls
-            %dir_rot_real = SimulationFolders.getInstance.rot_real;
-            
-            %% GET GLOBAL PARAMETERS
-            % Ground Parameters
-            gnd_structure_id = GndParams.getInstance.gnd_structure_id;
-            
-
-            % If ground is single-layered
-            if gnd_structure_id == Constants.id_gnd_single_layered
-                
-                dispMsg = '';
-                result = Constants.need_for_run.NO;
-                return
-            
-            % Else, it is multi-layered
-            elseif gnd_structure_id == Constants.id_gnd_multi_layered
-            
-            dispMsg = 'Multilayer Reflectivities';
-            result = Constants.need_for_run.FULL;
-
-            
-            end            
-            
-        end
-        
-        
         function [result, write_attenuation, dispMsg] = isToCalcPropagation()
-            
-            
-            %% GET GLOBAL DIRECTORIES
-            dir_afsa = SimulationFolders.getInstance.afsa;
             
             
             %% GET GLOBAL PARAMETERS
@@ -436,22 +403,9 @@ classdef ParamsManager < handle
                 return
                 
             end
-            
-            % If passes user preferences, check the existence of files
-            all_files = dir(dir_afsa);
-            num_files = numel(all_files) - 2;
-            
-            if num_files >= Constants.num_afsa
                 
-                dispMsg = 'Propagation - SKIPPED - Already exists!';
-                result = Constants.need_for_run.NO;
-                
-            else
-                
-                dispMsg = 'Propagation';
-                result = Constants.need_for_run.FULL;
-                
-            end
+            dispMsg = 'Propagation';
+            result = Constants.need_for_run.FULL;
             
         end
         
@@ -708,7 +662,7 @@ classdef ParamsManager < handle
 
         %% SIMULATION SETTINGS
         % Write the simulation software version
-        fprintf(fileID, strcat( 'SCoBi Version:\t\t\t', Constants.version, '\n' ) );
+        fprintf(fileID, strcat( 'SCoBi Version:\t\t\t', Constants.VERSION, '\n' ) );
         % Write the simulation campaign
         fprintf(fileID, strcat( 'Campaign:\t\t\t', inputStruct.campaign, '\n' ) );
         % Write sim_mode

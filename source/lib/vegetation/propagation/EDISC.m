@@ -1,16 +1,16 @@
 %	***********************************************************
-function F = EDISC(TIN, PIN, TS, PS, TH, PH, FHZ, T, A, B, EPSDC)
+function F = eDisc(TIN, PIN, TS, PS, TH, PH, FHZ, T, A, B, EPSDC)
 %
 %     Calculates the bistatic scattering amplitude of an elliptic
 %     disc.
 
-F1 = ROTDISC(TIN, PIN, TS, PS, TH, PH, FHZ, T, A, B, EPSDC) ;
+F1 = rotDisc(TIN, PIN, TS, PS, TH, PH, FHZ, T, A, B, EPSDC) ;
 
 F = [F1(1, 1) F1(2, 1); F1(3, 1) F1(4, 1)] ;
 end
 
 
-function FF = ROTDISC(TIN1, PIN1, TS1, PS1, TH1, PH1, FHZ, T, A, B, EPSDC)
+function FF = rotDisc(TIN1, PIN1, TS1, PS1, TH1, PH1, FHZ, T, A, B, EPSDC)
 
 %% ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %  Calculates the scattering amplitudes with respect to laboratory
@@ -88,8 +88,8 @@ if TIP > 3.1316 && TIP <= pi; TIP = 3.1316 ; end
 if TSP >= 0.0 && TSP < 0.01; TSP = 0.01 ;      end
 if TSP > 3.1316 && TSP <= pi; TSP = 3.1316 ; end
 
-%% THIN_EDISC
-FP = THIN_EDISC(TIP, PIP, TSP, PSP, FHZ, T, A, B, EPSDC) ;
+%% thin_eDisc
+FP = thin_eDisc(TIP, PIP, TSP, PSP, FHZ, T, A, B, EPSDC) ;
 
 %%       Calculate dot products
 
@@ -144,7 +144,7 @@ FF(4, 1) = FP(1, 1) * VHS * VHI + FP(2, 1) * VHS * VVI ...
 %
 end
 
-function FP1 = THIN_EDISC(TIP1, PIP1, TSP1, PSP1, FHZ, T, A, B, EPSDC)
+function FP1 = thin_eDisc(TIP1, PIP1, TSP1, PSP1, FHZ, T, A, B, EPSDC)
 
 % ***********************************************************************
 % Calculates scattering amplitudes of a thin elliptic dielectric disk
