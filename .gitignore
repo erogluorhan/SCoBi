@@ -7,10 +7,8 @@ source/lib/scobi_veg/analysis/*
 
 # File ignores
 design/UML-EA/*.ldb
+docs/manuals/*.docx
 
 source/input/sys/sysInput-Paulownia-PAPER_PBAND*
 
 *.asv
-source/lib/runSCoBi_*.m
-source/lib/common/SCoBi/mainSCoBi_*.m
-source/lib/scobi_veg/products/diffuseTerm_*.m
