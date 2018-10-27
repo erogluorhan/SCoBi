@@ -11,9 +11,9 @@ classdef Constants
         
         URL_SCOBI_DESIGN = 'https://github.com/impresslab/SCoBi/blob/master/design/UML-EA/SCoBi-v0.EAP';
         
-        URL_SCOBI_USER_MANUAL = 'https://github.com/impresslab/SCoBi/blob/master/docs/manuals/SCoBi-User_Manual_v1_0.docx';
+        URL_SCOBI_USER_MANUAL = 'https://github.com/impresslab/SCoBi/blob/master/docs/manuals/SCoBi-User_Manual_v1_0.pdf';
         
-        URL_SCOBI_DEVELOPER_MANUAL = 'https://github.com/impresslab/SCoBi/blob/master/docs/manuals/SCoBi-Developer_Manual_v1_0.docx';
+        URL_SCOBI_DEVELOPER_MANUAL = 'https://github.com/impresslab/SCoBi/blob/master/docs/manuals/SCoBi-Developer_Manual_v1_0.pdf';
         
         
         %% GENERAL PURPOSE CONSTANTS (Maths, EM, etc.)
