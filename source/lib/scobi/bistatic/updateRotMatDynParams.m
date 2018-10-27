@@ -10,7 +10,6 @@ function updateRotMatDynParams
 pol_Tx = TxParams.getInstance.pol_Tx;
 % Receiver Parameters
 pol_Rx = RxParams.getInstance.pol_Rx;
-ant_pat_struct_Rx = RxParams.getInstance.ant_pat_struct_Rx;
 % Ground Parameters
 polG = GndParams.getInstance.polG;
 % Bistatic Parameters

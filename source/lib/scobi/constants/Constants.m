@@ -4,6 +4,18 @@ classdef Constants
     
     properties (Constant)
         
+        
+        %% SCOBI VERSION        
+        
+        VERSION = '1.0.0';
+        
+        URL_SCOBI_DESIGN = 'https://github.com/impresslab/SCoBi/blob/master/design/UML-EA/SCoBi-v0.EAP';
+        
+        URL_SCOBI_USER_MANUAL = 'https://github.com/impresslab/SCoBi/blob/master/docs/manuals/SCoBi-User_Manual_v1_0.docx';
+        
+        URL_SCOBI_DEVELOPER_MANUAL = 'https://github.com/impresslab/SCoBi/blob/master/docs/manuals/SCoBi-Developer_Manual_v1_0.docx';
+        
+        
         %% GENERAL PURPOSE CONSTANTS (Maths, EM, etc.)
          
         km2m = 1e3;
@@ -24,8 +36,6 @@ classdef Constants
         
         % Air Dielectric Constant
         eps_diel_air = 1.0 - 0.0 * 1i ;
-        
-        version = '1.0';
         
         ant_pat_th_range_deg = 180;
         
@@ -108,10 +118,6 @@ classdef Constants
         %% STRUCTS
         % To determine the need for a function run in mainSCoBi
         need_for_run = struct('NO', 0, 'PARTIAL', 1, 'FULL', 2 );
-        
-        
-        %% SIMULATION FOLDERS CONTENT COUNTS
-        num_afsa = 10;       % Except the Attenuation.xls
                                     
                                     
         %% INPUTS

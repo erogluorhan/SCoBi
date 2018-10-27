@@ -1,5 +1,5 @@
 
-function F = CYLINDER(TIN, PIN, TS, PS, TH, PH, FHZ, RAD, L, EPS)
+function F = eCylinder(TIN, PIN, TS, PS, TH, PH, FHZ, RAD, L, EPS)
 
 %% ****************************************************************
 %
