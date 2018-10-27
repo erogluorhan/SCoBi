@@ -1,12 +1,36 @@
 
-% Mehmet Kurum
-% April 6, 2017
-
 function mainSCoBi
+%mainSCoBi Simulation iteration function. 
+%
+%   mainSCoBi is called by runSCoBi for every single simulation iteration. 
+%   This function is common for any analysis type such as vegetation, 
+%   bare-soil, or root-zone. The need for analysis type-specific function 
+%   calls are determined by ParamManager class.
+%
+%   In each iteration, mainSCoBi calls the following functions:
+%   - updateBistaticDynParams
+%   - updateGndDynParams
+%   - generateDielMLProfiles (if needed)
+%   - calcPropagation (if needed)
+%   - writeAttenuation (if needed)
+%   - updateRotMatDynParams
+%   - directTerm
+%   - specularTerm
+%
+%   See also runSCoBi, ParamsManager, updateBistaticDynParams, 
+%   updateGndDynParams, updateRotMatDynParams, directTerm, specularTerm.
 
-%% START: SCoBi MAIN PROGRAM
-disp('++++++++++++++++   START: SCoBi MAIN PROGRAM   ++++++++++++++++++++')
-tstart = datetime('now')
+%    Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%    This program is free software: You can redistribute it and/or 
+%    modify it under the terms of the GNU General Public License as 
+%    published by the Free Software Foundation, either version 3 of the 
+%    License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
+%% start of the program
+disp('++++++++++++++++   START: mainSCoBi   ++++++++++++++++++++')
 
 
 %% CALCULATE AND UPDATE BISTATIC CONFIGURATION AND GROUND DYNAMIC PARAMS
@@ -42,13 +66,13 @@ disp( dispMsg );
 
 if needForPropagation == Constants.need_for_run.FULL
     
-    calcPropagation ;
+    calcPropagation();
     
     disp('++++++   WRITE ATTENUATION VALUES TO OUTPUT EXCEL FILE   ++++++')
     
     if needForWriteAttenuation
         
-        writeAttenuation ;
+        writeAttenuation();
         
     end
 end
@@ -63,20 +87,17 @@ updateRotMatDynParams();
 %% CALCULATE DIRECT CONTRIBUTION
 disp('+++++++++++++   CALCULATE DIRECT CONTRIBUTION   +++++++++++++++++++')
     
-directTerm;
+directTerm();
 
 
 %% CALCULATE SPECULAR CONTRIBUTION
 disp('+++++++++++++   CALCULATE SPECULAR CONTRIBUTION   +++++++++++++++++')
     
-specularTerm ;
+specularTerm();
 
 
 %% end of the program
-disp('++++++++++++++++   START: SCoBi MAIN PROGRAM   ++++++++++++++++++++')
-tstart
-tstop = datetime('now')
-duration = tstop - tstart 
+disp('++++++++++++++++   END: mainSCoBi   ++++++++++++++++++++')
 
 
 end

@@ -217,12 +217,12 @@ function avFScatAmp = compute_avfscatamp(tin, pin, f_Hz, Object)
 switch lower(Object.category)
     case 'cylinder'
         
-        scatFunc = @CYLINDER ;
+        scatFunc = @eCylinder ;
         pdffun = Object.pdf ;
         
     case 'edisc'
         
-        scatFunc = @EDISC ;
+        scatFunc = @eDisc ;
         pdffun = Object.pdf ;
         
     otherwise

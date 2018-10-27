@@ -120,7 +120,7 @@ U_ts = calc_Muller(u_ts) ;
 % 4 X 4
 U_sr = calc_Muller(u_sr) ;
 
-[R_sv, R_sb, r_sv, r_sb] = CalcSRM() ; % r_sv for vegetation, r_sb for bare soil
+[R_sv, R_sb, r_sv, r_sb] = calcSRM() ; % r_sv for vegetation, r_sb for bare soil
 
 
 %% SPECULAR TERM
@@ -288,7 +288,7 @@ end
 
 
 %% Calculate Specular Reflection Matrix(SRM)
-function  [R_sv, R_sb, r_sv, r_sb] = CalcSRM()
+function  [R_sv, R_sb, r_sv, r_sb] = calcSRM()
 
 %% GET GLOBAL DIRECTORIES
 dir_afsa = SimulationFolders.getInstance.afsa;

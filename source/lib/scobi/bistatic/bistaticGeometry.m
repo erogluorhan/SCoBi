@@ -2,7 +2,7 @@
 % Feb 25, 2017 
 
 function [rd_m, idn, isn, osp, osn, Tgs, Tgr, TgrI, AntRotZ_Rx, ...
-          AntRotY_Rx, AntRot_Rx, AntRotZ_Tx, ellipse_FP_Rx_m, ...
+          AntRotY_Rx, AntRot_Rx, AntRotZ_Tx, ...
           AllPoints_m, AngT2R_rf, AngS2R_rf, AngT2S_sf] = bistaticGeometry
 
 
@@ -24,7 +24,7 @@ ph0_Tx_rad = deg2rad(ph0_Tx_deg) ;
 hr_m = RxParams.getInstance.hr_m;                   % Receiver altitude
 ant_pat_Rx_id = RxParams.getInstance.ant_pat_Rx_id; % Receiver antenna pattern generation method (Look at Constants.Rx_ant_pats)
 th0_Rx_deg = RxParams.getInstance.th0_Rx_deg;       % Antenna Looking Angle (angle of Incidence)
-th0_Rx_rad = deg2rad(th0_Rx_deg) ;
+th0_Rx_rad = deg2rad(th0_Rx_deg);
 ph0_Rx_deg = RxParams.getInstance.ph0_Rx_deg;       % Azimuth Angle of Receiver position
 ph0_Rx_deg = 90 - ph0_Rx_deg;
 ph0_Rx_rad = deg2rad(ph0_Rx_deg) ;

@@ -56,7 +56,7 @@ eps_diel_zL = [];
 if calc_diel_profile_fit_functions(Constants.id_diel_logistic, 1)
     
     [z_m, eps_diel_zL] ...
-        = DielPrf0(eps_g, layer_thickness_m, sL_depth, zA_m, z_m) ;
+        = dielProfileLogistic(eps_g, layer_thickness_m, sL_depth, zA_m, z_m) ;
     
 end
 
@@ -92,7 +92,7 @@ end
 
 
 function [z_m, eps_diel_z] ...
-    = DielPrf0(eps_g, layer_thickness_m, sL_depth, zA_m, z_m)
+    = dielProfileLogistic(eps_g, layer_thickness_m, sL_depth, zA_m, z_m)
 
 
 %% GET GLOBAL PARAMETERS

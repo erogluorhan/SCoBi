@@ -1,5 +1,23 @@
-%-e-------------------------*--. --- --. .--. ...*--------------------------
+%--------------------------------------------------------------------------
+%runSCoBi Simulation engine function. 
 %
+%   runSCoBi starts the simulation, calls GUI classes to get the user 
+%   inputs, performs input validity check by using ParamsManager class and 
+%   runs the simulation iterations for the required number of simulations.
+%
+%   See also mainSCoBi.
+
+%    Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%    This program (SCoBi) is free software: You can redistribute it and/or 
+%    modify it under the terms of the GNU General Public License as 
+%    published by the Free Software Foundation, either version 3 of the 
+%    License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
+
+
 %                    %%%%%  %%%%%   %%%%%  %%%%% %%%
 %                    %      %       %   %  %   %  %
 %                    %%%%%  %       %   %  %%%%   %
@@ -8,9 +26,9 @@
 %
 %
 %--------------------------------------------------------------------------
-%                         SCoBi v1.0
+%                         SCoBi v1.0.0
 %
-%    Copyright (C) 2018-2023 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+%    Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
 %--------------------------------------------------------------------------
 % 
 %    This program is free software: You can redistribute it and/or modify
@@ -24,10 +42,9 @@
 %    GNU General Public License for more details.
 %
 %    You should have received a copy of the GNU General Public License
-%    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%    along with this program (COPYING.txt).  If not, 
+%    see <http://www.gnu.org/licenses/>.
 %--------------------------------------------------------------------------
-
-%TO-DO: Ensure about Copyright and GNU
 
 
 function runSCoBi
@@ -90,6 +107,10 @@ if isInputValid
 
     % Write all inputs to a text file and show it
     ParamsManager.writeInputReports( inputStruct );
+
+    %% START SIMULATIONS
+    disp('++++++++++++++++   START SIMULATIONS   ++++++++++++++++++++')
+    sim_start = datetime('now')
     
     % Run the simulations
     for ii = sim_counter_start : num_sims
@@ -97,9 +118,16 @@ if isInputValid
         ParamsManager.sim_counter( ii );
 
         % Call SCoBi main flow
-        mainSCoBi;
+        mainSCoBi();
 
     end
+
+
+    %% END SIMULATIONS
+    disp('++++++++++++++++   END SIMULATIONS   ++++++++++++++++++++')
+    sim_start
+    sim_stop = datetime('now')
+    duration = sim_stop - sim_start           
 
 % Else if input is NOT valid
 else

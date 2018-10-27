@@ -392,7 +392,22 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
           end
           
             
-          %% PUSH BUTTONS               
+          %% PUSH BUTTONS
+            
+            % on the sim: About
+            if sum(intersect(idEl, obj.uiIDs.pb_about)) > 0
+                
+                obj.openAboutDialog();
+                  
+            end
+            
+            % on the sim: Documents
+            if sum(intersect(idEl, obj.uiIDs.pb_documents)) > 0                
+                
+                obj.openDocumentsDialog();
+                  
+            end
+            
             % on Forest button
             if sum(intersect(idEl, obj.uiIDs.pb_Forest)) > 0
                     
@@ -715,6 +730,8 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
           
           
           i = i+1;        id.pb_SCoBi_Illustration = i;     pointers(i) = obj.handles.pb_SCoBi_Illustration;  
+          i = i+1;        id.pb_about = i;                  pointers(i) = obj.handles.pb_about; 
+          i = i+1;        id.pb_documents = i;              pointers(i) = obj.handles.pb_documents;   
           i = i+1;        id.pb_Forest = i;                 pointers(i) = obj.handles.pb_Forest; 
           i = i+1;        id.pb_Snow = i;                   pointers(i) = obj.handles.pb_Snow;   
           i = i+1;        id.pb_Soil = i;                   pointers(i) = obj.handles.pb_Soil;   
