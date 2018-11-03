@@ -1,5 +1,7 @@
 %--------------------------------------------------------------------------
-%runSCoBi Simulation engine function. 
+% function runSCoBi
+%
+%   Simulation engine function. 
 %
 %   runSCoBi starts the simulation, calls GUI classes to get the user 
 %   inputs, performs input validity check by using ParamsManager class and 
@@ -7,12 +9,12 @@
 %
 %   See also mainSCoBi.
 
-%    Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
 
-%    This program (SCoBi) is free software: You can redistribute it and/or 
-%    modify it under the terms of the GNU General Public License as 
-%    published by the Free Software Foundation, either version 3 of the 
-%    License, or (at your option) any later version.
+%   This program (SCoBi) is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
 
 %   Version: 1.0.0
 
@@ -70,7 +72,6 @@ end
 
 
 %% GUI: START THE SELECTED SIMULATOR'S GUI
-% TO-DO: Check this!
 inputStruct = [];
 
 % If the OS is not UNIX OR it is MAC and Matlab version below 7.14
@@ -109,8 +110,10 @@ if isInputValid
     ParamsManager.writeInputReports( inputStruct );
 
     %% START SIMULATIONS
-    disp('++++++++++++++++   START SIMULATIONS   ++++++++++++++++++++')
-    sim_start = datetime('now')
+    disp('++++++++++++++++++++++++++++   START SIMULATIONS   ++++++++++++++++++++++++++++++++')
+    
+    sim_start = datetime('now');
+    disp( strcat('Simulation Start: ', string(sim_start) ) )
     
     % Run the simulations
     for ii = sim_counter_start : num_sims
@@ -124,10 +127,14 @@ if isInputValid
 
 
     %% END SIMULATIONS
-    disp('++++++++++++++++   END SIMULATIONS   ++++++++++++++++++++')
-    sim_start
-    sim_stop = datetime('now')
-    duration = sim_stop - sim_start           
+    disp('-------------------------------   END SIMULATIONS   -------------------------------')
+    
+    
+    disp( strcat('Simulation Start: ', string(sim_start) ) )
+    sim_stop = datetime('now');
+    disp( strcat('Simulation End: ', string(sim_stop) ) )
+    duration = sim_stop - sim_start          
+    disp( strcat('Duration: ', string(duration) ) )
 
 % Else if input is NOT valid
 else
@@ -146,7 +153,7 @@ function resetWS
 restoredefaultpath
 
 % Add the common "scobi" directory to the path to start running SCoBi
-addpath( genpath( strcat(pwd, '/scobi') ) );
+addpath( genpath( strcat(pwd, '\scobi') ) );
 
 % Add "input" directory to the path
 addpath( genpath( Directories.getInstance.input ) );

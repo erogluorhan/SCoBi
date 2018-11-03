@@ -1,6 +1,8 @@
 
 function mainSCoBi
-%mainSCoBi Simulation iteration function. 
+% function mainSCoBi
+% 
+%   Simulation iteration function. 
 %
 %   mainSCoBi is called by runSCoBi for every single simulation iteration. 
 %   This function is common for any analysis type such as vegetation, 
@@ -20,84 +22,104 @@ function mainSCoBi
 %   See also runSCoBi, ParamsManager, updateBistaticDynParams, 
 %   updateGndDynParams, updateRotMatDynParams, directTerm, specularTerm.
 
-%    Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
 
-%    This program is free software: You can redistribute it and/or 
-%    modify it under the terms of the GNU General Public License as 
-%    published by the Free Software Foundation, either version 3 of the 
-%    License, or (at your option) any later version.
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
 
 %   Version: 1.0.0
 
-%% start of the program
-disp('++++++++++++++++   START: mainSCoBi   ++++++++++++++++++++')
+
+
+%% START OF THE CURRENT ITERATION
+disp('+++++++++++++++++++++   START: mainSCoBi   ++++++++++++++++++++++++')
+
 
 
 %% CALCULATE AND UPDATE BISTATIC CONFIGURATION AND GROUND DYNAMIC PARAMS
-disp('++++++++   UPDATE BISTATIC CONFIGURATION AND GROUND   +++++++++')
+disp('Update Bistatic Configuration')
 
-% Update Bistaic Configuration parameters
+% Calculate the dynamic bistatic configuration and transmitter parameters
+% and update the class BistaticDynParams 
 updateBistaticDynParams();
 
-% Update Ground Dynamic Parameters
+
+disp('Update Dynamic Ground Parameters')
+
+% Calculate the dynamic ground parameters and update the class GndDynParams
 updateGndDynParams();
 
 
 
 %% GENERATE DIELECTRIC PROFILES
-% TO-DO: Test ParamsManager controls
+% Use ParamsManager to determine if multilayer dielectric profiles needed
 [needForDielProfiles, dispMsg] = ParamsManager.isToGenerateDielMLProfiles();
 
 disp( dispMsg );
     
-if ~needForDielProfiles == Constants.need_for_run.NO
+% If multilayer dielectric profiles needed
+if ~needForDielProfiles == Constants.NEED_TO_RUN_STRUCT.NO
 
     generateDielMLProfiles(); 
     
 end
 
 
-%% CALCULATE INCREMENTAL PROPAGATION CONSTANT FOR EACH LAYER
-disp('++   CALCULATE INCREMENTAL PROPAGATION CONSTANT FOR EACH LAYER   ++')
 
+%% CALCULATE INCREMENTAL PROPAGATION CONSTANT FOR EACH LAYER
+% Use ParamsManager to determine if vegetation propagation needed
 [needForPropagation, needForWriteAttenuation, dispMsg] = ParamsManager.isToCalcPropagation();
 
 disp( dispMsg );
 
-if needForPropagation == Constants.need_for_run.FULL
+% If multilayer dielectric profles needed
+if needForPropagation == Constants.NEED_TO_RUN_STRUCT.FULL
     
+    % Calculate vegetation propagation
     calcPropagation();
     
-    disp('++++++   WRITE ATTENUATION VALUES TO OUTPUT EXCEL FILE   ++++++')
-    
+    % If writing attenuation values to Excel file needed
     if needForWriteAttenuation
+        
+        disp('VEGETATION - Write Propagation Values to Excel File')
         
         writeAttenuation();
         
     end
+    
 end
 
 
-%% CALCULATE AND UPDATE ROTATION MATRICES
-disp('+++++++++++   CALCULATE AND UPDATE ROTATION MATRICES   ++++++++++++')     
 
+%% CALCULATE AND UPDATE ROTATION MATRICES
+disp('Update Polarization Rotation Matrices')     
+
+% Calculate the dynamic polarizaztion rotation matrices and update the 
+% class RotMatDynParams
 updateRotMatDynParams();
 
 
+
 %% CALCULATE DIRECT CONTRIBUTION
-disp('+++++++++++++   CALCULATE DIRECT CONTRIBUTION   +++++++++++++++++++')
+disp('Calculate Direct Contribution')
     
+% Calculate the direct (line-of-sight) contribution in the received signals
 directTerm();
 
 
+
 %% CALCULATE SPECULAR CONTRIBUTION
-disp('+++++++++++++   CALCULATE SPECULAR CONTRIBUTION   +++++++++++++++++')
+disp('Calculate Specular Contribution')
     
+% Calculate the coherent (through specular reflection point) contribution 
+% in the received signals
 specularTerm();
 
 
-%% end of the program
-disp('++++++++++++++++   END: mainSCoBi   ++++++++++++++++++++')
+%% END OF THE CURRENT ITERATION
+disp('------------------------   END: mainSCoBi   -----------------------')
 
 
 end
