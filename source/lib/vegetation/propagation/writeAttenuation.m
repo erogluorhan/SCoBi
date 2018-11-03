@@ -1,4 +1,22 @@
+
 function writeAttenuation
+% function writeAttenuation 
+%
+%   Writes the alculated vegetation propagation values into an Excel file, 
+%   if this option is selected in the simulation preferences.  
+%
+%   See also mainSCoBi, calcPropagation.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
+
 
 %% GET GLOBAL DIRECTORIES
 dir_afsa = SimulationFolders.getInstance.afsa;
@@ -12,7 +30,6 @@ TYPKND = VegParams.getInstance.TYPKND;
 
 %% READ META-DATA
 disp('reading...')
-tic ;
 
 Desired_Medium = 1 ;
 Desired_Layer = 1 ; 
@@ -55,7 +72,7 @@ end
 
 
 % Save Sig0
-outFileName = ConstantNames.attenuation_out_filename ;
+outFileName = ConstantNames.ATTENUATION_OUT_FILENAME ;
 outFileName = strcat(dir_afsa, outFileName) ;
 
 % polarization
@@ -86,12 +103,11 @@ for ii = 1 : Nlayer
                 
                 ofsetnum1 = ofsetnum1 + 5 ;
                 
-                % ++++++++++++++++++++++++++++++
-                % Scatterers Combined
+                
+                %% SCATTERERS COMBINED
                 if  Desired_Kind == 1
-                    tic ;
-                    disp(strcat('L', num2str(ii), 'T', num2str(jj), 'K', num2str(kk)))
                     
+                    disp(strcat('L', num2str(ii), 'T', num2str(jj), 'K', num2str(kk)))                    
                     
                     sheetName = 'Kind' ;
                     
@@ -115,19 +131,16 @@ for ii = 1 : Nlayer
                     cellname = strcat(char(ofsetnum1), num2str(cellnum)) ;
                     a = squeeze(ATPIQS(:, 35, kk, jj, ii)) ;
                     xlswrite(outFileName, num2cell(a), sheetName, cellname)
-                    
-                                        
-                   toc ;
-                end
-                % +++++++++++++++++++++++++++++
-            end
-            
-            % ++++++++++++++++++++++++++++++
-            % Kind Combined
-            if  Desired_Type == 1
-                tic ;
-                disp(strcat('L', num2str(ii), 'T', num2str(jj)))
+                  
+                end % Desired Kind check
                 
+            end % End of Kinds
+            
+            
+            %% KIND COMBINED
+            if  Desired_Type == 1
+                
+                disp(strcat('L', num2str(ii), 'T', num2str(jj)))                
                 
                 sheetName = 'Type' ;
                 
@@ -153,18 +166,16 @@ for ii = 1 : Nlayer
                 a = squeeze(ATTPIQS(:, 35, jj, ii)) ;
                 xlswrite(outFileName, num2cell(a), sheetName, cellname)
                 
-                toc ;
-            end
-            % +++++++++++++++++++++++++++++
+            end  % Desired Type check
             
-        end
-    end
+        end % End of Kinds
+        
+    end % End of Types
     
     
-    % ++++++++++++++++++++++++++++++
-    % Type Combined
+    %% TYPE COMBINED
     if  Desired_Layer == 1
-        tic ;
+     
         disp(strcat('L', num2str(ii)))
         
         sheetName = strcat('Layer') ;
@@ -185,18 +196,14 @@ for ii = 1 : Nlayer
         cellname = strcat(char(ofsetnum - 1), num2str(cellnum)) ;
         xlswrite(outFileName, strcat(pols), sheetName, cellname)
         
-        
-        toc ;
     end
-    % +++++++++++++++++++++++++++++
     
 end
 
 
-% ++++++++++++++++++++++++++++++
-% Layer Combined
+%% LAYER COMBINED
 if  Desired_Medium == 1
-    tic ;
+
     sheetName = strcat('Layer') ;
     cellnum = 4 + 6 * Nlayer ;
     ofsetnum = 68 ;
@@ -213,10 +220,8 @@ if  Desired_Medium == 1
     % Polarization
     cellname = strcat(char(ofsetnum - 1), num2str(cellnum)) ;
     xlswrite(outFileName, strcat(pols), sheetName, cellname)
-        
-    toc ;
+            
 end
-% +++++++++++++++++++++++++++++
 
 
 end

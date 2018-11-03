@@ -1,7 +1,30 @@
 
-
-
 function vegInputFullFile = initVegParams( inputStruct )
+% function initVegParams 
+%
+%   Fetches the vegetation parameters' values from the inputstructure and 
+%   initializes the VegParams class if ground cover is vegetation. It 
+%   implements preprocessing of data beyond intialization (such as 
+%   relating the Layers with Kinds).
+%
+%   vegInputFullFile = initVegParams( inputStruct )
+%
+%   INPUTS:
+%   inputStruct: Input structure that comes from GUI
+%
+%   See also initAllInputParams, initSimSettings, initTxParams, 
+%   initRxParams, initGndParams, initConfigParams.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
+
 
 %% GET GLOBAL PARAMETERS
 % Simulation Settings
@@ -10,11 +33,12 @@ gnd_cover_id = SimSettings.getInstance.gnd_cover_id;
 vegInputFullFile = [];
 
 % If ground cover is Vegetation, then Vegetation Parameters are set
-if gnd_cover_id == Constants.id_veg_cover
+if gnd_cover_id == Constants.ID_VEG_COVER
     
     % Initialize workspace for vegetation
     initWSVegetation();
 
+    % Call the homogenous vegetation initialization function
     vegInputFullFile = initVegHomParams( inputStruct );
 
 end
@@ -27,6 +51,7 @@ function vegInputFullFile = initVegHomParams( inputStruct )
 
 %% EXCEL FILE
 vegInputFullFile = inputStruct.veg_inputs_file;
+
 
 % Read the vegetation layer structure first 
 [dim_layers_m, txtLayers, ~] = xlsread( vegInputFullFile, 1 );
@@ -127,8 +152,10 @@ for ii = 1 : num_veg_layers
     layersCell{ii, 1} = partsCell;
 end
 
-% Initialize Vegetation Parameters
+
+% INITIALIZE VEGETATION PARAMETERS
 VegParams.getInstance.setup( dim_layers_m, particleIDs, particlesCell, layersCell );
+
 
 end
 

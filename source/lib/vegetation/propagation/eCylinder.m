@@ -1,23 +1,38 @@
 
 function F = eCylinder(TIN, PIN, TS, PS, TH, PH, FHZ, RAD, L, EPS)
-
-%% ****************************************************************
+% function eCylinder 
 %
-%     The bistatic scattering amplitude from a lossy dielectric cylinder
-%     is calculated. The phase center is at the bottom of the cylinder.
-%     Both thin and thick routines are used.
+%   The bistatic scattering amplitude from a lossy dielectric cylinder is
+%   calculated. The phase center is at the bottom of the cylinder. Both
+%   thin and thick routines are used. 
 %
-%       TIN,PIN = INCIDENT ANGLES (RAD)
-%       TS,PS = SCATTERED ANGLES (RAD)
-%       TH,PH = ROTATION ANGLES (RAD)
-%       FHZ = FRQUENCY (HZ)
-%       RAD = RADIUS OF CYLINDER (M)
-%       L = LENGTH OF CYLINDER (M)
-%       EPS = RELATIVE DIELECTRIC CONSTANT
-%       F = BISTATIC SCATTERING AMPLITUDES
-%       F(1) = FHH, F(2) = FVH, F(3) = FHV, F(4) = FVV
+%   F = eCylinder(TIN, PIN, TS, PS, TH, PH, FHZ, RAD, L, EPS)
+%
+%   INPUTS:
+%   TIN,PIN = INCIDENT ANGLES (RAD)
+%   TS,PS = SCATTERED ANGLES (RAD)
+%   TH,PH = ROTATION ANGLES (RAD)
+%   FHZ = FRQUENCY (HZ)
+%   RAD = RADIUS OF CYLINDER (M)
+%   L = LENGTH OF CYLINDER (M)
+%   EPS = RELATIVE DIELECTRIC CONSTANT
+%   F = BISTATIC SCATTERING AMPLITUDES
+%   F(1) = FHH, F(2) = FVH, F(3) = FHV, F(4) = FVV
+%
+%   See also calcPropagation, eDisc.
 
-%%
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
+
+
+
 F = ROTATE2(TIN, PIN, TS, PS, TH, PH, RAD, L, FHZ, EPS) ;
 
 return ;

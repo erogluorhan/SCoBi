@@ -1,21 +1,31 @@
+
 classdef SimulationFolders < handle
-    % SIMULATIONFOLDERS Class to keep track of all output directories
-    %   This class has one attribute for each source code or input
-    %   directory. Every attribute can be reached by a static getter method.
+% class specularTerm 
+%
+%   Handles the output directories. This class has a property for each 
+%   simulation output directory that is to be managed, accessed, etc.
+%   . Its properties can be reached by static getter methods.
+%
+%   See also Directories.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
     
     
 properties (SetAccess = private, GetAccess = public)
 
 
-    sims_main_dir    
-
-    
-    %% ANALYSIS
-    analysis
+    sims_main_dir  
 
 
     % OUTPUT
-    output
     sim
 
     % Input
@@ -42,7 +52,7 @@ properties (SetAccess = private, GetAccess = public)
     fig_direct
     fig_specular
     fig_specular_reflectivity
-    fig_specular_reflectivity_vsTH
+    fig_specular_reflectivity_vsEL
 
 end
     
@@ -96,16 +106,8 @@ methods
         obj.sims_main_dir = strcat( main_dir, '\sims\temp');
     end
 
-
-    %% ANALYSIS
-    obj.analysis = strcat( obj.sims_main_dir, '\', 'analysis') ; 
-
-
-    %% OUTPUT
-    obj.output = strcat( obj.sims_main_dir , '\output');
-
     % TO-DO: create a unique name with timestamp
-    obj.sim = strcat( obj.output, '\', sim_name);
+    obj.sim = strcat( obj.sims_main_dir, '\', sim_name);
 
     % Simulation input
     obj.sim_input = strcat( obj.sim, '\input');
@@ -115,7 +117,7 @@ methods
     obj.metadata = strcat( obj.sim, '\metadata');
 
     % Average Forward Scattering Amplitude
-    if gnd_cover_id == Constants.id_veg_cover
+    if gnd_cover_id == Constants.ID_VEG_COVER
     
         obj.afsa = strcat(obj.metadata, '\', 'afsa');  
         
@@ -131,7 +133,7 @@ methods
     obj.products_specular_reflectivity = strcat(obj.products_specular, '\', 'reflectivity') ;
     
     % Products for multiple dielectric profiles
-    diel_profiles = Constants.diel_profiles;
+    diel_profiles = Constants.DIEL_PROFILES;
     [~, num_diel_profiles] = size( diel_profiles );
     
     for ii = 1 : num_diel_profiles
@@ -148,7 +150,7 @@ methods
     obj.fig_direct = strcat(obj.fig, '\', 'direct') ;
     obj.fig_specular = strcat(obj.fig, '\', 'specular') ;
     obj.fig_specular_reflectivity = strcat(obj.fig_specular, '\', 'reflectivity') ;
-    obj.fig_specular_reflectivity_vsTH = strcat(obj.fig_specular_reflectivity, '\', 'vs_TH') ;
+    obj.fig_specular_reflectivity_vsEL = strcat(obj.fig_specular_reflectivity, '\', 'vs_EL') ;
 
 
     end
@@ -167,12 +169,6 @@ methods
             mkdir(obj.sims_main_dir);
         end
 
-
-        %% Analysis
-        if ~exist(obj.analysis, 'dir')
-            mkdir(obj.analysis);
-        end
-
         %% Input folder that includes sim. report and input file used
         if ~exist(obj.sim_input, 'dir')
             mkdir(obj.sim_input)
@@ -185,7 +181,9 @@ methods
 
         %% Average Forward Scattering Amplitude
         if ~exist(obj.afsa, 'dir')
-            mkdir(obj.afsa)
+            if ~ isempty(obj.afsa)
+                mkdir(obj.afsa)
+            end
         end
 
         %% Products
@@ -218,9 +216,9 @@ methods
         end
     
         % Products for multiple dielectric profiles
-        if gnd_structure_id == Constants.id_gnd_multi_layered
+        if gnd_structure_id == Constants.ID_GND_MULTI_LAYERED
             
-            diel_profiles = Constants.diel_profiles;
+            diel_profiles = Constants.DIEL_PROFILES;
             [~, num_diel_profiles] = size( diel_profiles );
 
             for ii = 1 : num_diel_profiles
@@ -258,18 +256,14 @@ methods
             mkdir(obj.fig_specular_reflectivity)
         end
 
-        if ~exist(obj.fig_specular_reflectivity_vsTH, 'dir')
-            mkdir(obj.fig_specular_reflectivity_vsTH)
+        if ~exist(obj.fig_specular_reflectivity_vsEL, 'dir')
+            mkdir(obj.fig_specular_reflectivity_vsEL)
         end
 
     end
 
     function out = get.sims_main_dir(obj)
         out = obj.sims_main_dir;
-    end
-
-    function out = get.analysis(obj)
-        out = obj.analysis;
     end
 
     function out = get.sim(obj)
@@ -340,8 +334,8 @@ methods
         out = obj.fig_specular_reflectivity;
     end
 
-    function out = get.fig_specular_reflectivity_vsTH(obj)
-        out = obj.fig_specular_reflectivity_vsTH;
+    function out = get.fig_specular_reflectivity_vsEL(obj)
+        out = obj.fig_specular_reflectivity_vsEL;
     end
         
 end

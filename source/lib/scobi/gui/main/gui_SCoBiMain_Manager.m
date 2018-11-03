@@ -1,7 +1,23 @@
-% TO-DO: Check comments, copyrights, etc.
+
 classdef gui_SCoBiMain_Manager < SCoBiGUIManagers
-    %GUI_SCOBIMAIN_MANAGER This class implements handles for GUI elements, and 
-    % performs the GUI-related functionalities    
+% class gui_SCoBiMain_Manager 
+%
+%   Implements handles for gui_SCoBiMain.fig and gui_SCoBiMain.m.
+%   
+%   simulator_id = gui_SCoBiMain;
+%
+%   See also SCoBiGUIManagers, gui_SCoBi_Manager.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+%   Adapted from gui_goGPS.m class of goGPS v0.4.3 software
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
     
     
     %% METHODS
@@ -38,7 +54,6 @@ classdef gui_SCoBiMain_Manager < SCoBiGUIManagers
             % Read all the values of the elements
             obj.getAllElContent();
             obj.setAllElContent();
-
             
           %% PUSH BUTTONS                        
             % on SCoBi main illustration 
@@ -57,7 +72,7 @@ classdef gui_SCoBiMain_Manager < SCoBiGUIManagers
             % on the sim: Soils
             if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Soil)) > 0
                 
-                obj.simulator_id = Constants.id_sim_soil;
+                obj.simulator_id = Constants.ID_SIM_SOIL;
                 
                 uiresume(obj.handles.panel_main);
                   
@@ -66,7 +81,7 @@ classdef gui_SCoBiMain_Manager < SCoBiGUIManagers
             % on the sim: Root-zone 
             if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Root_Zone)) > 0
                 
-                obj.simulator_id = Constants.id_sim_root_zone;
+                obj.simulator_id = Constants.ID_SIM_ROOT_ZONE;
                 
                 uiresume(obj.handles.panel_main);
                 
@@ -83,7 +98,7 @@ classdef gui_SCoBiMain_Manager < SCoBiGUIManagers
             % on the sim: Agriculture 
             if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Agriculture)) > 0
                 
-                obj.simulator_id = Constants.id_sim_agriculture;
+                obj.simulator_id = Constants.ID_SIM_AGRICULTURE;
                 
                 uiresume(obj.handles.panel_main);
                 
@@ -92,7 +107,7 @@ classdef gui_SCoBiMain_Manager < SCoBiGUIManagers
             % on the sim: Forest 
             if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Forest)) > 0
                 
-                obj.simulator_id = Constants.id_sim_forest;
+                obj.simulator_id = Constants.ID_SIM_FOREST;
                 
                 uiresume(obj.handles.panel_main);
                 
@@ -199,6 +214,7 @@ classdef gui_SCoBiMain_Manager < SCoBiGUIManagers
         end
         
         
+        
         % Function that runs inside onoffUIEl
         % Test every logical dependence in the GUI
         % E.g. a flag that activate other fields
@@ -207,6 +223,8 @@ classdef gui_SCoBiMain_Manager < SCoBiGUIManagers
             % May not be any dependency
             
         end
+        
+        
         
         % Get enable / disable status of the element of the interface
         % This function should be called only once, later in the code
