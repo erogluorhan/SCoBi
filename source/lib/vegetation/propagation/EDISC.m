@@ -1,8 +1,36 @@
-%	***********************************************************
+
 function F = eDisc(TIN, PIN, TS, PS, TH, PH, FHZ, T, A, B, EPSDC)
+% function eDisc 
 %
-%     Calculates the bistatic scattering amplitude of an elliptic
-%     disc.
+%   The bistatic scattering amplitude from a lossy dielectric disc is
+%   calculated. The phase center is at the bottom of the disc. Both
+%   thin and thick routines are used. 
+%
+%   F = eDisc(TIN, PIN, TS, PS, TH, PH, FHZ, T, A, B, EPSDC)
+%
+%   INPUTS:
+%   TIN,PIN = INCIDENT ANGLES (RAD)
+%   TS,PS = SCATTERED ANGLES (RAD)
+%   TH,PH = ROTATION ANGLES (RAD)
+%   FHZ = FRQUENCY (HZ)
+%   RAD = RADIUS OF CYLINDER (M)
+%   L = LENGTH OF CYLINDER (M)
+%   EPS = RELATIVE DIELECTRIC CONSTANT
+%   F = BISTATIC SCATTERING AMPLITUDES
+%   F(1) = FHH, F(2) = FVH, F(3) = FHV, F(4) = FVV
+%
+%   See also calcPropagation, eCylinder.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
+
 
 F1 = rotDisc(TIN, PIN, TS, PS, TH, PH, FHZ, T, A, B, EPSDC) ;
 

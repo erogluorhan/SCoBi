@@ -1,6 +1,32 @@
 
 function writeVarIncremental(pathname, filename, index, var)
-% var: Column vector    
+% function writeVarIncremental 
+%
+%   Writes the given number values to an existing files in an incremental
+%   fashion by using the writeVar function. In other words, it uses the 
+%   main writer function "writeVar" and an index to add the given "var" i
+%   nto the "index" of the given "filename"   
+%
+%   writeVarIncremental(pathname, filename, index, var)
+%
+%   INPUTS:
+%   pathname  : The folder path to store the files
+%   filename  : The filename that will hold the numbers.
+%   index     : The index that "var" will be put in
+%   var       : Number values that will be stored.
+%
+%   See also writeVar, readVar
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
+
 
 % First read the existing variable, if any    
 currentVar = readVar(pathname, filename);

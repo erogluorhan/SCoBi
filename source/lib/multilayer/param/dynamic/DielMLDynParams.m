@@ -1,11 +1,26 @@
 classdef DielMLDynParams < handle
-    % DIELMLDYNPARAMS Maintains specific Dielectric Profile parameters for 
-    % MultiLayer soil simulations
-    % It keeps the parameters that are specific to multi-layer ground with
-    % row structures and each simulation. It can have only one instance 
-    % throughout the whole simulation thanks to Singleton Pattern. Its 
-    % properties should be initialized once in the simulation and then used
-    % by other entities by using the get() functions provided by it.
+% class DielMLDynParams 
+%
+%   Maintains dynamic dielectric profile parameters for multi-layered 
+%   ground, if any. It keeps the parameters that are specific to 
+%   multi-layer ground with row structures and are updated in each 
+%   simulation iteration. It can have only one instance throughout the 
+%   entire simulation thanks to Singleton Pattern. Its properties are 
+%   updated in every simulation iteration and are then used by other 
+%   entities by using the get() functions provided. 
+%
+%   See also generateDielMLProfiles.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
+
     
     properties (SetAccess = private, GetAccess = public)
         
@@ -20,12 +35,6 @@ classdef DielMLDynParams < handle
         
         % Discrete Slab
         eps_diel_zS
-        
-        % Figure 1 to draw VSM and reflectivity data 
-        fig1
-        
-        % Figure 1 to draw VSM and reflectivity data
-        fig2
         
     end
     
@@ -55,11 +64,9 @@ classdef DielMLDynParams < handle
     
     methods        
         
-        function initialize(obj, fig1, fig2, eps_diel_z2nd, eps_diel_z3rd, eps_diel_zL, eps_diel_zS )
+        function initialize(obj, eps_diel_z2nd, eps_diel_z3rd, eps_diel_zL, eps_diel_zS )
             % INITIALIZE - Initializes all the properties
                      
-            obj.fig1 = fig1;
-            obj.fig2 = fig2;
             obj.eps_diel_z2nd = eps_diel_z2nd;
             obj.eps_diel_z3rd = eps_diel_z3rd;
             obj.eps_diel_zL = eps_diel_zL;
@@ -85,16 +92,6 @@ classdef DielMLDynParams < handle
         
         function out = get.eps_diel_zS(obj)
             out = obj.eps_diel_zS;        
-        end
-               
-        
-        function out = get.fig1(obj)
-            out = obj.fig1;        
-        end
-               
-        
-        function out = get.fig2(obj)
-            out = obj.fig2;        
         end
         
     end 

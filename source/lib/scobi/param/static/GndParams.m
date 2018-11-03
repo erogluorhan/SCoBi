@@ -1,10 +1,24 @@
 classdef GndParams < handle
-    %% GNDPARAMS CLASS - Maintains ground parameters
-    % It keeps the parameters that are specific to the ground and each 
-    % simulation. It can have only one instance throughout the whole
-    % simulation thanks to Singleton Pattern. Its properties should be 
-    % initialized once in the simulation and then used by other entities by 
-    % using the get() functions provided by it.
+% class GndParams
+%
+%   Maintains ground parameters. It keeps the parameters that are specific 
+%   to the ground of any simulation. It can have only one instance 
+%   throughout the whole simulation thanks to Singleton Pattern. Its 
+%   properties should be initialized once in the simulation and then used 
+%   by other entities by using the get() functions provided by it. 
+%
+%   See also initGndParams.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
+
     
     properties (SetAccess = private, GetAccess = public)
                 

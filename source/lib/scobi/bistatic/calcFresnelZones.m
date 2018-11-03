@@ -1,13 +1,33 @@
-%% Mehmet Kurum
-% March 15, 2017
 
 function [S0x_m, x1_m, ax1_m, by1_m] = calcFresnelZones(ht_m, hr_m, Nfz)
+% function calcFresnelZones 
+%
+%   Calculates and outputs the Fresnel zones for the specular reflection 
+%   point and to use them in the calculation of the other points.  
+%
+%   [S0x_m, x1_m, ax1_m, by1_m] = calcFresnelZones(ht_m, hr_m, Nfz)
+%
+%   INPUTS:
+%   ht_m: Transmitter altitude (in meters)
+%   hr_m: Receiver altitude (in meters)
+%   Nfz: Number of Fresnel zones
+%
+%   See also bistaticGeometry.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
 
 
 %% GET GLOBAL PARAMETERS
 sim_counter = ParamsManager.sim_counter;
 % Transmitter Parameters
-f_Hz = TxParams.getInstance.f_MHz * Constants.MHz2Hz ;
+f_Hz = TxParams.getInstance.f_MHz * Constants.MHZ_TO_HZ ;
 % Configuration Parameters
 th0_Tx_list_deg = ConfigParams.getInstance.th0_Tx_list_deg;
 th0_Tx_deg = th0_Tx_list_deg( sim_counter );
@@ -15,10 +35,10 @@ el0_Tx_deg = 90 - th0_Tx_deg;
 
 
 %% CALCULATIONS
-lambda_m = Constants.c / f_Hz ;     % Wavelength
+% Wavelength
+lambda_m = Constants.LIGHTSPEED / f_Hz ;
 
 % Angle of Incidence of incoming signal
-% TxParams.getInstance.el0_Tx_deg = 36.3287 ;        % Elevation angle
 th0_Tx_rad = deg2rad(th0_Tx_deg) ;
 
 % Transmitter/Reciever ground range
@@ -34,7 +54,7 @@ rd2_m = sqrt(hd_m ^ 2 + Dist_m ^ 2) ;
 rs_m = sqrt(hs_m ^ 2 + Dist_m ^ 2) ;
 del0_m = rs_m - rd2_m ; % the shortest distance after the direct path
 
-tanth = hd_m / Dist_m ; %#ok<NASGU>
+tanth = hd_m / Dist_m ;
 sinth = hd_m / rd2_m ;
 costh = Dist_m / rd2_m ;
 secth = 1 / costh ;
@@ -43,6 +63,9 @@ x1_m = zeros(Nfz, 1) ;
 ax1_m = zeros(Nfz, 1) ;
 by1_m = zeros(Nfz, 1) ;
 
+% Iterate for the decided number of Fresnel zones
+% This iteration may be meaningful, when incoherent contribution is 
+% considered. Nfz is always 1 for the current version. 
 for nn = 1 : Nfz
     
     % the path for the nth Fresnel Zone
