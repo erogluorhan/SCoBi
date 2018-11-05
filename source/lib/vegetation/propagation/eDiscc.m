@@ -1,5 +1,5 @@
 
-function F = eDisc(TIN, PIN, TS, PS, TH, PH, FHZ, T, A, B, EPSDC)
+function F = eDiscc(TIN, PIN, TS, PS, TH, PH, FHZ, T, A, B, EPSDC)
 % function eDisc 
 %
 %   The bistatic scattering amplitude from a lossy dielectric disc is
@@ -21,7 +21,8 @@ function F = eDisc(TIN, PIN, TS, PS, TH, PH, FHZ, T, A, B, EPSDC)
 %
 %   See also calcPropagation, eCylinder.
 
-%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd.
+%   Adapted from George Washington University vegetation scattering models
 
 %   This program is free software: You can redistribute it and/or 
 %   modify it under the terms of the GNU General Public License as 
