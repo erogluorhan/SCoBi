@@ -185,6 +185,10 @@ classdef SCoBiGUIManagers < handle
         
         function openAboutDialog(obj)
             
+            
+            %% GET GLOBAL DIRECTORIES
+            dir_scobi_gui_images_about = Directories.getInstance.scobi_gui_images_about;
+            
            %get display size
             screenSize = get(0, 'ScreenSize');
 
@@ -213,7 +217,8 @@ classdef SCoBiGUIManagers < handle
                                  'Position',[20 245 480 25],...
                                  'String', 'Developers: Orhan Eroglu, Dylan R. Boyd, Mehmet Kurum');
             
-            [x,map] = imread('D:\Orhan\GitHub\SCoBi\source\lib\scobi\gui\images\about\SCoBi_Illustration.png');
+            
+            [x,map] = imread( strcat(dir_scobi_gui_images_about, '\SCoBi_Illustration.png') );
             I2 = imresize(x, [50 103]);
             btnScobi = uicontrol('Parent',d,...
                                   'Position',[40 180 103 50],...
@@ -221,7 +226,7 @@ classdef SCoBiGUIManagers < handle
                                   'cdata',I2, ...
                                   'Callback', strcat('web(''', Constants.URL_SCOBI_GITHUB, ''', ''-browser'')'));
             
-            [x,map] = imread('D:\Orhan\GitHub\SCoBi\source\lib\scobi\gui\images\about\impress-logo.png');
+            [x,map] = imread(strcat(dir_scobi_gui_images_about, '\impress-logo.png') );
             I2 = imresize(x, [50 156]);
             btnImpress = uicontrol('Parent',d,...
                                   'Position',[164 180 156 50],...
@@ -229,7 +234,7 @@ classdef SCoBiGUIManagers < handle
                                   'cdata',I2, ...
                                   'Callback', strcat('web(''', Constants.URL_IMPRESS, ''', ''-browser'')'));
             
-            [x,map] = imread('D:\Orhan\GitHub\SCoBi\source\lib\scobi\gui\images\about\msstate-maroon.png');
+            [x,map] = imread(strcat(dir_scobi_gui_images_about, '\msstate-maroon.png') );
             I2 = imresize(x, [50 120]);
             btnMsstate = uicontrol('Parent',d,...
                                   'Position',[341 180 120 50],...

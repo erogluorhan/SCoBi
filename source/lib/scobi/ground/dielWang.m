@@ -15,13 +15,10 @@ function diel = dielWang(VSM, sand_ratio, clay_ratio, rhob_gcm3)
 %
 %   See also updateGndDynParams, dielMironov, dielDobson.
 
-%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
-%   Adapted from Steven Chan, 03/2011
-
-%   This program is free software: You can redistribute it and/or 
-%   modify it under the terms of the GNU General Public License as 
-%   published by the Free Software Foundation, either version 3 of the 
-%   License, or (at your option) any later version.
+%   Implemeted from the following paper:
+%   J. R. Wang and T. J. Schmugge, “An empirical model for the complex 
+%   dielectric permittivity of soils as a function of water content,” 
+%   IEEE Trans. Geosci. Remote Sens., vol. GE-18, no. 4, pp. 288–295, 1980.
 
 %   Version: 1.0.0
 
