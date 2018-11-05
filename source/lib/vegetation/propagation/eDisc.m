@@ -1,5 +1,5 @@
 
-function F = eDiscc(TIN, PIN, TS, PS, TH, PH, FHZ, T, A, B, EPSDC)
+function F = eDisc(TIN, PIN, TS, PS, TH, PH, FHZ, T, A, B, EPSDC)
 % function eDisc 
 %
 %   The bistatic scattering amplitude from a lossy dielectric disc is
