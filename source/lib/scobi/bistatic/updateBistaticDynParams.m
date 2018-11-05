@@ -2,7 +2,7 @@
 function updateBistaticDynParams
 % function updateBistaticDynParams 
 %
-%   Calls the functions that calculate the geometry and transmitter bistatic 
+%   Calls the functions that calculate the bistatic geometry and transmitter
 %   parameters and updates the bistatic dynamic parameters 
 %   (BistaticDynParams) with those parameter values in each 
 %   simulation iteration.
