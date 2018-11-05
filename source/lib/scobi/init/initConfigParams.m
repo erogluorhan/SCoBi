@@ -106,11 +106,11 @@ VSM_list_cm3cm3(any(isnan(VSM_list_cm3cm3), 2), :) = [];
 % If sim_mode is Time-series, then preprocess data
 if sim_mode_id == Constants.ID_TIME_SERIES
     
-    num_DoY = length( DoYs );
-    num_El = length( el0_Tx_list_deg );
-    num_Ph = length( ph0_Tx_list_deg );
-    num_VSM = length( VSM_list_cm3cm3 );
-    num_RMSH = length( RMSH_list_cm );
+    [num_DoY, ~]    = size( DoYs );
+    [num_Th, ~]     = size( th0_Tx_list_deg );
+    [num_Ph, ~]     = size( ph0_Tx_list_deg );
+    [num_VSM, ~]    = size( VSM_list_cm3cm3 );
+    [num_RMSH, ~]   = size( RMSH_list_cm );
     
     maxnum = max( [num_DoY, num_El, num_Ph, num_VSM, num_RMSH] );
 
