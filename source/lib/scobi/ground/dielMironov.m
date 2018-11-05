@@ -18,13 +18,10 @@ function diel = dielMironov(f_Hz, VSM, clay_ratio)
 %
 %   See also updateGndDynParams, dielDobson, dielWang.
 
-%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
-%   Adapted from Steven Chan, 03/2011
-
-%   This program is free software: You can redistribute it and/or 
-%   modify it under the terms of the GNU General Public License as 
-%   published by the Free Software Foundation, either version 3 of the 
-%   License, or (at your option) any later version.
+%   Implemeted from the following paper:
+%   V. L. Mironov and S. V Fomin, “Temperature dependable microwave 
+%   dielectric model for moist soils,” PIERS Proceedings, March, pp. 23–27, 
+%   2009.
 
 %   Version: 1.0.0
 
