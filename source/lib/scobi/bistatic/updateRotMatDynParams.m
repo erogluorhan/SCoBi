@@ -2,7 +2,7 @@
 function updateRotMatDynParams
 % function updateRotMatDynParams 
 %
-%   Calculates the antenna polarization rotation matrices and updates 
+%   Calculates the antenna polarization rotation matrices and updates the
 %   RotMatDynParams class with those values in each simulation iteration.  
 %
 %   See also mainSCoBi, RotMatDynParams.
