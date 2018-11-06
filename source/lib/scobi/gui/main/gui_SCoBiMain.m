@@ -194,6 +194,9 @@ function pb_SCoBi_Wetland_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+global scobiMainGUI
+scobiMainGUI.syncFromGUI( scobiMainGUI.uiIDs.pb_SCoBi_Wetland );
+
 
 % --- Executes on button press in togglebutton1.
 function togglebutton1_Callback(hObject, eventdata, handles)
