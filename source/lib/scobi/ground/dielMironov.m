@@ -2,13 +2,6 @@
 function diel = dielMironov(f_Hz, VSM, clay_ratio)
 % function dielMironov 
 %
-%   Independent implementation of Mironov soil dielectric model straight 
-%   from his 2009 TGRS paper.
-%
-%   Mironov's MSBDM is based on GRMDM, which is in turn based on RMDM.  The 
-%   complex dielectric constant of a soil/water mixture is given in 
-%   Eqns 11-13 in the paper.  
-%
 %   diel = dielMironov(f_Hz, VSM, clay_ratio)
 %
 %   INPUTS:
@@ -16,12 +9,12 @@ function diel = dielMironov(f_Hz, VSM, clay_ratio)
 %   VSM:        Volumetric soil moisture (cm3/cm3) [0,1]
 %   clay_ratio: Mass fraction of clay content in soil
 %
-%   See also updateGndDynParams, dielDobson, dielWang.
-
-%   Implemeted from the following paper:
+%   Implemented from the following paper:
 %   V. L. Mironov and S. V Fomin, “Temperature dependable microwave 
 %   dielectric model for moist soils,” PIERS Proceedings, March, pp. 23–27, 
 %   2009.
+%
+%   See also updateGndDynParams, dielDobson, dielWang.
 
 %   Version: 1.0.0
 
