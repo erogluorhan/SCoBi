@@ -42,4 +42,4 @@ Repository contains:
    b) Presentation
       
       
-3) design: Involves the architectural design of the SCoBi software that consists of UML diagrams created in Enterprise Architect.
+3) design: Involves the architectural design of the SCoBi software that consists of UML diagrams created in the Sparx Systems' Enterprise Architect tool.
