@@ -2,13 +2,6 @@
 function diel = dielDobson(f_Hz, VSM, sand_ratio, clay_ratio, rhob_gcm3)
 % function dielDobson 
 %
-%   Computes the complex dielectric constant of soil as a function of 
-%   frequency, soil moisture, sand/clay fractions, and surface temperature.  
-%   This particular implementation combines Ann Hsu's code with our 
-%   existing Dobson model.  This approach starts with fixing RHOS at 2.66 
-%   and computes for EPSS and RHOB. Low frequency correction is made for 
-%   both the real and imaginary parts of the dielectric constant.  
-%
 %   diel = dielDobson(f_Hz, VSM, sand_ratio, clay_ratio, rhob_gcm3)
 %
 %   INPUTS:
@@ -18,20 +11,18 @@ function diel = dielDobson(f_Hz, VSM, sand_ratio, clay_ratio, rhob_gcm3)
 %   sand_ratio: Mass fraction of sand content in soil
 %   clay_ratio: Mass fraction of clay content in soil
 %
+%   Implemented from the following paper:
+%   M. C. Dobson, F. F. Ulaby, M. T. Hallikainen, and M. A. El-Rayes, 
+%   “Microwave dielectric behavior of wet soil - {P}art {II}: {D}ielectric 
+%   mixing models,” IEEE Trans. Geosci. Remote Sens., vol. 23, no. 1, 
+%   pp. 35–46, 1985.
+%
 %   See also updateGndDynParams, dielMironov, dielWang.
-
-%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
-%   Adapted from Steven Chan, 03/2011
-
-%   This program is free software: You can redistribute it and/or 
-%   modify it under the terms of the GNU General Public License as 
-%   published by the Free Software Foundation, either version 3 of the 
-%   License, or (at your option) any later version.
 
 %   Version: 1.0.0
 
 
-% Cnvert freq. to GHz
+% Convert freq. to GHz
 f_GHz = f_Hz / Constants.GHZ_TO_HZ;
 
 % Set physical constants and bounds

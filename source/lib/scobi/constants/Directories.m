@@ -24,7 +24,8 @@ classdef Directories < handle
         
         scobi        
         scobi_gui_last_input    
-        scobi_gui_scobi        
+        scobi_gui_scobi   
+        scobi_gui_images_about       
         multi_layer
         vegetation
         
@@ -92,6 +93,10 @@ classdef Directories < handle
             scobi_gui = fullfile(obj.scobi, 'gui');
 
             obj.scobi_gui_scobi = fullfile( scobi_gui, 'scobi');
+            
+            scobi_gui_images = fullfile(scobi_gui, 'images');
+            
+            obj.scobi_gui_images_about = fullfile( scobi_gui_images, 'about');
 
             obj.scobi_gui_last_input = fullfile( scobi_gui, 'last_input');
 
@@ -135,6 +140,10 @@ classdef Directories < handle
         
         function out = get.scobi_gui_scobi(obj)
             out = obj.scobi_gui_scobi;
+        end
+        
+        function out = get.scobi_gui_images_about(obj)
+            out = obj.scobi_gui_images_about;
         end
         
         function out = get.scobi_gui_last_input(obj)

@@ -85,21 +85,25 @@ classdef RxGGParams < handle
             ant_pat_struct = [];
             
             
-            %% CALCULATIONS
-            
-            % Calculate parameter a based on SLL
+            %% CALCULATIONS            
+            % Calculate parameter "a" based on SLL
+            % Use the known values for SLL and "a"
             sll_levels = [15; 20; 30; 40];
             a_values = [0.18; 0.11; 0.04; 0.01];
-            fit3_sll = fit(sll_levels, a_values, 'poly3');
-            
-            a = fit3_sll( obj.SLL_dB );
+            % Fit a 3rd order polynomial to these known values
+            p = polyfit(sll_levels, a_values, 3);            
+            % Calculate the "a" value for the given SLL value
+            a = p(1,1) * obj.SLL_dB ^ 3 + p(1,2) * obj.SLL_dB ^ 2 + ...
+                 p(1,3) * obj.SLL_dB + p(1,4);
             
             % Calculate parameter V based on XPL
             xpl_levels = [15; 25; 30; 40];
             V_values = [sqrt(0.0316); sqrt(0.0100); sqrt(0.0010); sqrt(0.0001)];
-            fit3_xpl = fit(xpl_levels, V_values, 'poly3');
-            
-            V = fit3_xpl( obj.XPL_dB );
+            % Fit a 3rd order polynomial to these known values
+            pV = polyfit(xpl_levels, V_values, 3);            
+            % Calculate the "a" value for the given SLL value
+            V = pV(1,1) * obj.XPL_dB ^ 3 + pV(1,2) * obj.XPL_dB ^ 2 + ...
+                 pV(1,3) * obj.XPL_dB + pV(1,4);
 
             % Calculate Generalized-Gaussian pattern
             [th, ph, gg] = obj.GGpattern( obj.hpbw_deg, a, ant_pat_res_deg ) ;
