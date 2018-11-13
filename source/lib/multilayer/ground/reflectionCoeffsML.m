@@ -16,8 +16,18 @@ function [r_g] = reflectionCoeffsML
 %   published by the Free Software Foundation, either version 3 of the 
 %   License, or (at your option) any later version.
 
-%   Version: 1.0.0
-
+%   Version: 1.0.1
+%
+%  %%%%%%%%%%%%%%%%%%%%%%%%%%  UPDATE HISTORY  %%%%%%%%%%%%%%%%%%%%%%%%%  %
+%  Version 1.0.1
+%  November 13, 2018
+%
+%  Desc:
+%   Refitted the complex conjugate to make the physics-oriented multidiel 
+%   function compatible with SCoBi. In engineering, j =sqrt(-1).
+%   In physics, j = (-1)sqrt(-1).
+%
+%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  %
 
 %% GET GLOBAL PARAMETERS
 sim_counter = ParamsManager.sim_counter;
@@ -55,7 +65,7 @@ if calc_diel_profile_fit_functions(Constants.ID_DIEL_PROFILE_SLAB, 1)
     zzb = (zA_m + layer_bottom_m) ;
     Lzb = diff(zzb)' ; % / lambda_m ; % complex optical length in units of lambda_m
     nA = sqrte(Constants.EPS_DIEL_AIR) ;
-    nS = sqrte(eps_g) ;
+    nS = sqrte(conj(eps_g)) ;
     nS = nS.';
 
     na = [nA; nA; nA] ;
