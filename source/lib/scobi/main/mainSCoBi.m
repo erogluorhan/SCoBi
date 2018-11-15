@@ -1,87 +1,125 @@
 
-% Mehmet Kurum
-% April 6, 2017
-
 function mainSCoBi
+% function mainSCoBi
+% 
+%   Simulation iteration function. 
+%
+%   mainSCoBi is called by runSCoBi for every single simulation iteration. 
+%   This function is common for any analysis type such as vegetation, 
+%   bare-soil, or root-zone. The need for analysis type-specific function 
+%   calls are determined by ParamManager class.
+%
+%   In each iteration, mainSCoBi calls the following functions:
+%   - updateBistaticDynParams
+%   - updateGndDynParams
+%   - generateDielMLProfiles (if needed)
+%   - calcPropagation (if needed)
+%   - writeAttenuation (if needed)
+%   - updateRotMatDynParams
+%   - directTerm
+%   - specularTerm
+%
+%   See also runSCoBi, ParamsManager, updateBistaticDynParams, 
+%   updateGndDynParams, updateRotMatDynParams, directTerm, specularTerm.
 
-%% START: SCoBi MAIN PROGRAM
-disp('++++++++++++++++   START: SCoBi MAIN PROGRAM   ++++++++++++++++++++')
-tstart = datetime('now') %#ok<NOPRT,*NASGU>
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
+
+
+%% START OF THE CURRENT ITERATION
+disp('+++++++++++++++++++++   START: mainSCoBi   ++++++++++++++++++++++++')
+
 
 
 %% CALCULATE AND UPDATE BISTATIC CONFIGURATION AND GROUND DYNAMIC PARAMS
-disp('++++++++   UPDATE BISTATIC CONFIGURATION AND GROUND   +++++++++')
-t = datetime('now') %#ok<NOPRT>
+disp('Update Bistatic Configuration')
 
-% Update Bistaic Configuration parameters
+% Calculate the dynamic bistatic configuration and transmitter parameters
+% and update the class BistaticDynParams 
 updateBistaticDynParams();
 
-% Update Ground Dynamic Parameters
+
+disp('Update Dynamic Ground Parameters')
+
+% Calculate the dynamic ground parameters and update the class GndDynParams
 updateGndDynParams();
 
 
 
 %% GENERATE DIELECTRIC PROFILES
-% TO-DO: Test ParamsManager controls
+% Use ParamsManager to determine if multilayer dielectric profiles needed
 [needForDielProfiles, dispMsg] = ParamsManager.isToGenerateDielMLProfiles();
 
 disp( dispMsg );
     
-if ~needForDielProfiles == Constants.need_for_run.NO
+% If multilayer dielectric profiles needed
+if ~needForDielProfiles == Constants.NEED_TO_RUN_STRUCT.NO
 
     generateDielMLProfiles(); 
     
 end
 
 
-%% CALCULATE INCREMENTAL PROPAGATION CONSTANT FOR EACH LAYER
-disp('++   CALCULATE INCREMENTAL PROPAGATION CONSTANT FOR EACH LAYER   ++')
-t = datetime('now') %#ok<NOPRT>
 
+%% CALCULATE INCREMENTAL PROPAGATION CONSTANT FOR EACH LAYER
+% Use ParamsManager to determine if vegetation propagation needed
 [needForPropagation, needForWriteAttenuation, dispMsg] = ParamsManager.isToCalcPropagation();
 
 disp( dispMsg );
 
-if needForPropagation == Constants.need_for_run.FULL
+% If multilayer dielectric profles needed
+if needForPropagation == Constants.NEED_TO_RUN_STRUCT.FULL
     
-    calcPropagation ;
+    % Calculate vegetation propagation
+    calcPropagation();
     
-    disp('++++++   WRITE ATTENUATION VALUES TO OUTPUT EXCEL FILE   ++++++')
-    
+    % If writing attenuation values to Excel file needed
     if needForWriteAttenuation
         
-        writeAttenuation ;
+        disp('VEGETATION - Write Propagation Values to Excel File')
+        
+        writeAttenuation();
         
     end
+    
 end
 
 
-%% CALCULATE AND UPDATE ROTATION MATRICES
-disp('+++++++++++   CALCULATE AND UPDATE ROTATION MATRICES   ++++++++++++')     
-t = datetime('now')
 
+%% CALCULATE AND UPDATE ROTATION MATRICES
+disp('Update Polarization Rotation Matrices')     
+
+% Calculate the dynamic polarizaztion rotation matrices and update the 
+% class RotMatDynParams
 updateRotMatDynParams();
 
 
+
 %% CALCULATE DIRECT CONTRIBUTION
-disp('+++++++++++++   CALCULATE DIRECT CONTRIBUTION   +++++++++++++++++++')
-t = datetime('now')
+disp('Calculate Direct Contribution')
     
-directTerm;
+% Calculate the direct (line-of-sight) contribution in the received signals
+directTerm();
+
 
 
 %% CALCULATE SPECULAR CONTRIBUTION
-disp('+++++++++++++   CALCULATE SPECULAR CONTRIBUTION   +++++++++++++++++')
-t = datetime('now')
+disp('Calculate Specular Contribution')
     
-specularTerm ;
+% Calculate the coherent (through specular reflection point) contribution 
+% in the received signals
+specularTerm();
 
 
-%% end of the program
-disp('++++++++++++++++   START: SCoBi MAIN PROGRAM   ++++++++++++++++++++')
-tstart %#ok<NOPRT>
-tstop = datetime('now') %#ok<NOPRT,*NASGU>
-duration = tstop - tstart  %#ok<NOPRT>
+%% END OF THE CURRENT ITERATION
+disp('------------------------   END: mainSCoBi   -----------------------')
 
 
 end

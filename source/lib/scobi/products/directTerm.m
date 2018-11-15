@@ -1,9 +1,22 @@
-%% Mehmet Kurum
-% 03/12/2017
-% modified - 11/09/2017
 
-% Direct Term
 function directTerm
+% function directTerm 
+%
+%   Calculates the direct (line-of-sight) received field and power between 
+%   the transmitter and the receiver. Stores the calculated values into simulation output 
+%   folders in an incremental fashion as the simulation iterations continue.
+%
+%   See also mainSCoBi, specularTerm.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
 
 
 %% GET GLOBAL DIRECTORIES
@@ -39,7 +52,7 @@ u_tr = RotMatDynParams.getInstance.u_tr;
 
 
 %% INITIALIZE REQUIRED PARAMETERS
-% AllPoints_m = [pos_Tx_m, pos_TxI_m, pos_SP_m, pos_Rx_m, pos_RxI_m, pos_Gnd_m, pos_B_Rx_m, pos_FP_Rx_m, pos_FZ_m] ;
+% AllPoints_m = [pos_Tx_m, pos_TxI_m, pos_SP_m, pos_Rx_m, pos_RxI_m, pos_Gnd_m, pos_B_Rx_m, pos_FZ_m] ;
 pos_Tx_m = AllPoints_m(:, 1) ;        % Transmitter
 pos_Rx_m = AllPoints_m(:, 4) ;         % Receiver
 
@@ -64,9 +77,9 @@ g_r0 = [1 0 ; 0 1] ; % ideal
 RT_m = pos_Rx_m - pos_Tx_m ;          % Transmitter to Receiver
 rd_m = vectorMagnitude(RT_m) ;    % slant range
 
-f_Hz = f_MHz * Constants.MHz2Hz ;
-lambda_m = Constants.c / f_Hz ;     % Wavelength
-k0 = 2 * pi * f_Hz / Constants.c ;    % Wave number
+f_Hz = f_MHz * Constants.MHZ_TO_HZ ;
+lambda_m = Constants.LIGHTSPEED / f_Hz ;     % Wavelength
+k0 = 2 * pi * f_Hz / Constants.LIGHTSPEED ;    % Wave number
 
 
 % Factor Kd
@@ -79,8 +92,8 @@ phrd = AngT2R_rf(2, 1) ;
 
 ant_pat_res_factor = 1 / ant_pat_res_deg;
 
-thd = round( ant_pat_res_factor * radtodeg(th)) / ant_pat_res_factor ; % rounding operation is due to accuracy concerns
-phd = round( ant_pat_res_factor * radtodeg(ph)) / ant_pat_res_factor ; % to make the angles multiples of ant_pat_res_deg
+thd = round( ant_pat_res_factor * rad2deg(th)) / ant_pat_res_factor ; % rounding operation is due to accuracy concerns
+phd = round( ant_pat_res_factor * rad2deg(ph)) / ant_pat_res_factor ; % to make the angles multiples of ant_pat_res_deg
 
 % Receiver Antenna values in the transmitter direction
 ind_th = thd == round( ant_pat_res_factor * thrd(1, 1)) / ant_pat_res_factor ; % round is to make it a multiple of ant_pat_res_deg
@@ -93,15 +106,15 @@ g_r = [g11(ind_th & ind_ph), g12(ind_th & ind_ph); ...
     g21(ind_th & ind_ph), g22(ind_th & ind_ph)] ;
 
 % 4 X 4
-G_r = calc_Muller(g_r) ;
+G_r = calcMuller(g_r) ;
 % 4 X 4
-G_r0 = calc_Muller(g_r0) ;
+G_r0 = calcMuller(g_r0) ;
 % 4 X 4
-G_t = calc_Muller(g_t) ;
+G_t = calcMuller(g_t) ;
 
 % Transmitter-Receiver Rotation  Matrix
 % 4 X 4
-U_tr = calc_Muller(u_tr) ;
+U_tr = calcMuller(u_tr) ;
 
 
 %% DIRECT TERM
@@ -120,7 +133,7 @@ P0_d2 = G_r0 * U_tr * G_t * E_t2 ;
 
 %% SAVE
 % If sim_mode is Time-series, write DoYs
-if sim_mode_id == Constants.id_time_series
+if sim_mode_id == Constants.ID_TIME_SERIES
     
     DoY = DoYs( sim_counter );
     filename = 'DoYs';
@@ -148,5 +161,6 @@ writeVarIncremental(dir_products_direct_power, filename1, sim_counter, P_d1);
 writeVarIncremental(dir_products_direct_power, filename2, sim_counter, P_d2);
 writeVarIncremental(dir_products_direct_power, filename01, sim_counter, P0_d1);
 writeVarIncremental(dir_products_direct_power, filename02, sim_counter, P0_d2);
+
 
 end

@@ -1,5 +1,25 @@
-%-e-------------------------*--. --- --. .--. ...*--------------------------
+%--------------------------------------------------------------------------
+% function runSCoBi
 %
+%   Simulation engine function. 
+%
+%   runSCoBi starts the simulation, calls GUI classes to get the user 
+%   inputs, performs input validity check by using ParamsManager class and 
+%   runs the simulation iterations for the required number of simulations.
+%
+%   See also mainSCoBi.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program (SCoBi) is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
+
+
 %                    %%%%%  %%%%%   %%%%%  %%%%% %%%
 %                    %      %       %   %  %   %  %
 %                    %%%%%  %       %   %  %%%%   %
@@ -8,9 +28,9 @@
 %
 %
 %--------------------------------------------------------------------------
-%                         SCoBi v1.0
+%                         SCoBi v1.0.0
 %
-%    Copyright (C) 2018-2023 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+%    Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
 %--------------------------------------------------------------------------
 % 
 %    This program is free software: You can redistribute it and/or modify
@@ -24,22 +44,15 @@
 %    GNU General Public License for more details.
 %
 %    You should have received a copy of the GNU General Public License
-%    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%    along with this program (COPYING.txt).  If not, 
+%    see <http://www.gnu.org/licenses/>.
 %--------------------------------------------------------------------------
-
-%TO-DO: Ensure about Copyright and GNU
 
 
 function runSCoBi
 
 
 %% WORKSPACE MANAGEMENT
-% Add the common "scobi" directory to the path to start running SCoBi
-addpath( genpath( strcat(pwd, '/scobi') ) );
-
-% Add "input" directory to the path
-addpath( genpath( Directories.getInstance.input ) );
-
 % Reset workspace
 resetWS();
 
@@ -59,7 +72,6 @@ end
 
 
 %% GUI: START THE SELECTED SIMULATOR'S GUI
-% TO-DO: Check this!
 inputStruct = [];
 
 % If the OS is not UNIX OR it is MAC and Matlab version below 7.14
@@ -96,6 +108,12 @@ if isInputValid
 
     % Write all inputs to a text file and show it
     ParamsManager.writeInputReports( inputStruct );
+
+    %% START SIMULATIONS
+    disp('++++++++++++++++++++++++++++   START SIMULATIONS   ++++++++++++++++++++++++++++++++')
+    
+    sim_start = datetime('now');
+    disp( strcat('Simulation Start: ', string(sim_start) ) )
     
     % Run the simulations
     for ii = sim_counter_start : num_sims
@@ -103,9 +121,20 @@ if isInputValid
         ParamsManager.sim_counter( ii );
 
         % Call SCoBi main flow
-        mainSCoBi;
+        mainSCoBi();
 
     end
+
+
+    %% END SIMULATIONS
+    disp('-------------------------------   END SIMULATIONS   -------------------------------')
+    
+    
+    disp( strcat('Simulation Start: ', string(sim_start) ) )
+    sim_stop = datetime('now');
+    disp( strcat('Simulation End: ', string(sim_stop) ) )
+    duration = sim_stop - sim_start          
+    disp( strcat('Duration: ', string(duration) ) )
 
 % Else if input is NOT valid
 else
@@ -115,3 +144,36 @@ else
 end
 
 end 
+
+
+% Reset the workspace
+function resetWS
+
+% Restore search path to defaults
+restoredefaultpath
+
+% Add the common "scobi" directory to the path to start running SCoBi
+addpath( genpath( strcat(pwd, '\scobi') ) );
+
+% Add "input" directory to the path
+addpath( genpath( Directories.getInstance.input ) );
+
+
+% Store current debug breakpoints before doing clear all
+myBreakpoints = dbstatus;
+save('myBreakpoints.mat', 'myBreakpoints');
+
+% Clear all the workspace
+clear all;
+clc ;
+
+% Restore debug breakpoints
+load('myBreakpoints.mat');
+dbstop(myBreakpoints);
+clear myBreakpoints;
+
+if ( exist('myBreakpoints.mat','file') ) 
+    delete('myBreakpoints.mat'); 
+end
+
+end

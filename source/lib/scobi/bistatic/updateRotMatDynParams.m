@@ -1,8 +1,20 @@
-%% Mehmet Kurum
-% 03/03/2017
-
 
 function updateRotMatDynParams
+% function updateRotMatDynParams 
+%
+%   Calculates the antenna polarization rotation matrices and updates the
+%   RotMatDynParams class with those values in each simulation iteration.  
+%
+%   See also mainSCoBi, RotMatDynParams.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
 
 
 %% GET GLOBAL PARAMETERS
@@ -10,7 +22,6 @@ function updateRotMatDynParams
 pol_Tx = TxParams.getInstance.pol_Tx;
 % Receiver Parameters
 pol_Rx = RxParams.getInstance.pol_Rx;
-ant_pat_struct_Rx = RxParams.getInstance.ant_pat_struct_Rx;
 % Ground Parameters
 polG = GndParams.getInstance.polG;
 % Bistatic Parameters
@@ -24,11 +35,8 @@ Tgt = BistaticDynParams.getInstance.Tgt;
 
 
 %% CALCULATIONS
-% Rotation Matrix (Transmitter to Receiver)
+%% TRANSMITTER to RECEIVER
 % u_t_r(i_d^-)
-
-disp('Rotation Matrix (Transmitter to Receiver) . . .')
-tic; 
 [ut1, ut2, ur1, ur2] = tanUnitVectors(Tgt, Tgr, idn, pol_Tx, pol_Rx ) ;
 
 % Polarization Basis Dot Products
@@ -38,14 +46,11 @@ u21 = dot(ut1, conj(ur2)) ; u22 = dot(ut2, conj(ur2)) ;
 % 2 X 2
 u_tr = [u11, u12; u21, u22] ;
 % % % 4 X 4
-% % U_tr = calc_Muller(u_tr) ;
+% % U_tr = calcMuller(u_tr) ;
 
-toc
-%% Rotation Matrix (Transmitter to Specular Point - Ground)
+
+%% TRANSMITTER to SPECULAR POINT
 % u_t_s(i_s^-)
-
-disp('Rotation Matrix (Transmitter to Specular) . . .')
-tic ;
 [ut1, ut2, uvsi, uhsi] = tanUnitVectors(Tgt, Tgs, isn, pol_Tx, polG) ;
 
 % Polarization Basis Dot Products
@@ -55,19 +60,17 @@ u21 = dot(ut1, conj(uhsi)) ; u22 = dot(ut2, conj(uhsi)) ;
 % 2 X 2
 u_ts = [u11, u12; u21, u22] ;
 % % % 4 X 4
-% % U_ts = calc_Muller(u_ts) ;
+% % U_ts = calcMuller(u_ts) ;
 
-toc
 
 % 2 X 2
 u_tIs = u_ts ; %% added april 29, 2017
 % % % 4 X 4
 % % U_tIs = U_ts ; %% added May 1, 2017
-%% Rotation Matrix (Specular point - Ground to Receiver)
-% u_p_r(o_s^+)
 
-disp('Rotation Matrix (Specular to Receiver) . . .')
-tic ;
+
+%% SPECULAR POINT to RECEIVER
+% u_p_r(o_s^+)
 [uvso, uhso, ur1, ur2] = tanUnitVectors(Tgs, Tgr, osp, polG, pol_Rx) ;
 
 % Polarization Basis Dot Products
@@ -77,22 +80,18 @@ u21 = dot(uvso, conj(ur2)) ; u22 = dot(uhso, conj(ur2)) ;
 % 2 X 2
 u_sr = [u11, u12; u21, u22] ;
 % % % 4 X 4
-% % U_sr = calc_Muller(u_sr) ;
-
-toc
+% % U_sr = calcMuller(u_sr) ;
 
 
 %% UPDATE ROTATION MATRICES DYNAMIC PARAMETERS
 RotMatDynParams.getInstance.update( u_sr, u_tr, u_ts, u_tIs );
 
-toc
-
 
 end
 
 
-%% Calculate unit vectors on the tangetial plane
 
+% Calculates unit vectors on the tangential plane
 function [u1p1, u1p2, u2p1, u2p2] = tanUnitVectors(Tg1, Tg2, k, pol1, pol2)
 
 % k is a unit vector (given in reference frame) from Frame 1 to Frame 2
@@ -163,48 +162,49 @@ u1R = 1/ sqrt(2) * (u1X - 1i * u1Y) ;   % port 1    RHCP
 u1L = 1/ sqrt(2) * (u1X + 1i * u1Y) ;   % port 2    LHCP
 
 % frame 2
-u2R = 1/ sqrt(2) * (u2X - 1i * u2Y) ;   % port 1    RHCP
-u2L = 1/ sqrt(2) * (u2X + 1i * u2Y) ;   % port 2    LHCP
+u2R = 1 / sqrt(2) * (u2X - 1i * u2Y) ;   % port 1    RHCP
+u2L = 1 / sqrt(2) * (u2X + 1i * u2Y) ;   % port 2    LHCP
 
-% sum(u2R .* conj(u2L))
 
-if pol1 == Constants.polarizations{Constants.id_pol_H}
+% Determine w.r.t the polarization
+if pol1 == Constants.POLARIZATIONS{Constants.ID_POL_H}
     u1p1 = u1ph ;
     u1p2 = u1th ;
-elseif pol1 == Constants.polarizations{Constants.id_pol_V}
+elseif pol1 == Constants.POLARIZATIONS{Constants.ID_POL_V}
     u1p1 = u1th ;
     u1p2 = u1ph ;
-elseif pol1 == Constants.polarizations{Constants.id_pol_X}
+elseif pol1 == Constants.POLARIZATIONS{Constants.ID_POL_X}
     u1p1 = u1X ;
     u1p2 = u1Y ;
-elseif pol1 == Constants.polarizations{Constants.id_pol_Y}
+elseif pol1 == Constants.POLARIZATIONS{Constants.ID_POL_Y}
     u1p1 = u1Y ;
     u1p2 = u1X ;
-elseif pol1 == Constants.polarizations{Constants.id_pol_R}
+elseif pol1 == Constants.POLARIZATIONS{Constants.ID_POL_R}
     u1p1 = u1R ;
     u1p2 = u1L ;
-elseif pol1 == Constants.polarizations{Constants.id_pol_L}
+elseif pol1 == Constants.POLARIZATIONS{Constants.ID_POL_L}
     u1p1 = u1L ;
     u1p2 = u1R ;
     
 end
 
-if pol2 == Constants.polarizations{Constants.id_pol_H}
+% Determine w.r.t the polarization
+if pol2 == Constants.POLARIZATIONS{Constants.ID_POL_H}
     u2p1 = u2ph ;
     u2p2 = u2th ;
-elseif pol2 == Constants.polarizations{Constants.id_pol_V}
+elseif pol2 == Constants.POLARIZATIONS{Constants.ID_POL_V}
     u2p1 = u2th ;
     u2p2 = u2ph ;
-elseif pol2 == Constants.polarizations{Constants.id_pol_X}
+elseif pol2 == Constants.POLARIZATIONS{Constants.ID_POL_X}
     u2p1 = u2X ;
     u2p2 = u2Y ;
-elseif pol2 == Constants.polarizations{Constants.id_pol_Y}
+elseif pol2 == Constants.POLARIZATIONS{Constants.ID_POL_Y}
     u2p1 = u2Y ;
     u2p2 = u2X ;
-elseif pol2 == Constants.polarizations{Constants.id_pol_R}
+elseif pol2 == Constants.POLARIZATIONS{Constants.ID_POL_R}
     u2p1 = u2R ;
     u2p2 = u2L ;
-elseif pol2 == Constants.polarizations{Constants.id_pol_L}
+elseif pol2 == Constants.POLARIZATIONS{Constants.ID_POL_L}
     u2p1 = u2L ;
     u2p2 = u2R ;
 end
@@ -220,8 +220,7 @@ end
 end
 
 
-%% from Spherical to Cartesian coordinate system
-
+% Conversion from Spherical to Cartesian coordinate system
 function [AX, AY, AZ] = sph2Car2(theta, phi, AR, AT, AP)
 
 st = sin(theta) ;

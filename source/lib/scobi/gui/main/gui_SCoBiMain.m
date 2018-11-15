@@ -22,7 +22,7 @@ function varargout = gui_SCoBiMain(varargin)
 
 % Edit the above text to modify the response to help gui_SCoBiMain
 
-% Last Modified by GUIDE v2.5 17-Aug-2018 15:50:46
+% Last Modified by GUIDE v2.5 26-Oct-2018 12:50:42
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -60,7 +60,7 @@ guidata(hObject, handles);
 
 clearvars -global scobiMainGUI
 global scobiMainGUI
-scobiMainGUI = SCoBiMainGUIManager(handles);
+scobiMainGUI = gui_SCoBiMain_Manager(handles);
 
 % Wait for thee user response
 uiwait( hObject );
@@ -186,3 +186,42 @@ function pb_SCoBi_Soil_Callback(hObject, eventdata, handles)
 
 global scobiMainGUI
 scobiMainGUI.syncFromGUI( scobiMainGUI.uiIDs.pb_SCoBi_Soil );
+
+
+% --- Executes on button press in pb_SCoBi_Wetland.
+function pb_SCoBi_Wetland_Callback(hObject, eventdata, handles)
+% hObject    handle to pb_SCoBi_Wetland (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+global scobiMainGUI
+scobiMainGUI.syncFromGUI( scobiMainGUI.uiIDs.pb_SCoBi_Wetland );
+
+
+% --- Executes on button press in togglebutton1.
+function togglebutton1_Callback(hObject, eventdata, handles)
+% hObject    handle to togglebutton1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of togglebutton1
+
+
+% --- Executes on button press in pb_about.
+function pb_about_Callback(hObject, eventdata, handles)
+% hObject    handle to pb_about (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+global scobiMainGUI
+scobiMainGUI.syncFromGUI( scobiMainGUI.uiIDs.pb_about );
+
+
+% --- Executes on button press in pb_documents.
+function pb_documents_Callback(hObject, eventdata, handles)
+% hObject    handle to pb_documents (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+global scobiMainGUI
+scobiMainGUI.syncFromGUI( scobiMainGUI.uiIDs.pb_documents );

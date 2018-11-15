@@ -1,7 +1,21 @@
 classdef Directories < handle
-    %DIRECTORIES Class to keep track of all source code and input directories
-    %   This class has one attribute for each source code or input
-    %   directory. Every attribute can be reached by a static getter method.
+% class Directories
+%
+%   This class allows the simulator to access to the source code and input 
+%   directories. It has attributes for specific source code and input
+%   directories that are required to be accessed throughout the simulation. 
+%   Every attribute can be reached by a static getter method.   
+%
+%   See also Constants, ConstantNames, SimulationFolders.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
     
     
     properties (SetAccess = private, GetAccess = public)
@@ -10,7 +24,8 @@ classdef Directories < handle
         
         scobi        
         scobi_gui_last_input    
-        scobi_gui_scobi        
+        scobi_gui_scobi   
+        scobi_gui_images_about       
         multi_layer
         vegetation
         
@@ -19,6 +34,8 @@ classdef Directories < handle
         input_sys
         input_ant_pat_Rx
         input_veg
+        
+        sims_main
             
     end
     
@@ -76,8 +93,16 @@ classdef Directories < handle
             scobi_gui = fullfile(obj.scobi, 'gui');
 
             obj.scobi_gui_scobi = fullfile( scobi_gui, 'scobi');
+            
+            scobi_gui_images = fullfile(scobi_gui, 'images');
+            
+            obj.scobi_gui_images_about = fullfile( scobi_gui_images, 'about');
 
             obj.scobi_gui_last_input = fullfile( scobi_gui, 'last_input');
+
+            
+            %% GUI DIRECTORIES
+            obj.sims_main = fullfile( obj.main_dir, 'sims');
             
         end
         
@@ -117,8 +142,16 @@ classdef Directories < handle
             out = obj.scobi_gui_scobi;
         end
         
+        function out = get.scobi_gui_images_about(obj)
+            out = obj.scobi_gui_images_about;
+        end
+        
         function out = get.scobi_gui_last_input(obj)
             out = obj.scobi_gui_last_input;
+        end
+        
+        function out = get.sims_main(obj)
+            out = obj.sims_main;
         end
     end
     

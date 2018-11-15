@@ -1,11 +1,25 @@
+
 classdef RxGGParams < handle
-    %% RXGGPARAMS CLASS - Maintains Generalized-Gaussian receiver antenna 
-    % parameters
-    % It keeps the parameters that are specific to the receiver antenna in 
-    % the bistatic configuration of each simulation. It can have only one 
-    % instance throughout the whole simulation thanks to Singleton Pattern. 
-    % Its properties should be initialized once in the simulation and then 
-    % used by other entities by using the get() functions provided by it.
+% class RxGGParams
+%
+%   Maintains Generalized-Gaussian receiver antenna parameters. It can have 
+%   only one instance throughout the whole simulation thanks to Singleton 
+%   Pattern. Its properties should be initialized once in the simulation 
+%   and then used by other entities by using the get() functions provided 
+%   by it. 
+%
+%   See also initRxGGParams.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
+
     
     properties (SetAccess = private, GetAccess = public)
         
@@ -71,30 +85,27 @@ classdef RxGGParams < handle
             ant_pat_struct = [];
             
             
-            %% CALCULATIONS
-            % TO-DO: Make a continous range
-            if obj.SLL_dB == 15 ;
-                a = 0.18 ; % 0.35 ;  % 15 dB    
-            elseif obj.SLL_dB == 20 ;
-                a = 0.11 ; % 0.25 ;  % 20 dB    
-            elseif obj.SLL_dB == 30 ;
-                a = 0.04 ; % 0.12 ;  % 30 dB    
-            elseif obj.SLL_dB == 40 ;
-                a = 0.01 ; % 0.055 ; % 40 dB    
-            end
+            %% CALCULATIONS            
+            % Calculate parameter "a" based on SLL
+            % Use the known values for SLL and "a"
+            sll_levels = [15; 20; 30; 40];
+            a_values = [0.18; 0.11; 0.04; 0.01];
+            % Fit a 3rd order polynomial to these known values
+            p = polyfit(sll_levels, a_values, 3);            
+            % Calculate the "a" value for the given SLL value
+            a = p(1,1) * obj.SLL_dB ^ 3 + p(1,2) * obj.SLL_dB ^ 2 + ...
+                 p(1,3) * obj.SLL_dB + p(1,4);
+            
+            % Calculate parameter V based on XPL
+            xpl_levels = [15; 25; 30; 40];
+            V_values = [sqrt(0.0316); sqrt(0.0100); sqrt(0.0010); sqrt(0.0001)];
+            % Fit a 3rd order polynomial to these known values
+            pV = polyfit(xpl_levels, V_values, 3);            
+            % Calculate the "a" value for the given SLL value
+            V = pV(1,1) * obj.XPL_dB ^ 3 + pV(1,2) * obj.XPL_dB ^ 2 + ...
+                 pV(1,3) * obj.XPL_dB + pV(1,4);
 
-
-            % X-pol level
-            if obj.XPL_dB == 15
-                V = sqrt(0.0316) ; % -15 dB
-            elseif obj.XPL_dB == 25
-                V = sqrt(0.0100);  % -20 dB
-            elseif obj.XPL_dB == 30
-                V = sqrt(0.0010) ;  % -30 dB
-            elseif obj.XPL_dB == 40
-                V = sqrt(0.0001) ; % -40 dB
-            end
-
+            % Calculate Generalized-Gaussian pattern
             [th, ph, gg] = obj.GGpattern( obj.hpbw_deg, a, ant_pat_res_deg ) ;
             gXX = gg ; gYY = gg ;
 
@@ -209,11 +220,11 @@ classdef RxGGParams < handle
         function [th, ph, gg] = GGpattern( obj, ths_deg, a, ant_pat_res_deg )
             
             
-            ant_pat_th_range_deg = Constants.ant_pat_th_range_deg;
-            ant_pat_th_range_rad = degtorad( ant_pat_th_range_deg );
+            ant_pat_th_range_deg = Constants.ANT_PAT_TH_RANGE_DEG;
+            ant_pat_th_range_rad = deg2rad( ant_pat_th_range_deg );
             
-            ant_pat_ph_range_deg = Constants.ant_pat_ph_range_deg;
-            ant_pat_ph_range_rad = degtorad( ant_pat_ph_range_deg );
+            ant_pat_ph_range_deg = Constants.ANT_PAT_PH_RANGE_DEG;
+            ant_pat_ph_range_rad = deg2rad( ant_pat_ph_range_deg );
 
             % Beamwidth
             % ths_deg = 12, 6, 3
@@ -221,7 +232,7 @@ classdef RxGGParams < handle
             % Sidelobe levels
             % a = 0.35 (15 dB), 0.25 (20 dB), 0.12 (30 dB), 0.055 (40 db)
 
-            % TO-DO: Test for bad values (e.g. non-integer result)?
+            % TO-DO: Future work: Test for bad values (e.g. non-integer result)?
             Nth = floor( ant_pat_th_range_deg / ant_pat_res_deg ) + 1;
             Nph = floor( ant_pat_ph_range_deg / ant_pat_res_deg ) + 1;
 
@@ -232,7 +243,7 @@ classdef RxGGParams < handle
 
             % Angle span (Beamwidth)
             % ths_deg = 12 ;                     
-            ths_rad = degtorad(ths_deg) ; 
+            ths_rad = deg2rad(ths_deg) ; 
 
             % Generalized Gaussian Pattern parameters
             alpha = 0.2 ; % 0.5 ;  % sidelobe width                 

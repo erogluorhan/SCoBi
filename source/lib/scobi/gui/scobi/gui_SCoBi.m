@@ -22,7 +22,7 @@ function varargout = gui_SCoBi(varargin)
 
 % Edit the above text to modify the response to help gui_SCoBi
 
-% Last Modified by GUIDE v2.5 23-Aug-2018 14:36:08
+% Last Modified by GUIDE v2.5 02-Nov-2018 10:14:40
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -816,21 +816,21 @@ end
 
 
 
-function edit_th0_Tx_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_th0_Tx (see GCBO)
+function edit_el0_Tx_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_el0_Tx (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit_th0_Tx as text
-%        str2double(get(hObject,'String')) returns contents of edit_th0_Tx as a double
+% Hints: get(hObject,'String') returns contents of edit_el0_Tx as text
+%        str2double(get(hObject,'String')) returns contents of edit_el0_Tx as a double
 
 global guiSCoBiManager
-guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.edit_th0_Tx );
+guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.edit_el0_Tx );
 
 
 % --- Executes during object creation, after setting all properties.
-function edit_th0_Tx_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit_th0_Tx (see GCBO)
+function edit_el0_Tx_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_el0_Tx (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1019,3 +1019,30 @@ function cb_discrete_slab_Callback(hObject, eventdata, handles)
 
 global guiSCoBiManager
 guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.cb_discrete_slab );
+
+
+% --- Executes on button press in pb_Wetland.
+function pb_Wetland_Callback(hObject, eventdata, handles)
+% hObject    handle to pb_Wetland (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pb_about.
+function pb_about_Callback(hObject, eventdata, handles)
+% hObject    handle to pb_about (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+global guiSCoBiManager
+guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.pb_about );
+
+
+% --- Executes on button press in pb_documents.
+function pb_documents_Callback(hObject, eventdata, handles)
+% hObject    handle to pb_documents (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+global guiSCoBiManager
+guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.pb_documents );

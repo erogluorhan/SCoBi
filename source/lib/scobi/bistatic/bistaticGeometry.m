@@ -1,9 +1,30 @@
-%% Mehmet Kurum
-% Feb 25, 2017 
 
 function [rd_m, idn, isn, osp, osn, Tgs, Tgr, TgrI, AntRotZ_Rx, ...
-          AntRotY_Rx, AntRot_Rx, AntRotZ_Tx, ellipse_FP_Rx_m, ...
+          AntRotY_Rx, AntRot_Rx, AntRotZ_Tx, ...
           AllPoints_m, AngT2R_rf, AngS2R_rf, AngT2S_sf] = bistaticGeometry
+% function bistaticGeometry 
+%
+%   Calculates and outputs the bistatic geometry-related transformation matrices, 
+%   direction vectors, and rotation matrices.  
+%
+%   - Calls calcFresnelZones function to calculate the Fresnel zones for 
+%   the specular reflection point and to use them in the calculation of ...
+%   the other points.
+%
+%   [rd_m, idn, isn, osp, osn, Tgs, Tgr, TgrI, AntRotZ_Rx, AntRotY_Rx, ...
+%    AntRot_Rx, AntRotZ_Tx, AllPoints_m, AngT2R_rf, AngS2R_rf, ...
+%    AngT2S_sf] = bistaticGeometry
+%
+%   See also updateBistaticDynParams, calcFresnelZones.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
 
 
 %% GET GLOBAL PARAMETERS
@@ -13,26 +34,20 @@ r_Tx_m = TxParams.getInstance.r_Tx_m;
 % Configuration Parameters
 th0_Tx_list_deg = ConfigParams.getInstance.th0_Tx_list_deg;
 th0_Tx_deg = th0_Tx_list_deg( sim_counter );   % Currrent theta ( Incidence Angle )
-th0_Tx_rad = degtorad(th0_Tx_deg) ;
+th0_Tx_rad = deg2rad(th0_Tx_deg) ;
 el0_Tx_deg = 90 - th0_Tx_deg;
-el0_Tx_rad = degtorad(el0_Tx_deg) ;
+el0_Tx_rad = deg2rad(el0_Tx_deg) ;
 ph0_Tx_list_deg = ConfigParams.getInstance.ph0_Tx_list_deg;
 ph0_Tx_deg = ph0_Tx_list_deg( ParamsManager.sim_counter );   % Current phi (Azimuth Angle (standard spherical coords) of transmitter's position)
 ph0_Tx_deg = 90 - ph0_Tx_deg ;                            % If it was the incoming signal's azimuth, we would add 180 degrees
-ph0_Tx_rad = degtorad(ph0_Tx_deg) ;
+ph0_Tx_rad = deg2rad(ph0_Tx_deg) ;
 % Receiver Parameters
 hr_m = RxParams.getInstance.hr_m;                   % Receiver altitude
-ant_pat_Rx_id = RxParams.getInstance.ant_pat_Rx_id; % Receiver antenna pattern generation method (Look at Constants.Rx_ant_pats)
 th0_Rx_deg = RxParams.getInstance.th0_Rx_deg;       % Antenna Looking Angle (angle of Incidence)
-th0_Rx_rad = degtorad(th0_Rx_deg) ;
+th0_Rx_rad = deg2rad(th0_Rx_deg);
 ph0_Rx_deg = RxParams.getInstance.ph0_Rx_deg;       % Azimuth Angle of Receiver position
 ph0_Rx_deg = 90 - ph0_Rx_deg;
-ph0_Rx_rad = degtorad(ph0_Rx_deg) ;
-% If recevier antenna pattern is Generalized-Gaussian, its footprint
-% ellipse will be calculated below
-if ant_pat_Rx_id == Constants.id_Rx_GG
-    hpbw_deg = RxGGParams.getInstance.hpbw_deg;
-end
+ph0_Rx_rad = deg2rad(ph0_Rx_deg) ;
 
 
 %% INITIALIZE REQUIRED PARAMETERS
@@ -48,19 +63,6 @@ pos_Gnd_m = [0; 0; 0] ;
 
 
 %% CALCULATIONS
-% Antenna Parameters/Orientation - Receiver
-
-% If recevier antenna pattern is Generalized-Gaussian, its footprint
-% ellipse will be calculated below
-if ant_pat_Rx_id == Constants.id_Rx_GG
-    % 3dB Beamwidths
-    % Bthrd = 40 ;
-    Bthr_rad = degtorad(hpbw_deg) ;
-    % Bphrd = 40 ;
-    Bphr_rad = degtorad(hpbw_deg) ;
-end
-
-
 % Antenna Rotation Matrix for reciever
 % Rotation about z-axis (Azimuth rotation)
 AntRotZ_Rx = [ cos(ph0_Rx_rad), -sin(ph0_Rx_rad), 0 ;
@@ -82,22 +84,24 @@ AntRotZ_Tx = [ cos(ph0_Tx_rad), -sin(ph0_Tx_rad), 0 ;
              0,                0,               1 ];
 
 
-% Transmitter position
+%% TRANSMITTER POSITION AND RELATED LOCATIONS
 % Slant range (Approximated)
-rd_m = sqrt( r_Tx_m ^ 2 - (Constants.re * cos( el0_Tx_rad ) ) ^ 2) - Constants.re * sin( el0_Tx_rad ) ;
-% T : Transmitter Antenna position
+rd_m = sqrt( r_Tx_m ^ 2 - (Constants.R_EARTH * cos( el0_Tx_rad ) ) ^ 2) - Constants.R_EARTH * sin( el0_Tx_rad ) ;
+
+% Transmitter Antenna position
 pos_Tx_m = rd_m * [sin(th0_Tx_rad) * cos(ph0_Tx_rad); sin(th0_Tx_rad) * sin(ph0_Tx_rad); cos(th0_Tx_rad)] ;
+
+% Transmitter altitude
 ht_m = pos_Tx_m(3) ;
-% TI : Transmitter Image Antenna position
+
+% Transmitter Image position
 pos_TxI_m = [pos_Tx_m(1); pos_Tx_m(2); -ht_m] ;
 
-% A : Antenna projection point on the ground
-% % pHt = [pos_Tx_m(1), pos_Tx_m(2), 0] ;
-
-% Specular point and 1st Fresnel zone ellipse
-Nfz = 1;  % number of fresnel zones is 1 for specular 
+% Specular reflection point and 1st Fresnel zone ellipse
+Nfz = 1;  % number of fresnel zones is 1 since only the specular contribution is considered 
 [S0x_m, x1_m, ~, ~] = calcFresnelZones(ht_m, hr_m, Nfz) ;
 
+% Specular reflection point position
 pos_SP_m = [S0x_m; 0; 0] ;
 pos_SP_m = AntRotZ_Tx * pos_SP_m  ; % specular point location
 
@@ -106,53 +110,19 @@ pos_FZ_m = [x1_m(1); 0; 0] ;
 pos_FZ_m = AntRotZ_Tx * pos_FZ_m  ;
 
 
-%% RECEIVER FOOTPRINT - ELLIPSE
-% If recevier antenna pattern is Generalized-Gaussian, its footprint
-% ellipse will be calculated below
-ellipse_FP_Rx_m = [];
-
-if ant_pat_Rx_id == Constants.id_Rx_GG
-    
-    % major axis
-    dar_m = hr_m * (tan(th0_Rx_rad + Bthr_rad / 2) - tan(th0_Rx_rad - Bthr_rad / 2)) ;
-
-    % angle of incidnce at the center of the ellipse
-    thcr_rad = atan(tan(th0_Rx_rad + Bthr_rad / 2) - dar_m / hr_m / 2) ;
-    thcr_deg = radtodeg(thcr_rad) ; %#ok<NASGU>
-
-    % minor axis
-    dbr_m = 2 * hr_m * sec(thcr_rad) * tan(Bphr_rad / 2) ;
-
-    ellipse_FP_Rx_m = [dar_m; dbr_m] ; % receiver footprint
-    
-end
-
-
 %% RECEIVER POSITION AND POINTING LOCATIONS
-% R : Receiver Antenna position
+% Receiver Antenna position
 pos_Rx_m = [0; 0; hr_m] ;
-% pos_Rx_m = AntRotZ_Rx * pos_Rx_m ;
 
-% RI : Image Receiver Antenna position
+% Receiver Image position
 pos_RxI_m = [0; 0; -hr_m] ;
 
-% G : Antenna projection point on the ground
-% Center of reference coordinate system
-pos_Gnd_m = AntRotZ_Rx * pos_Gnd_m ;
+% Antenna projection point on the ground
+pos_Gnd_m = AntRotZ_Rx * pos_Gnd_m ;        % Center of reference coordinate system
 
 % B : Boresight point
 pos_B_Rx_m = [hr_m * tan(th0_Rx_rad); 0; 0] ;
 pos_B_Rx_m = AntRotZ_Rx * pos_B_Rx_m ;
-
-% If recevier antenna pattern is Generalized-Gaussian, its footprint
-% ellipse will be calculated below
-if ant_pat_Rx_id == Constants.id_Rx_GG
-    % Ellipse Center - C
-    pos_FP_Rx_m = [hr_m * tan(thcr_rad); 0; 0] ;
-    pos_FP_Rx_m = AntRotZ_Rx * pos_FP_Rx_m ;
-else
-    pos_FP_Rx_m = [];
-end
 
 
 %% ALL POINTS
@@ -161,9 +131,8 @@ end
 % pos_Rx_m: Receiver, 
 % pos_Gnd_m: Ground (reference), 
 % pos_B_Rx_m: Receiver Boresight,
-% pos_FP_Rx_m: Center of Receiver's FootPrint, 
 % pos_FZ_m: Center of Fresnel Zone
-AllPoints_m = [pos_Tx_m, pos_TxI_m, pos_SP_m, pos_Rx_m, pos_RxI_m, pos_Gnd_m, pos_B_Rx_m, pos_FP_Rx_m, pos_FZ_m] ;
+AllPoints_m = [pos_Tx_m, pos_TxI_m, pos_SP_m, pos_Rx_m, pos_RxI_m, pos_Gnd_m, pos_B_Rx_m, pos_FZ_m] ;
 
 
 %% PROPAGATION VECTORS
@@ -218,12 +187,8 @@ Tgr = [uxr ; uyr ; uzr] ; % G -> R
 % to Image receiver system
 TgrI = [uxrI ; uyrI ; uzrI] ; % G -> RI
 
-% % Receive antenna Coordinates in local (specular) ground system
-% Trs = Tgs * Tgr .' ;   % R -> S
 
-
-
-%% The incidence angle on the receiver in receiver coordinates
+% The incidence angle on the receiver in receiver coordinates
 % propagation vector from Transmitter to reciever in receiver antenna system
 idn_rf = Tgr * idn ;
 
@@ -249,9 +214,10 @@ ph0 = atan2(-osp_rf(2), -osp_rf(1)) * 180 / pi ;
 AngS2R_rf = [th0; convertAngleTo360Range( ph0 ) ]  ;
 
 
-%% The incidence angle in spacular frame
+% The incidence angle in specular frame
 % propagation vector from Transmitter to ground in local (specular) ground system
 isn_sf = Tgs * isn ;
+
 
 % Transmitter to Specular Point
 % off-axis angle of zs towards Transmitter

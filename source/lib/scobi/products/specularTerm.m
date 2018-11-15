@@ -1,10 +1,23 @@
-%% Mehmet Kurum
-% 03/12/2017
-% modified - 11/09/2017
-% modified - 11/15/2017
 
-% Specular (Coherent) Term
 function specularTerm
+% function specularTerm 
+%
+%   Calculates the specular reflection coefficient (coherent forward 
+%   scattering through specular reflection point) and reflectivity. Stores 
+%   the calculated values into simulation output folders in an incremental 
+%   fashion as the simulation iterations continue.
+%
+%   See also mainScoBi, directTerm.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
 
 
 %% GET GLOBAL DIRECTORIES
@@ -39,7 +52,7 @@ DoYs = ConfigParams.getInstance.DoYs;
 gnd_structure_id = GndParams.getInstance.gnd_structure_id;
 % Ground Multi-layer Parameters
 calc_diel_profile_fit_functions = [];
-if gnd_structure_id == Constants.id_gnd_multi_layered
+if gnd_structure_id == Constants.ID_GND_MULTI_LAYERED
     calc_diel_profile_fit_functions = GndMLParams.getInstance.calc_diel_profile_fit_functions;
 end
 % Bistatic Dynamic Parameters
@@ -51,7 +64,7 @@ u_sr = RotMatDynParams.getInstance.u_sr;
 
 
 %% INITIALIZE REQUIRED PARAMETERS
-% AllPoints_m = [pos_Tx_m, pos_TxI_m, pos_SP_m, pos_Rx_m, pos_RxI_m, pos_Gnd_m, pos_B_Rx_m, pos_FP_Rx_m, pos_FZ_m] ;
+% AllPoints_m = [pos_Tx_m, pos_TxI_m, pos_SP_m, pos_Rx_m, pos_RxI_m, pos_Gnd_m, pos_B_Rx_m, pos_FZ_m] ;
 pos_Tx_m = AllPoints_m(:, 1) ;        % Transmitter position
 pos_SP_m = AllPoints_m(:, 3) ;       % Specular point
 pos_Rx_m = AllPoints_m(:, 4) ;        % Receiver position
@@ -80,9 +93,9 @@ r_st = vectorMagnitude(ST) ;  % slant range
 RS = pos_Rx_m - pos_SP_m ;         % Specular to Receiver
 r_sr = vectorMagnitude(RS) ;  % slant range
 
-f_Hz = f_MHz * Constants.MHz2Hz ;
-lambda_m = Constants.c / f_Hz ;     % Wavelength
-k0 = 2 * pi * f_Hz / Constants.c ;    % Wave number
+f_Hz = f_MHz * Constants.MHZ_TO_HZ ;
+lambda_m = Constants.LIGHTSPEED / f_Hz ;     % Wavelength
+k0 = 2 * pi * f_Hz / Constants.LIGHTSPEED ;    % Wave number
 
 % Factor Kc
 K = 1i * sqrt(EIRP) * sqrt(G0r) * lambda_m / (4 * pi) ;
@@ -94,8 +107,8 @@ phrd = AngS2R_rf(2, 1) ;
 
 ant_pat_res_factor = 1 / ant_pat_res_deg;
 
-thd = round( ant_pat_res_factor * radtodeg(th)) / ant_pat_res_factor ; % rounding operation is due to accuracy concerns
-phd = round( ant_pat_res_factor * radtodeg(ph)) / ant_pat_res_factor ; % to make the angles multiples of ant_pat_res_deg
+thd = round( ant_pat_res_factor * rad2deg(th)) / ant_pat_res_factor ; % rounding operation is due to accuracy concerns
+phd = round( ant_pat_res_factor * rad2deg(ph)) / ant_pat_res_factor ; % to make the angles multiples of ant_pat_res_deg
 
 % Receiver Antenna values in the specular direction
 ind_th = thd == round( ant_pat_res_factor * thrd(1, 1)) / ant_pat_res_factor ; % round is to make it a multiple of ant_pat_res_deg
@@ -108,19 +121,20 @@ g_r = [g11(ind_th & ind_ph), g12(ind_th & ind_ph); ...
     g21(ind_th & ind_ph), g22(ind_th & ind_ph)] ;
 
 % 4 X 4
-G_r = calc_Muller(g_r) ;
+G_r = calcMuller(g_r) ;
 % 4 X 4
-G_r0 = calc_Muller(g_r0) ;
+G_r0 = calcMuller(g_r0) ;
 % 4 X 4
-G_t = calc_Muller(g_t) ;
+G_t = calcMuller(g_t) ;
 
 % Transmitter-Receiver Rotation Matrix
 % 4 X 4
-U_ts = calc_Muller(u_ts) ;
+U_ts = calcMuller(u_ts) ;
 % 4 X 4
-U_sr = calc_Muller(u_sr) ;
+U_sr = calcMuller(u_sr) ;
 
-[R_sv, R_sb, r_sv, r_sb] = CalcSRM() ; % r_sv for vegetation, r_sb for bare soil
+% Calculate specular reflection matrices
+[R_sv, R_sb, r_sv, r_sb] = calcSRM() ; % r_sv for vegetation, r_sb for bare soil
 
 
 %% SPECULAR TERM
@@ -128,17 +142,17 @@ U_sr = calc_Muller(u_sr) ;
 num_diel_profiles = 1;
 
 % For multiple ground layers
-if gnd_structure_id == Constants.id_gnd_multi_layered
+if gnd_structure_id == Constants.ID_GND_MULTI_LAYERED
     
     % Number of dielectric profiles depends on number of ground layers.
-    [~, num_diel_profiles] = size( Constants.diel_profiles );
+    [~, num_diel_profiles] = size( Constants.DIEL_PROFILES );
     
 end
 
 % P = 4 x 1
 % b = 2 x 1
 
-if gnd_structure_id == Constants.id_gnd_single_layered
+if gnd_structure_id == Constants.ID_GND_SINGLE_LAYERED
 
     % Field
     % Vegetation
@@ -166,7 +180,7 @@ if gnd_structure_id == Constants.id_gnd_single_layered
     P0_coh1b = G_r0 * U_sr * R_sb{1,1} * U_ts * G_t * E_t1 ;
     P0_coh2b = G_r0 * U_sr * R_sb{1,1} * U_ts * G_t * E_t2 ;
     
-elseif gnd_structure_id == Constants.id_gnd_multi_layered 
+elseif gnd_structure_id == Constants.ID_GND_MULTI_LAYERED 
 
     for ii = 1 : num_diel_profiles
     
@@ -207,7 +221,7 @@ end
 
 %% SAVE OUTPUTS
 % Day-of-year for Time-series simulations
-if sim_mode_id == Constants.id_time_series
+if sim_mode_id == Constants.ID_TIME_SERIES
     
     DoY = DoYs( sim_counter );    
     filename = 'DoYs';
@@ -245,11 +259,11 @@ filename_bare_02 = 'Bare02';
 
 for ii = 1 : num_diel_profiles
     
-    if gnd_structure_id == Constants.id_gnd_single_layered ...
-            || ( gnd_structure_id == Constants.id_gnd_multi_layered && calc_diel_profile_fit_functions(ii, 1) )
+    if gnd_structure_id == Constants.ID_GND_SINGLE_LAYERED ...
+            || ( gnd_structure_id == Constants.ID_GND_MULTI_LAYERED && calc_diel_profile_fit_functions(ii, 1) )
     
-        % Field: 2 X 1
-        if gnd_cover_id == Constants.id_veg_cover
+        % Reflection coefficient: 2 X 1
+        if gnd_cover_id == Constants.ID_VEG_COVER
 
             writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_veg_1, sim_counter, b_coh1v(:,ii) )
             writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_veg_2, sim_counter, b_coh2v(:,ii) )
@@ -263,8 +277,8 @@ for ii = 1 : num_diel_profiles
         writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_bare_01, sim_counter, b0_coh1b(:,ii) )
         writeComplexVarIncremental(pathname_reff_coeff{1,ii}, filename_bare_02, sim_counter, b0_coh2b(:,ii) )
 
-        % Power: 4 X 1
-        if gnd_cover_id == Constants.id_veg_cover
+        % Reflectivity: 4 X 1
+        if gnd_cover_id == Constants.ID_VEG_COVER
 
             writeVarIncremental(pathname_reflectivity{1,ii}, filename_veg_1, sim_counter, P_coh1v(:,ii) );
             writeVarIncremental(pathname_reflectivity{1,ii}, filename_veg_2, sim_counter, P_coh2v(:,ii));
@@ -287,17 +301,17 @@ end
 
 
 
-%% Calculate Specular Reflection Matrix(SRM)
-function  [R_sv, R_sb, r_sv, r_sb] = CalcSRM()
+function  [R_sv, R_sb, r_sv, r_sb] = calcSRM()
+% Calculate Specular Reflection Matrix(SRM)
+
 
 %% GET GLOBAL DIRECTORIES
 dir_afsa = SimulationFolders.getInstance.afsa;
 
 
 %% GET GLOBAL PARAMETERS
-% Vegetation Parameters
-dim_layers_m = VegParams.getInstance.dim_layers_m;
-num_veg_layers = VegParams.getInstance.num_layers;
+% Simulation Settings
+gnd_cover_id = SimSettings.getInstance.gnd_cover_id;
 % Ground Parameters
 gnd_structure_id = GndParams.getInstance.gnd_structure_id;
 % Ground Dynamic Paramaters
@@ -325,14 +339,26 @@ dKz_s = squeeze(dKz(:, ANGDEG == round(thsd), :)) ;
 ArgH = 0 ;
 ArgV = 0 ;
 
-for ii = 1 : num_veg_layers
+% If ground cover is Vegetation-cover
+if gnd_cover_id == Constants.ID_VEG_COVER
     
-    ArgH = ArgH + dKz_s(1, ii) * dim_layers_m(ii, 1) ;
-    ArgV = ArgV + dKz_s(2, ii) * dim_layers_m(ii, 1) ;
+    
+    %% GET GLOBAL PARAMETERS
+    % Vegetation Parameters
+    dim_layers_m = VegParams.getInstance.dim_layers_m;
+    num_veg_layers = VegParams.getInstance.num_layers;                  
+    
+    % Calculate the attenuation
+    for ii = 1 : num_veg_layers
+
+        ArgH = ArgH + dKz_s(1, ii) * dim_layers_m(ii, 1) ;
+        ArgV = ArgV + dKz_s(2, ii) * dim_layers_m(ii, 1) ;
+
+    end
     
 end
 
-% vegetation transmissivity
+% vegetation transmissivity, if any
 t_sv = [exp(+1i * ArgV) 0; 0 exp(+1i * ArgH)] ;
 % unity transmissivity for bare soil
 t_sb = [1 0; 0 1] ;
@@ -340,9 +366,9 @@ t_sb = [1 0; 0 1] ;
 
 %% GROUND REFLECTION MATRIX
 % If single-layered ground
-if gnd_structure_id == Constants.id_gnd_single_layered
+if gnd_structure_id == Constants.ID_GND_SINGLE_LAYERED
     
-    ths = degtorad(thsd) ;
+    ths = deg2rad(thsd) ;
     [RGHIF, RGVIF, ~, ~] = reflectionCoeffSingle(ths, ths, eps_g, h) ;
 
     r_g = [RGVIF 0; 0 RGHIF] ;
@@ -353,11 +379,11 @@ if gnd_structure_id == Constants.id_gnd_single_layered
     r_sv{1,1} = t_sv * r_g * t_sv ;
     r_sb{1,1} = t_sb * r_g * t_sb ;
     % 4 X 4
-    R_sv{1,1} = calc_Muller(r_sv{1,1}) ;
-    R_sb{1,1} = calc_Muller(r_sb{1,1}) ;
+    R_sv{1,1} = calcMuller(r_sv{1,1}) ;
+    R_sb{1,1} = calcMuller(r_sb{1,1}) ;
 
 % Else if multi-layered ground
-elseif gnd_structure_id == Constants.id_gnd_multi_layered
+elseif gnd_structure_id == Constants.ID_GND_MULTI_LAYERED
     
     %% GET GLOBAL PARAMETERS
     calc_diel_profile_fit_functions = GndMLParams.getInstance.calc_diel_profile_fit_functions;
@@ -379,8 +405,8 @@ elseif gnd_structure_id == Constants.id_gnd_multi_layered
             r_sv{ii,1} = t_sv * r_g_cell{ii,1} * t_sv ;
             r_sb{ii,1} = t_sb * r_g_cell{ii,1} * t_sb ;
             % 4 X 4
-            R_sv{ii,1} = calc_Muller(r_sv{ii,1});
-            R_sb{ii,1} = calc_Muller(r_sb{ii,1});
+            R_sv{ii,1} = calcMuller(r_sv{ii,1});
+            R_sb{ii,1} = calcMuller(r_sb{ii,1});
             
         end
         

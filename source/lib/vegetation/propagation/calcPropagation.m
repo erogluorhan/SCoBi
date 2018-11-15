@@ -1,6 +1,26 @@
-% Mehmet Kurum - Nov. 2nd, 2007
 
 function calcPropagation
+% function calcPropagation 
+%
+%   Calculates propagation and attenuation due to the vegetation layer, if 
+%   any. Uses the functions eCylinder and eDisk to make calculations for
+%   dieelctric cylinder (stalk, branch, or needle) and dielectric disk 
+%   (leaf)
+%
+%   - Stores the calculations into simulation output folders as metadata . 
+%
+%   See also mainSCoBi, eCylinder, eDisc.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
+
 
 %% GET GLOBAL DIRECTORIES
 dir_afsa = SimulationFolders.getInstance.afsa;
@@ -8,7 +28,7 @@ dir_afsa = SimulationFolders.getInstance.afsa;
 
 %% GET GLOBAL PARAMETERS 
 % Transmitter Parameters
-f_Hz = TxParams.getInstance.f_MHz * Constants.MHz2Hz ;
+f_Hz = TxParams.getInstance.f_MHz * Constants.MHZ_TO_HZ ;
 % Vegetation Parameters
 TYPES = VegParams.getInstance.TYPES;
 dim_layers_m = VegParams.getInstance.dim_layers_m;
@@ -34,6 +54,7 @@ Na = length(ANGDEG) ;
 
 fXAmp = zeros(2, Na, NkindMax, Ntype, Nlayer) ;
 
+% Trace the vegetation layersm Types, and Kinds
 for ii = 1 : Nlayer
     
     for jj = 1 : Ntype
@@ -42,7 +63,8 @@ for ii = 1 : Nlayer
         
         for kk = 1 : Nkind
             
-            if jj == TYPES.L % Elliptic Disk (Leaf)
+            % Elliptic Disk (Leaf)
+            if jj == TYPES.L 
                 
                 A = dim1_m(kk, jj, ii) ;
                 B = dim2_m(kk, jj, ii) ;
@@ -53,8 +75,9 @@ for ii = 1 : Nlayer
                 PROB_deg = [TH1, TH2] ;
                 
                 Object = Object_mode1(PROB_deg, A, B, T, EPS, 'L') ;
-                
-            else  % Circular Cylinder, i.e., dim1=dim2
+            
+            % Circular Cylinder, i.e., dim1=dim2
+            else  
                 
                 RAD = dim1_m(kk, jj, ii) ;
                 LEN = dim3_m(kk, jj, ii) ;
@@ -70,18 +93,15 @@ for ii = 1 : Nlayer
             disp(strcat('Layer:', num2str(ii), '-Type:',...
                 num2str(jj), '-Kind:', num2str(kk)))
             disp('calculating...')
-            tic ;
 
             for aa = 1 : Na
 
-                tho = degtorad( ANGDEG(aa) );
+                tho = deg2rad( ANGDEG(aa) );
                 pho = 0 ;
                 % Average Forward Scattering Amplitude
                 fXAmp(:, aa, kk, jj, ii) ...
                     = compute_avfscatamp(tho, pho, f_Hz, Object) ;
             end
-
-            toc ;
             
         end % Nkind
         
@@ -114,7 +134,7 @@ ATTENV = zeros(Na, 1) ;
 % Propagation Constants
 for aa = 1 : Na
     
-    tho = degtorad( ANGDEG(aa) );
+    tho = deg2rad( ANGDEG(aa) );
     
     for ii = 1 : Nlayer
         
@@ -217,12 +237,12 @@ function avFScatAmp = compute_avfscatamp(tin, pin, f_Hz, Object)
 switch lower(Object.category)
     case 'cylinder'
         
-        scatFunc = @CYLINDER ;
+        scatFunc = @eCylinder ;
         pdffun = Object.pdf ;
         
     case 'edisc'
         
-        scatFunc = @EDISC ;
+        scatFunc = @eDisc ;
         pdffun = Object.pdf ;
         
     otherwise
@@ -481,8 +501,8 @@ function Object = Object_mode1(prob_deg, dim1_m, dim2_m, dim3_m, eps_r, filename
 theta1_deg = prob_deg(1, 1) ;
 theta2_deg = prob_deg(1, 2) ;
 
-theta1_rad = degtorad( theta1_deg );
-theta2_rad = degtorad( theta2_deg );
+theta1_rad = deg2rad( theta1_deg );
+theta2_rad = deg2rad( theta2_deg );
 
 EPSILON = eps_r ;
 var1 = EPSILON ;

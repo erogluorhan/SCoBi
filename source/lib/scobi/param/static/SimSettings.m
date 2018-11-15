@@ -1,15 +1,29 @@
 classdef SimSettings < handle
-    %% SIMSETTINGS CLASS - Maintains simulation settings
-    % It keeps the settings that are specific to each 
-    % simulation. It can have only one instance throughout the whole
-    % simulation thanks to Singleton Pattern. Its properties should be 
-    % initialized once in the simulation and then used by other entities by 
-    % using the get() functions provided by it.
+% class SimSettings
+%
+%   Maintains simulation settings. It keeps the settings parameters that 
+%   are specific  to each simulation. It can have only one instance 
+%   throughout the whole simulation thanks to Singleton Pattern. Its 
+%   properties should be initialized once in the simulation and then used 
+%   by other entities by  using the get() functions provided by it. 
+%
+%   See also initSimSettings.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
+
     
     properties (SetAccess = private, GetAccess = public)
         
         % Simulator version, e.g. "1.0"
-        version = Constants.version;
+        version = Constants.VERSION;
         
         % Campaign name, e.g. "MSU"
         campaign
@@ -43,8 +57,6 @@ classdef SimSettings < handle
         % 1: Include
         include_in_master_sim_file
         
-        % Flag for drawing live plots during simulations
-        draw_live_plots
     end
     
     
@@ -76,7 +88,7 @@ classdef SimSettings < handle
     methods
         
         function initialize(obj, campaign, simulator_id, sim_mode_id, gnd_cover_id, write_attenuation, ...
-                include_in_master_sim_file, draw_live_plots )
+                include_in_master_sim_file )
             % INITIALIZE - Initializes all the properties
             
             obj.campaign = campaign;
@@ -92,16 +104,11 @@ classdef SimSettings < handle
             obj.gnd_cover_id = gnd_cover_id;
             obj.write_attenuation = write_attenuation;
             obj.include_in_master_sim_file = include_in_master_sim_file; 
-            obj.draw_live_plots = draw_live_plots; 
             
         end
         
         function out = get.campaign(obj)
             out = obj.campaign;
-        end 
-        
-        function out = get.draw_live_plots(obj)
-            out = obj.draw_live_plots;
         end 
         
         function out = get.gnd_cover_id(obj)

@@ -1,10 +1,25 @@
 classdef VegParams < handle
-    %% VEGPARAMS CLASS - Maintains vegetation parameters
-    % It keeps the parameters that are specific to the vegetation and each 
-    % simulation. It can have only one instance throughout the whole
-    % simulation thanks to Singleton Pattern. Its properties should be 
-    % initialized once in the simulation and then used by other entities by 
-    % using the get() functions provided by it.
+% class VegParams
+%
+%   Maintains vegetation parameters, if any. It keeps the parameters that 
+%   are specific to the vegetation layer, if any, of any simulation. It 
+%   can have only one instance throughout the entire simulation thanks to 
+%   Singleton Pattern. Its properties should be initialized once in the 
+%   simulation and then used by other entities by using the get() functions
+%   provided by it. 
+%
+%   See also initVegParams.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
+
     
     properties (SetAccess = private, GetAccess = public)
         
@@ -21,40 +36,44 @@ classdef VegParams < handle
         % Number of layers
         num_layers = 0;
         
-        
+        % Type and Kind distribution matrix for vegetation layers
         TYPKND;
         
-       
+       % Total number of Kinds
         sTYPKND;
-        
-        
+                
+        % Number of Types in the vegetation layer
         num_types;
         
-        
+        % Number of Kinds in the vegetation layer
         num_kinds;
         
         
         LTK;
         
-        
+        % Density of the particles (count/m^3)
         dsty;
         
-        
+        % Dimension 1 of the particles (m) (Start radius for stalk, branch, 
+        % or needle; width for leaf)
         dim1_m
         
-        
+        % Dimension 2 of the particles (m) (End radius for stalk, branch, 
+        % or needle; length for leaf)         
         dim2_m
         
-        
+        % Dimension 3 of the particles (m) (Length for stalk, branch, or 
+        % needle; thickness for leaf)       
         dim3_m
         
-        
+        % Dielectric constant of the particles (a+b*1i)
         epsr
         
-        
+        % Start angle of a particle off the zenith 
         parm1_deg
         
         
+        % End angle of a particle off the zenith 
         parm2_deg
         
         
@@ -88,7 +107,27 @@ classdef VegParams < handle
     
     methods
         
-        function initialize(obj, dim_layers_m, particleIDs, particlesCell, layersCell )
+        function initialize( obj, dim_layers_m, num_layers, TYPKND, ...
+                       num_types, num_kinds, LTK, dsty, dim1_m, dim2_m, ...
+                       dim3_m, epsr, parm1_deg, parm2_deg )
+      
+            obj.dim_layers_m = dim_layers_m;
+            obj.num_layers = num_layers;
+            obj.TYPKND = TYPKND;
+            obj.num_types = num_types;
+            obj.num_kinds = num_kinds;
+            obj.LTK = LTK;
+            obj.dsty = dsty;
+            obj.dim1_m = dim1_m;
+            obj.dim2_m = dim2_m;
+            obj.dim3_m = dim3_m;
+            obj.epsr = epsr;
+            obj.parm1_deg = parm1_deg;
+            obj.parm2_deg = parm2_deg;
+                   
+        end
+        
+        function setup(obj, dim_layers_m, particleIDs, particlesCell, layersCell )
             % INITIALIZE - Initializes all the properties from input file  
             
             obj.dim_layers_m = dim_layers_m;

@@ -1,11 +1,23 @@
 classdef RxUserDefinedParams < handle
-    %% RXUSERDEFINEDPARAMS CLASS - Maintains the user-defined receiver 
-    % antenna parameters
-    % It keeps the parameters that are specific to the user-defined 
-    % receiver antenna pattern. It can have only one instance throughout 
-    % the whole simulation thanks to Singleton Pattern. 
-    % Its properties should be initialized once in the simulation and then 
-    % used by other entities by using the get() functions provided by it.
+% class RxUserDefinedParams
+%
+%   Holds User-defined receiver antenna parameters. It may have only one 
+%   instance throughout the whole simulation thanks to Singleton Pattern. 
+%   Its properties should be initialized once in the simulation and then 
+%   used by other entities by using the get() functions provided by it. 
+%
+%   See also initRxUserDefinedParams.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
+
     
     properties (SetAccess = private, GetAccess = public)
         
@@ -52,10 +64,10 @@ classdef RxUserDefinedParams < handle
         
         function [ant_pat_struct, ant_pat_res_deg] = calcRxAntPatMatrix(obj)
 
-            ant_pat_th_range_deg = Constants.ant_pat_th_range_deg;
-            ant_pat_th_range_rad = degtorad( ant_pat_th_range_deg );
-            ant_pat_ph_range_deg = Constants.ant_pat_ph_range_deg;
-            ant_pat_ph_range_rad = degtorad( ant_pat_ph_range_deg );
+            ant_pat_th_range_deg = Constants.ANT_PAT_TH_RANGE_DEG;
+            ant_pat_th_range_rad = deg2rad( ant_pat_th_range_deg );
+            ant_pat_ph_range_deg = Constants.ANT_PAT_PH_RANGE_DEG;
+            ant_pat_ph_range_rad = deg2rad( ant_pat_ph_range_deg );
 
 
             %% READ ANTENNA PATTERN FILE
