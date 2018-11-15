@@ -21,7 +21,8 @@ function F = eCylinder(TIN, PIN, TS, PS, TH, PH, FHZ, RAD, L, EPS)
 %
 %   See also calcPropagation, eDisc.
 
-%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd.
+%   Adapted from George Washington University vegetation scattering models
 
 %   This program is free software: You can redistribute it and/or 
 %   modify it under the terms of the GNU General Public License as 

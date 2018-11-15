@@ -23,17 +23,25 @@ classdef Constants
         
         VERSION = '1.0.0';
         
+        
+        %% SCoBi URLs
         URL_MSSTATE = 'https://www.msstate.edu';
         
-        URL_IMPRESS = 'http://impress.ece.msstate.edu/';
+        URL_IMPRESS = 'impress.ece.msstate.edu';
         
         URL_SCOBI_GITHUB = 'https://github.com/impresslab/SCoBi';
         
         URL_SCOBI_DESIGN = 'https://github.com/impresslab/SCoBi/blob/master/design/UML-EA/SCoBi-v1_0.EAP';
         
+        URL_SCOBI_PRESENTATION = 'https://github.com/impresslab/SCoBi/blob/master/docs/SCoBi-Presentation-v1_0.pdf';
+        
+        URL_SCOBI_QUICK_START_GUIDE = 'https://github.com/impresslab/SCoBi/blob/master/docs/manuals/SCoBi-Quick_Start_Guide-v1_0.pdf';
+        
         URL_SCOBI_USER_MANUAL = 'https://github.com/impresslab/SCoBi/blob/master/docs/manuals/SCoBi-User_Manual-v1_0.pdf';
         
         URL_SCOBI_DEVELOPER_MANUAL = 'https://github.com/impresslab/SCoBi/blob/master/docs/manuals/SCoBi-Developer_Manual-v1_0.pdf';
+        
+        URL_SCOBI_TUTORIAL_VIDEOS = 'https://www.youtube.com/playlist?list=PLpNPNnGsHon7WyQ8IkK6odma0wsqjfZi4';
         
         
         %% GENERAL PURPOSE CONSTANTS (Maths, EM, etc.)
