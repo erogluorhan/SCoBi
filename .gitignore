@@ -1,12 +1,14 @@
-# Folders
+# Folder ignores
 source/sims/*
+source/input/obsolete/*
+source/lib/scobi_veg/analysis/*
 
 
-# Files
+
+# File ignores
 design/UML-EA/*.ldb
+docs/manuals/*.docx
 
 source/input/sys/sysInput-Paulownia-PAPER_PBAND*
 
-source/lib/runSCoBi_*.m
-source/lib/SCoBi/mainSCoBi_*.m
-source/lib/products/diffuseTerm_*.m
+*.asv

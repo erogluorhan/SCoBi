@@ -1,5 +1,25 @@
-%-e-------------------------*--. --- --. .--. ...*--------------------------
+%--------------------------------------------------------------------------
+% function runSCoBi
 %
+%   Simulation engine function. 
+%
+%   runSCoBi starts the simulation, calls GUI classes to get the user 
+%   inputs, performs input validity check by using ParamsManager class and 
+%   runs the simulation iterations for the required number of simulations.
+%
+%   See also mainSCoBi.
+
+%   Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program (SCoBi) is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.0
+
+
+
 %                    %%%%%  %%%%%   %%%%%  %%%%% %%%
 %                    %      %       %   %  %   %  %
 %                    %%%%%  %       %   %  %%%%   %
@@ -8,11 +28,11 @@
 %
 %
 %--------------------------------------------------------------------------
-%                         SCoBi-Veg v1.0
+%                         SCoBi v1.0.0
 %
-%    Copyright (C) 2018-2023 Mehmet Kurum, Orhan Eroglu
+%    Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
 %--------------------------------------------------------------------------
-%
+% 
 %    This program is free software: You can redistribute it and/or modify
 %    it under the terms of the GNU General Public License as published by
 %    the Free Software Foundation, either version 3 of the License, or
@@ -24,122 +44,136 @@
 %    GNU General Public License for more details.
 %
 %    You should have received a copy of the GNU General Public License
-%    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%    along with this program (COPYING.txt).  If not, 
+%    see <http://www.gnu.org/licenses/>.
 %--------------------------------------------------------------------------
 
-%To-DO: Ensure about Copyright and GNU
 
 function runSCoBi
 
-initSCoBi
 
-% startGUI;
+%% WORKSPACE MANAGEMENT
+% Reset workspace
+resetWS();
 
-inputFile_sys = 'sysInput-Paulownia.xml';
-inputFile_veg = 'vegHomInput-Paulownia.xml';
-% inputFile_sys = 'sysInput-Corn.xml';
-% inputFile_veg = 'vegVirRowInput-Corn.xml';
 
-% Get input and check validity
-getInput(inputFile_sys, inputFile_veg);
+%% GUI: MAIN SCOBI WINDOW (SIMULATOR SELECTION)
+% Open the main SCoBi GUI for simulator selection
+simulator_id = gui_SCoBiMain();
 
-isInputValid = initWithInputs();
-
-% If input is valid
-if isInputValid
+% If no output from GUI, terminate program
+if (isempty(simulator_id))
     
-    num_Th = length( SatParams.getInstance.th0_list_deg );
-    num_Ph = length( SatParams.getInstance.PH0_list_deg );
-    num_VSM = length( GndParams.getInstance.VSM_list_cm3cm3 );
-    num_RMSH = length( GndParams.getInstance.RMSH_list_cm );
-    
-    % Snapshot simulation
-    if SimSettings.getInstance.sim_mode == Constants.sim_mode.SNAPSHOT
-        
-        % For each theta (looking angle)
-        for tt = 1 : num_Th
-            
-            % Set theta index
-            ParamsManager.index_Th( tt );
-            
-            % For each phi (azimuth angle)
-            for pp = 1 : num_Ph
-            
-                % Set phi index
-                ParamsManager.index_Ph( pp );
-                
-                % For each VSM (volumetric soil moisture)
-                for vv = 1 : num_VSM
-            
-                    % Set VSM index
-                    ParamsManager.index_VSM( vv );
-                    
-                    % For each RMSH (root mean square height - roughness)
-                    for rr = 1 : num_RMSH
-                        
-                        % Set RMSH index
-                        ParamsManager.index_RMSH( rr );
-                        
-                        % Initialize the directories depending on theta,
-                        % phi, VSM, and RMSH
-                        SimulationFolders.getInstance.initializeDynamicDirs();
-                        
-                        % Call SCoBi main flow
-                        mainSCoBi;
-                        
-                    end
-                    
-                end
-                
-            end
-            
-        end
-        
-        
-    % Time-series simulation
-    else
-        
-        % For each corresponding tuple of theta (looking angle), 
-        % phi (azimuth angle), VSM (volumetric soil moisture), and 
-        % RMSH (root mean square height - roughness)
-        for ii = 1 : num_Th  % The length of each is equal
-            
-            % Set theta, phi, VSM, ad RMSH index the same
-            ParamsManager.index_Th( ii );
-            ParamsManager.index_Ph( ii );
-            ParamsManager.index_VSM( ii );
-            ParamsManager.index_RMSH( ii );
-            
-            % Initialize the directories depending on theta, phi, VSM, and 
-            % RMSH
-            SimulationFolders.getInstance.initializeDynamicDirs();
-            
-            % Call SCoBi main flow
-            mainSCoBi;
-        
-        end
-        
-    end
-    
-% Else if input is NOT valid
-else
+    fprintf('SCoBi terminated by the user\n');
     
     return
     
 end
 
 
+%% GUI: START THE SELECTED SIMULATOR'S GUI
+inputStruct = [];
+
+% If the OS is not UNIX OR it is MAC and Matlab version below 7.14
+if (~isunix || (ismac && verLessThan('matlab', '7.14')))
+        
+    [simulator_id, inputStruct ] = gui_SCoBi(simulator_id);
+    
+end
+
+% If no output from GUI, terminate program
+if (isempty(inputStruct))
+    
+    fprintf('SCoBi terminated by the user\n');
+    
+    return
+
+end
+
+% Initialize all input parameters by using the inputs from GUI
+varout = initAllInputParams(simulator_id, inputStruct);
+
+% Check input validity
+[isInputValid, sim_counter_start] = initWithInputs( varout );
+
+
+%% SIMULATIONS
+% If input is valid
+if isInputValid
+    
+    
+    %% GET GLOBAL PARAMETERS
+    num_sims = ParamsManager.num_sims;
+    
+
+    % Write all inputs to a text file and show it
+    ParamsManager.writeInputReports( inputStruct );
+
+    %% START SIMULATIONS
+    disp('++++++++++++++++++++++++++++   START SIMULATIONS   ++++++++++++++++++++++++++++++++')
+    
+    sim_start = datetime('now');
+    disp( strcat('Simulation Start: ', string(sim_start) ) )
+    
+    % Run the simulations
+    for ii = sim_counter_start : num_sims
+
+        ParamsManager.sim_counter( ii );
+
+        % Call SCoBi main flow
+        mainSCoBi();
+
+    end
+
+
+    %% END SIMULATIONS
+    disp('-------------------------------   END SIMULATIONS   -------------------------------')
+    
+    
+    disp( strcat('Simulation Start: ', string(sim_start) ) )
+    sim_stop = datetime('now');
+    disp( strcat('Simulation End: ', string(sim_stop) ) )
+    duration = sim_stop - sim_start          
+    disp( strcat('Duration: ', string(duration) ) )
+
+% Else if input is NOT valid
+else
+
+    return
+
+end
+
 end 
 
 
+% Reset the workspace
+function resetWS
 
-function startGUI
+% Restore search path to defaults
+restoredefaultpath
 
-if (~isunix || (ismac && verLessThan('matlab', '7.14')))
-    [mode, mode_vinc, mode_data, mode_ref, flag_ms_pos, flag_ms, flag_ge, flag_cov, flag_NTRIP, flag_amb, ...
-        flag_skyplot, flag_plotproc, flag_var_dyn_model, flag_stopGOstop, flag_SP3, flag_SBAS, flag_IAR, ...
-        filerootIN, filerootOUT, filename_R_obs, filename_M_obs, ...
-        filename_nav, filename_ref, filename_pco, pos_M_man, protocol_idx, multi_antenna_rf, iono_model, tropo_model,fsep_char] = gui_goGPS;
+% Add the common "scobi" directory to the path to start running SCoBi
+addpath( genpath( strcat(pwd, '\scobi') ) );
+
+% Add "input" directory to the path
+addpath( genpath( Directories.getInstance.input ) );
+
+
+% Store current debug breakpoints before doing clear all
+myBreakpoints = dbstatus;
+save('myBreakpoints.mat', 'myBreakpoints');
+
+% Clear all the workspace
+clear all;
+clc ;
+
+% Restore debug breakpoints
+load('myBreakpoints.mat');
+dbstop(myBreakpoints);
+clear myBreakpoints;
+
+if ( exist('myBreakpoints.mat','file') ) 
+    delete('myBreakpoints.mat'); 
 end
 
 end
