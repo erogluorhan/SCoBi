@@ -1,0 +1,21 @@
+Current Release - November 14, 2018
+
+v1.0.1
+
+Fixes:
+* Multi-layer generateDielMLProfiles.m and reflectionCoeffsML.m functions updated to refit the complex conjugate dielectric constant.
+
+Improvements:
+* Release Notes added to the release package
+
+
+
+##########################  PREVIOUS RELEASES  ############################
+
+v1.0.0 - November 6, 2018
+
+New:
+* SCoBi first release ready!
+* Forest, Agriculture, Soil, and Root-zone analyses available.
+* User's manual, Developer's manual, Quick Start Guide, Presentation available.
+* SCoBi design file (.EAP) available.
