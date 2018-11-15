@@ -20,7 +20,18 @@ function generateDielMLProfiles
 %   published by the Free Software Foundation, either version 3 of the 
 %   License, or (at your option) any later version.
 
-%   Version: 1.0.0
+%   Version: 1.0.1
+%
+%  %%%%%%%%%%%%%%%%%%%%%%%%%%  UPDATE HISTORY  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Version 1.0.1  
+%
+%   November 14, 2018
+%
+%   Refitted the complex conjugate to make the physics-oriented multidiel 
+%   function compatible with SCoBi. In engineering, j =sqrt(-1).
+%   In physics, i = (-1)sqrt(-1).
+%
+%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -29,6 +40,7 @@ function generateDielMLProfiles
 gnd_layer_depth_m = GndMLParams.getInstance.layer_depth_m;
 % Ground Dynamic Params
 eps_g = GndDynParams.getInstance.eps_g;
+eps_g = conj(eps_g); % i --> j
 % Ground-ML Parameters
 layer_bottom_m = GndMLParams.getInstance.layer_bottom_m;
 layer_thickness_m = GndMLParams.getInstance.layer_thickness_m;
