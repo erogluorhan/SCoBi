@@ -61,12 +61,22 @@ classdef gui_SCoBiMain_Manager < SCoBiGUIManagers
                 % Do not require any operation
             end
             
-            % on the sim: Snow
-            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Snow)) > 0
+            % on the sim: Forest 
+            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Forest)) > 0
                 
-                % Display a warning that the method is not implemented yet
-                waitfor(msgbox('WARNING: This is not yet implemented! Please choose another one!'));
-                  
+                obj.simulator_id = Constants.ID_SIM_FOREST;
+                
+                uiresume(obj.handles.panel_main);
+                
+            end
+            
+            % on the sim: Agriculture 
+            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Agriculture)) > 0
+                
+                obj.simulator_id = Constants.ID_SIM_AGRICULTURE;
+                
+                uiresume(obj.handles.panel_main);
+                
             end
             
             % on the sim: Soils
@@ -87,29 +97,19 @@ classdef gui_SCoBiMain_Manager < SCoBiGUIManagers
                 
             end
             
+            % on the sim: Snow
+            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Snow)) > 0
+                
+                % Display a warning that the method is not implemented yet
+                waitfor(msgbox('WARNING: This is not yet implemented! Please choose another one!'));
+                  
+            end
+            
             % on the sim: Topography
             if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Topography)) > 0
                 
                 % Display a warning that the method is not implemented yet
                 waitfor(msgbox('WARNING: This is not yet implemented! Please choose another one!'));
-                
-            end
-            
-            % on the sim: Agriculture 
-            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Agriculture)) > 0
-                
-                obj.simulator_id = Constants.ID_SIM_AGRICULTURE;
-                
-                uiresume(obj.handles.panel_main);
-                
-            end
-            
-            % on the sim: Forest 
-            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Forest)) > 0
-                
-                obj.simulator_id = Constants.ID_SIM_FOREST;
-                
-                uiresume(obj.handles.panel_main);
                 
             end
             
@@ -119,6 +119,14 @@ classdef gui_SCoBiMain_Manager < SCoBiGUIManagers
                 % Display a warning that the method is not implemented yet
                 waitfor(msgbox('WARNING: This is not yet implemented! Please choose another one!'));
                 
+            end
+            
+            % on the sim: Snow
+            if sum(intersect(idEl, obj.uiIDs.pb_SCoBi_Wetland)) > 0
+                
+                % Display a warning that the method is not implemented yet
+                waitfor(msgbox('WARNING: This is not yet implemented! Please choose another one!'));
+                  
             end
             
             % on the sim: About
@@ -191,7 +199,8 @@ classdef gui_SCoBiMain_Manager < SCoBiGUIManagers
           i = i+1;        id.pb_SCoBi_Topography = i;       pointers(i) = obj.handles.pb_SCoBi_Topography;       
           i = i+1;        id.pb_SCoBi_Agriculture = i;      pointers(i) = obj.handles.pb_SCoBi_Agriculture;       
           i = i+1;        id.pb_SCoBi_Forest = i;           pointers(i) = obj.handles.pb_SCoBi_Forest;        
-          i = i+1;        id.pb_SCoBi_Permafrost = i;       pointers(i) = obj.handles.pb_SCoBi_Permafrost;    
+          i = i+1;        id.pb_SCoBi_Permafrost = i;       pointers(i) = obj.handles.pb_SCoBi_Permafrost;   
+          i = i+1;        id.pb_SCoBi_Wetland = i;       pointers(i) = obj.handles.pb_SCoBi_Wetland;    
           i = i+1;        id.pb_about = i;                  pointers(i) = obj.handles.pb_about;    
           i = i+1;        id.pb_documents = i;              pointers(i) = obj.handles.pb_documents; 
           

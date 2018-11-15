@@ -3,9 +3,7 @@ function directTerm
 % function directTerm 
 %
 %   Calculates the direct (line-of-sight) received field and power between 
-%   the transmitter and the receiver. Bare-soil values are always 
-%   calculated, but vegetation values are only included when there is 
-%   vegetation cover. Stores the calculated values into simulation output 
+%   the transmitter and the receiver. Stores the calculated values into simulation output 
 %   folders in an incremental fashion as the simulation iterations continue.
 %
 %   See also mainSCoBi, specularTerm.
