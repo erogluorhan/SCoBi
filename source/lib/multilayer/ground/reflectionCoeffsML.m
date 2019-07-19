@@ -16,9 +16,18 @@ function [r_g] = reflectionCoeffsML
 %   published by the Free Software Foundation, either version 3 of the 
 %   License, or (at your option) any later version.
 
-%   Version: 1.0.1
+%   Version: 1.0.2
 %
 %  %%%%%%%%%%%%%%%%%%%%%%%%%%  UPDATE HISTORY  %%%%%%%%%%%%%%%%%%%%%%%%%  %
+%
+%   Version 1.0.2
+%
+%   July 13, 2019
+%
+%   Corrected an error in accounting for surface roughness seen in
+%   multilayer scattering. calcSpecularReflectionCoeffML() is now used to
+%   calculate the reflectivity from the dielectric slab function.
+%
 %   Version 1.0.1
 %
 %   November 14, 2018
@@ -64,21 +73,8 @@ r_g = cell(num_diel_profiles, 1);
 % Reflection Coefficient for Discrete Slab
 if calc_diel_profile_fit_functions(Constants.ID_DIEL_PROFILE_SLAB, 1)
     
-    zzb = (zA_m + layer_bottom_m) ;
-    Lzb = diff(zzb)' ; % / lambda_m ; % complex optical length in units of lambda_m
-    nA = sqrte(Constants.EPS_DIEL_AIR) ;
-    nS = sqrte(eps_g) ;
-    nS = nS.';
-
-    na = [nA; nA; nA] ;
-    ns = [nS; nS; nS] ;
-
-    % input to multidiel
-    n = [na, ns] ;
-
-    rh = multidiel(n, Lzb, 1, th0_Tx_deg, 'te') ;
-    rv = multidiel(n, Lzb, 1, th0_Tx_deg, 'th') ;
-    r_g{Constants.ID_DIEL_PROFILE_SLAB, 1} = [rv 0; 0 rh];
+    [rh_ds, rv_ds] = calcSpecularReflectionCoeffML(lambda_m, th0_Tx_deg, z_m, eps_diel_zS) ;
+    r_g{Constants.ID_DIEL_PROFILE_SLAB, 1} = [rv_ds 0; 0 rh_ds];
 
 end
 
@@ -134,6 +130,21 @@ n = [na, nm, nb] ;
 %% Reflection Coeffficient
 rh = multidiel(n, Lz, 1, th0_Tx_deg, 'te') ;
 rv = multidiel(n, Lz, 1, th0_Tx_deg, 'th') ;
+
+
+%% Apply surface roughness
+% Effective roughness parameters
+h = GndDynParams.getInstance.h;
+
+% cosine of the incidence angle
+CTI = cos(th0_Tx_deg * pi/180) ;
+
+% Surface roughness scalar term
+QZSGMI2 = h * CTI ^ 2 / 2.0 ;
+
+% Apply term
+rh = rh * exp(-QZSGMI2) ;
+rv = rv * exp(-QZSGMI2) ;
 
 end
 

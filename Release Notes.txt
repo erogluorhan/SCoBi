@@ -1,6 +1,11 @@
-Current Release - November 14, 2018
+Current Release - July 13, 2019
 
-v1.0.1
+v1.0.2
+Fixes:
+* Updated reflectionCoeffsML.m to include roughness
+* calcSpecularReflectionCoeffML is used to calculate reflection coefficients from dielectric slabs
+
+v1.0.1 - November 14, 2018
 
 Fixes:
 * Multi-layer generateDielMLProfiles.m and reflectionCoeffsML.m functions updated to refit the complex conjugate dielectric constant.
