@@ -45,9 +45,9 @@ elseif gnd_cover_id == Constants.ID_BARE_SOIL
     
 end
 
-
 % INITIALIZE SIMULATION SETTINGS
-SimSettings.getInstance.initialize(campaign, simulator_id, sim_mode_id, ...
-                gnd_cover_id, write_attenuation, include_in_master_sim_file );
+SimSettings.getInstance.initialize( ...
+    campaign, simulator_id, sim_mode_id, ...
+    gnd_cover_id, write_attenuation, include_in_master_sim_file);
 
 end

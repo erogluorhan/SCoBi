@@ -40,6 +40,7 @@ classdef GndParams < handle
         % Dielectric permittivity model index
         diel_model_id
         
+        
     end
     
     
@@ -70,7 +71,9 @@ classdef GndParams < handle
     
     methods
         
-        function initialize(obj, gnd_structure_id, sand_ratio, clay_ratio, rhob_gcm3, diel_model_id )
+        function initialize( ...
+                obj, gnd_structure_id, sand_ratio, clay_ratio, ...
+                rhob_gcm3, diel_model_id )
             % INITIALIZE - Initializes all the properties
                 
             obj.gnd_structure_id = gnd_structure_id;
@@ -108,6 +111,7 @@ classdef GndParams < handle
         function out = get.polG(obj)
             out = obj.polG;
         end
+        
     end
     
 end

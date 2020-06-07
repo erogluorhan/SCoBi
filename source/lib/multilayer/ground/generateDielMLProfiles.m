@@ -20,7 +20,13 @@ function generateDielMLProfiles
 %   published by the Free Software Foundation, either version 3 of the 
 %   License, or (at your option) any later version.
 
-%   Version: 1.0.1
+%   Version: 1.0.3
+%  %%%%%%%%%%%%%%%%%%%%%%%%%%  UPDATE HISTORY  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Version 1.0.3
+%
+%	June 6, 2020
+%	
+%	Corrected an indexing error on the multilayer dielectric slab fit. 	
 %
 %  %%%%%%%%%%%%%%%%%%%%%%%%%%  UPDATE HISTORY  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Version 1.0.1  
@@ -47,6 +53,7 @@ layer_thickness_m = GndMLParams.getInstance.layer_thickness_m;
 zA_m = GndMLParams.getInstance.zA_m;
 z_m = GndMLParams.getInstance.z_m;    % Layer profile
 calc_diel_profile_fit_functions = GndMLParams.getInstance.calc_diel_profile_fit_functions;
+
 
 
 %% CALCULATIONS
@@ -98,8 +105,7 @@ eps_diel_zS = [];
 
 if calc_diel_profile_fit_functions(Constants.ID_DIEL_PROFILE_SLAB, 1)
 
-    eps_diel_zS = eps_diel_zL ; 
-    eps_diel_zS(z_m < zA_m) = Constants.EPS_DIEL_AIR ; 
+    eps_diel_zS = repmat([Constants.EPS_DIEL_AIR], size(z_m));
 
     for ii = 1 : length(layer_bottom_m)-1
         

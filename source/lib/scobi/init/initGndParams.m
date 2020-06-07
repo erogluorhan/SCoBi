@@ -76,6 +76,9 @@ GndParams.getInstance.initialize( gnd_structure_id, sand_ratio, clay_ratio, rhob
 % ground is multi-layer
 if gnd_structure_id == Constants.ID_GND_MULTI_LAYERED    
     
+    % Get the configuration inputs file
+    calculate_penetration_depth = inputStruct.calculate_penetration_depth;
+    
     % Flags to calculate several dielectric profile fit functions
     calc_diel_profile_fit_functions = inputStruct.calc_diel_profile_fit_functions;  
     
@@ -99,7 +102,7 @@ if gnd_structure_id == Constants.ID_GND_MULTI_LAYERED
 
     % INITIALIZE GROUND MULTI-LAYER PARAMETERS
     GndMLParams.getInstance.initialize( layer_depth_m, delZ_m, zA_m, zB_m, ...
-        calc_diel_profile_fit_functions );
+        calc_diel_profile_fit_functions, calculate_penetration_depth );
 end
 
 end

@@ -27,7 +27,8 @@ dir_products_specular_reff_coeff = SimulationFolders.getInstance.products_specul
 dir_products_specular_reflectivity = SimulationFolders.getInstance.products_specular_reflectivity;
 dir_products_specular_reff_coeff_diel_profiles = SimulationFolders.getInstance.products_specular_reff_coeff_diel_profiles;
 dir_products_specular_reflectivity_diel_profiles = SimulationFolders.getInstance.products_specular_reflectivity_diel_profiles;
-
+dir_products_specular_pen_dep = SimulationFolders.getInstance.products_specular_pen_dep;
+dir_products_specular_pen_dep_diel_profiles = SimulationFolders.getInstance.products_specular_pen_dep_diel_profiles;
 
 %% GET GLOBAL PARAMETERS
 sim_counter = ParamsManager.sim_counter;
@@ -55,6 +56,7 @@ calc_diel_profile_fit_functions = [];
 if gnd_structure_id == Constants.ID_GND_MULTI_LAYERED
     calc_diel_profile_fit_functions = GndMLParams.getInstance.calc_diel_profile_fit_functions;
 end
+calculate_penetration_depth = GndMLParams.getInstance.calculate_penetration_depth;
 % Bistatic Dynamic Parameters
 AllPoints_m = BistaticDynParams.getInstance.AllPoints_m;
 AngS2R_rf = BistaticDynParams.getInstance.AngS2R_rf; % SP->Rx Rotation Angle
@@ -133,8 +135,9 @@ U_ts = calcMuller(u_ts) ;
 % 4 X 4
 U_sr = calcMuller(u_sr) ;
 
-% Calculate specular reflection matrices
-[R_sv, R_sb, r_sv, r_sb] = calcSRM() ; % r_sv for vegetation, r_sb for bare soil
+% Calculate specular reflection matrices and penetration depth if
+% applicable
+[R_sv, R_sb, r_sv, r_sb, pd_cell] = calcSRM() ; % r_sv for vegetation, r_sb for bare soil
 
 
 %% SPECULAR TERM
@@ -234,16 +237,18 @@ filename = 'Kc';
 writeComplexVar(dir_products_specular, filename, Kc)
 
 
-% Determine the output fodlers w.r.t number of ground layers
+% Determine the output folders w.r.t number of ground layers
 if num_diel_profiles == 1
     
     pathname_reff_coeff{1,1} = dir_products_specular_reff_coeff;
     pathname_reflectivity{1,1} = dir_products_specular_reflectivity;
+    pathname_pen_dep{1,1} = dir_products_specular_pen_dep ;
     
 else
     
     pathname_reff_coeff = dir_products_specular_reff_coeff_diel_profiles;
     pathname_reflectivity = dir_products_specular_reflectivity_diel_profiles;
+    pathname_pen_dep = dir_products_specular_pen_dep_diel_profiles ;
     
 end
 
@@ -256,6 +261,8 @@ filename_bare_1 = 'Bare1';
 filename_bare_2 = 'Bare2';
 filename_bare_01 = 'Bare01';
 filename_bare_02 = 'Bare02';
+filename_pendep_1 = 'PenDep1';
+filename_pendep_2 = 'PenDep2';
 
 for ii = 1 : num_diel_profiles
     
@@ -291,6 +298,14 @@ for ii = 1 : num_diel_profiles
         writeVarIncremental(pathname_reflectivity{1,ii}, filename_bare_2, sim_counter, P_coh2b(:,ii) );
         writeVarIncremental(pathname_reflectivity{1,ii}, filename_bare_01, sim_counter, P0_coh1b(:,ii) );
         writeVarIncremental(pathname_reflectivity{1,ii}, filename_bare_02, sim_counter, P0_coh2b(:,ii) );
+        
+        % Penetration depth
+        if calculate_penetration_depth
+             pdval = pd_cell{ii,:};
+             writeVarIncremental(pathname_pen_dep{1,ii}, filename_pendep_1, sim_counter, pdval(1) );
+             writeVarIncremental(pathname_pen_dep{1,ii}, filename_pendep_2, sim_counter, pdval(2) );
+             clear pdval;
+        end
     
     end
     
@@ -301,7 +316,7 @@ end
 
 
 
-function  [R_sv, R_sb, r_sv, r_sb] = calcSRM()
+function  [R_sv, R_sb, r_sv, r_sb, pd_cell] = calcSRM()
 % Calculate Specular Reflection Matrix(SRM)
 
 
@@ -389,7 +404,7 @@ elseif gnd_structure_id == Constants.ID_GND_MULTI_LAYERED
     calc_diel_profile_fit_functions = GndMLParams.getInstance.calc_diel_profile_fit_functions;
 
     
-    [r_g_cell] = reflectionCoeffsML();
+    [r_g_cell, pd_cell] = reflectionCoeffsML();
     
     num_diel_profiles = length(r_g_cell);
     

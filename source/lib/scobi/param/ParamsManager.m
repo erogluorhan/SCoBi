@@ -252,6 +252,7 @@ classdef ParamsManager < handle
                 inputParamsStruct.zA_m = gndMLParams.zA_m;
                 inputParamsStruct.zB_m = gndMLParams.zB_m;
                 inputParamsStruct.calc_diel_profile_fit_functions = gndMLParams.calc_diel_profile_fit_functions;
+                inputParamsStruct.calculate_penetration_depth = gndMLParams.calculate_penetration_depth;
 
             end
 
@@ -584,9 +585,10 @@ classdef ParamsManager < handle
                 zA_m = inputParamsStruct.zA_m;
                 zB_m = inputParamsStruct.zB_m;
                 calc_diel_profile_fit_functions = inputParamsStruct.calc_diel_profile_fit_functions;
-
+                calculate_penetration_depth = inputParamsStruct.calculate_penetration_depth;
+                
                 % Initialize
-                GndMLParams.getInstance.initialize( layer_depth_m, delZ_m, zA_m, zB_m, calc_diel_profile_fit_functions );
+                GndMLParams.getInstance.initialize( layer_depth_m, delZ_m, zA_m, zB_m, calc_diel_profile_fit_functions, calculate_penetration_depth );
 
             end
 

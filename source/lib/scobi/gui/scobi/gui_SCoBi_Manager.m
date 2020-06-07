@@ -776,6 +776,7 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
           i = i+1;        id.panel_preferences = i;                 pointers(i) = obj.handles.panel_preferences;   % Another panel inside a panel
           i = i+1;        id.cb_write_attenuation = i;              pointers(i) = obj.handles.cb_write_attenuation;
           i = i+1;        id.cb_include_in_master_sim_file = i;     pointers(i) = obj.handles.cb_include_in_master_sim_file;
+          i = i+1;        id.cb_calculate_penetration_depth = i;     pointers(i) = obj.handles.cb_calculate_penetration_depth;
           
             
           groupIDs.sim_settings = [id.panel_sim_settings id.text_campaign : id.cb_include_in_master_sim_file];
@@ -1643,6 +1644,9 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
             % Flag to include the simulation in the Master Simulation file
             obj.setElVal(obj.uiIDs.cb_include_in_master_sim_file, 0, 0);
             
+            % Flag to calculate and save penetration depth (multilayer)
+            obj.setElVal(obj.uiIDs.cb_calculate_penetration_depth, 0, 0);
+            
             
             %% TRANSMITTER (Tx) INPUTS
             obj.setElVal(obj.uiIDs.edit_f_MHz, [], 0);
@@ -1817,6 +1821,9 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
             % Flag to include the simulation in the Master Simulation file
             obj.setElVal(obj.uiIDs.cb_include_in_master_sim_file, inputStruct.include_in_master_sim_file, 0);
             
+            % Flag to calculate penetration depth (multilayer)
+            obj.setElVal(obj.uiIDs.cb_calculate_penetration_depth, inputStruct.calculate_penetration_depth, 0);
+            
             
             %% TRANSMITTER (Tx) INPUTS
             obj.setElVal(obj.uiIDs.edit_f_MHz, num2str(inputStruct.f_MHz), 0);
@@ -1958,6 +1965,8 @@ classdef gui_SCoBi_Manager < SCoBiGUIManagers
         inputStruct.write_attenuation	= obj.getElVal(obj.uiIDs.cb_write_attenuation);
 
         inputStruct.include_in_master_sim_file	= obj.getElVal(obj.uiIDs.cb_include_in_master_sim_file);
+        
+        inputStruct.calculate_penetration_depth	= obj.getElVal(obj.uiIDs.cb_calculate_penetration_depth);
 
 
         %% TRANSMITTER (Tx) INPUTS PANEL ELEMENTS  

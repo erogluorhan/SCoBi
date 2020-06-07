@@ -103,7 +103,7 @@ classdef SimSettings < handle
             obj.sim_mode_id = sim_mode_id;
             obj.gnd_cover_id = gnd_cover_id;
             obj.write_attenuation = write_attenuation;
-            obj.include_in_master_sim_file = include_in_master_sim_file; 
+            obj.include_in_master_sim_file = include_in_master_sim_file;    
             
         end
         
