@@ -1,9 +1,11 @@
 
-function varout = initAllInputParams(simulator_id, inputStruct)
+function [varout, inputStruct] = initAllInputParams(simulator_id, inputStruct)
 % function initAllInputParams 
 %
 %   Initializes the static parameter classes by using the user inputs.
 %   Calls:
+%   - initBackwardsControl to initialize inputStruct from a previous
+%       version of SCoBi
 %   - initSimSettings to initialize SimSettings class
 %   - initTxParams to initialize TxParams class
 %   - initRxParams to initialize RxParams class
@@ -31,6 +33,9 @@ function varout = initAllInputParams(simulator_id, inputStruct)
 
 
 varout = [];
+
+%% BACKWARDS COMPATIBILITY CONTROL
+inputStruct = initBackwardsControl(inputStruct);
 
 
 %% SIMULATION SETTINGS 

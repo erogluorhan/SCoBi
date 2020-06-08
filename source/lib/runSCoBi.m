@@ -16,7 +16,7 @@
 %   published by the Free Software Foundation, either version 3 of the 
 %   License, or (at your option) any later version.
 
-%   Version: 1.0.0
+%   Version: 1.0.3
 
 
 
@@ -28,7 +28,7 @@
 %
 %
 %--------------------------------------------------------------------------
-%                         SCoBi v1.0.0
+%                         SCoBi v1.0.3
 %
 %    Copyright © 2017-2018 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
 %--------------------------------------------------------------------------
@@ -47,7 +47,14 @@
 %    along with this program (COPYING.txt).  If not, 
 %    see <http://www.gnu.org/licenses/>.
 %--------------------------------------------------------------------------
-
+%  %%%%%%%%%%%%%%%%%%%%%%%%%%  UPDATE HISTORY  %%%%%%%%%%%%%%%%%%%%%%%%%  %
+%
+%   Version 1.0.3
+%
+%   June 6, 2020
+%
+% Added functionality for backwards compatibility for inputStruct files made
+% with older versions of SCoBi.
 
 function runSCoBi
 
@@ -91,7 +98,7 @@ if (isempty(inputStruct))
 end
 
 % Initialize all input parameters by using the inputs from GUI
-varout = initAllInputParams(simulator_id, inputStruct);
+[varout, inputStruct] = initAllInputParams(simulator_id, inputStruct);
 
 % Check input validity
 [isInputValid, sim_counter_start] = initWithInputs( varout );

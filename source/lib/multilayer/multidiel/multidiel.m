@@ -1,4 +1,23 @@
 %% multidiel.m - reflection response of isotropic or birefringent multilayer structure
+% function multidiel
+%
+%   Creates the multilayer reflection coefficient.
+%
+%   This code is originally taken from Orfanidis' multidiel.m function with
+%   modificiation made for versatile use of elementary reflection 
+%   coefficient calculation.
+%
+%   See also specularTerm, reflectionCoeffsSingle, optLenAndElemReflCoef
+
+%   Copyright © 2017-2020 Mehmet Kurum, Orhan Eroglu, Dylan R. Boyd
+
+%   This program is free software: You can redistribute it and/or 
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation, either version 3 of the 
+%   License, or (at your option) any later version.
+
+%   Version: 1.0.3
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %          na | n1 | n2 | ... | nM | nb
 % left medium | L1 | L2 | ... | LM | right medium 
@@ -46,72 +65,19 @@
 %%
 function [Gamma, Z] = multidiel(n, L, lambda, theta, pol)
 
-if nargin == 0, help multidiel ; return ; end
-if nargin <= 4, pol = 'te' ; end
-if nargin == 3, theta = 0 ; end
+[L, r, ~] = optLenAndElemReflCoef(n, L, lambda, theta, pol);
 
-if size(n, 2) == 1, n = n' ; end                            % in case n is entered as column 
+% Number of layers
+M = size(n, 2) - 2; 
 
-K = size(n, 1) ;                                          % birefringence dimension
-M = size(n, 2) - 2 ;                                        % number of layers
-
-if K == 1, n = [n; n; n] ; end                             % isotropic case
-if K == 2, n = [n(1, :); n] ; end                           % uniaxial case
-
-if M == 0, L = []; end                                    % single interface, no slabs
-
-theta = theta * pi / 180;
-
-if strcmp(pol, 'te')
-    Nsin2 = (n(2,1) * sin(theta)) ^ 2 ;                      % (Na*sin(tha))^2              
-    %c = conj(sqrt(conj(1 - Nsin2 ./ n(2,:).^2)));      % old version
-    c = sqrte(1 - Nsin2 ./ n(2, :) .^ 2) ;                  % coefficient ci, or cos(th(i)) in isotropic case
-    nT = n(2, :) .* c ;                                   % transverse refractive indices
-    r = n2r(nT) ;                                        % r(i) = (nT(i-1)-nT(i)) / (nT(i-1)+nT(i))
-else
-    Nsin2 = (n(1, 1) * n(3, 1) * sin(theta)) ^ 2 / (n(3, 1) ^ 2 * cos(theta) ^ 2 + n(1, 1) ^ 2 * sin(theta) ^ 2) ;
-    %c = conj(sqrt(conj(1 - Nsin2 ./ n(3,:).^2)));
-    c = sqrte(1 - Nsin2 ./ n(3, :) .^ 2) ;
-    nTinv = c ./ n(1, :) ;                                % nTinv(i) = 1/nT(i) to avoid NaNs
-    r = -n2r(nTinv) ;                                    % minus sign because n2r(n) = -n2r(1./n)
-end
-
-if M > 0
-    if strcmp(pol, 'te') % modifed 10/20/09 by MK
-    L = L .* n(2, 2 : M + 1) .* c(2 : M + 1) ;                                  % polarization-dependent optical lengths
-    else
-    L = L .* n(1, 2 : M + 1) .* c(2 : M + 1);                                  % polarization-dependent optical lengths        
-    end
-end
-
-Gamma = r(M + 1) * ones(1, length(lambda)) ;                % initialize Gamma at right-most interface
+Gamma = r(M + 1) * ones(1, length(lambda)) ;             % initialize Gamma at right-most interface
 
 for i = M : -1 : 1                                       % forward layer recursion 
-    delta = 2 * pi * L(i) ./ lambda ;                          % phase thickness in i-th layer
+    delta = 2 * pi * L(i) ./ lambda ;                    % phase thickness in i-th layer
     z = exp(-2 * 1i * delta) ;                          
     Gamma = (r(i) + Gamma .* z) ./ (1 + r(i) * Gamma .* z) ;
 end
 
 Z = (1 + Gamma) ./ (1 - Gamma) ;
-
-end
-
-
-%% n2r.m - refractive indices to reflection coefficients of M-layer structure
-%
-% Usage: r = n2r(n)
-%
-% n = refractive indices = [na,n(1),...,n(M),nb] 
-% r = reflection coefficients = [r(1),...,r(M+1)]
-%
-% notes: there are M layers, M+1 interfaces, and M+2 media
-
-% Sophocles J. Orfanidis - 1999-2008 - www.ece.rutgers.edu/~orfanidi/ewa
-%%
-function r = n2r(n)
-
-if nargin == 0, help n2r ; return ; end
-
-r = -diff(n) ./ (2 * n(1 : end - 1) + diff(n)) ;
 
 end

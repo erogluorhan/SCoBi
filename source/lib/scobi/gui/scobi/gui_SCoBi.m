@@ -194,6 +194,17 @@ function cb_include_in_master_sim_file_Callback(hObject, eventdata, handles)
 global guiSCoBiManager
 guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.cb_include_in_master_sim_file );
 
+% --- Executes on button press in cb_include_in_master_sim_file.
+function cb_calculate_penetration_depth_Callback(hObject, eventdata, handles)
+% hObject    handle to cb_include_in_master_sim_file (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of cb_include_in_master_sim_file
+
+global guiSCoBiManager
+guiSCoBiManager.syncFromGUI( guiSCoBiManager.uiIDs.cb_calculate_penetration_depth );
+
 
 
 function edit_f_MHz_Callback(hObject, eventdata, handles)

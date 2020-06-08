@@ -46,6 +46,8 @@ properties (SetAccess = private, GetAccess = public)
     products_specular_reff_coeff_diel_profiles
     products_specular_reflectivity
     products_specular_reflectivity_diel_profiles
+    products_specular_pen_dep
+    products_specular_pen_dep_diel_profiles
 
     % Figures
     fig
@@ -131,6 +133,7 @@ methods
     obj.products_specular = strcat(obj.products, '\', 'specular') ;
     obj.products_specular_reff_coeff = strcat(obj.products_specular, '\', 'reflection_coefficient') ;
     obj.products_specular_reflectivity = strcat(obj.products_specular, '\', 'reflectivity') ;
+    obj.products_specular_pen_dep = strcat(obj.products_specular, '\', 'pen_dep') ;
     
     % Products for multiple dielectric profiles
     diel_profiles = Constants.DIEL_PROFILES;
@@ -141,7 +144,7 @@ methods
         current_diel_profile = diel_profiles{1, ii};
         obj.products_specular_reff_coeff_diel_profiles{1, ii}  = strcat(obj.products_specular_reff_coeff, '\', current_diel_profile );
         obj.products_specular_reflectivity_diel_profiles{1, ii}  = strcat(obj.products_specular_reflectivity, '\', current_diel_profile );
-        
+        obj.products_specular_pen_dep_diel_profiles{1, ii}  = strcat(obj.products_specular_pen_dep, '\', current_diel_profile );
     end
         
 
@@ -214,6 +217,10 @@ methods
         if ~exist(obj.products_specular_reflectivity, 'dir')
             mkdir(obj.products_specular_reflectivity)
         end
+        
+        if ~exist(obj.products_specular_pen_dep, 'dir')
+            mkdir(obj.products_specular_pen_dep)
+        end
     
         % Products for multiple dielectric profiles
         if gnd_structure_id == Constants.ID_GND_MULTI_LAYERED
@@ -232,6 +239,12 @@ methods
                 if ~exist(obj.products_specular_reflectivity_diel_profiles{1, ii}, 'dir')
 
                     mkdir(obj.products_specular_reflectivity_diel_profiles{1, ii})
+
+                end
+                
+                if ~exist(obj.products_specular_pen_dep_diel_profiles{1, ii}, 'dir')
+
+                    mkdir(obj.products_specular_pen_dep_diel_profiles{1, ii})
 
                 end
 
@@ -316,6 +329,14 @@ methods
 
     function out = get.products_specular_reflectivity_diel_profiles(obj)
         out = obj.products_specular_reflectivity_diel_profiles;
+    end
+    
+    function out = get.products_specular_pen_dep(obj)
+        out = obj.products_specular_pen_dep;
+    end
+    
+    function out = get.products_specular_pen_dep_diel_profiles(obj)
+        out = obj.products_specular_pen_dep_diel_profiles;
     end
 
     function out = get.fig(obj)

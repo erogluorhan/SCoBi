@@ -53,6 +53,11 @@ classdef GndMLParams < handle
         % Flags to calculate several dielectric profile  fitting functions
         calc_diel_profile_fit_functions
         
+        % Flag for calculating penetration depth
+        % 0: Do not include
+        % 1: Include
+        calculate_penetration_depth
+        
     end
     
     methods (Access = private)
@@ -82,7 +87,8 @@ classdef GndMLParams < handle
     methods        
         
         function initialize(obj, layer_depth_m, ...
-                delZ_m, zA_m, zB_m, calc_diel_profile_fit_functions )
+                delZ_m, zA_m, zB_m, calc_diel_profile_fit_functions, ...
+                calculate_penetration_depth)
             % INITIALIZE - Initializes all the properties
                 
             obj.layer_depth_m = layer_depth_m;
@@ -104,6 +110,8 @@ classdef GndMLParams < handle
             obj.z_m = (0 : obj.delZ_m : obj.zS_m)';
             
             obj.calc_diel_profile_fit_functions = calc_diel_profile_fit_functions;
+            
+            obj.calculate_penetration_depth = calculate_penetration_depth;
                       
         end 
          
@@ -153,6 +161,10 @@ classdef GndMLParams < handle
         
         function out = get.z_m(obj)
             out = obj.z_m;        
+        end
+        
+        function out = get.calculate_penetration_depth(obj)
+            out = obj.calculate_penetration_depth;
         end
         
     end 

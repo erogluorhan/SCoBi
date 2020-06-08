@@ -1,6 +1,22 @@
-Current Release - November 14, 2018
+Current Release - June 6, 2020
+v1.0.3
+Improvements:
+* Added penetration depth functionality for bare soil, multilayer profiles
+* Common tools for multilayer added
+* multilayer.m now uses a helper function which can be accessed by the penetration depth function
+* Penetration depth added to GUI as a radio button, GUI slightly enlarged
 
-v1.0.1
+Fixes:
+* Corrected an indexing error that is sometimes observed in dielectric slab fit of the multilayer generateDielMLProfiles.m function
+
+##########################  PREVIOUS RELEASES  ############################
+
+v1.0.2 - July 13, 2019
+Fixes:
+* Updated reflectionCoeffsML.m to include roughness
+* calcSpecularReflectionCoeffML is used to calculate reflection coefficients from dielectric slabs
+
+v1.0.1 - November 14, 2018
 
 Fixes:
 * Multi-layer generateDielMLProfiles.m and reflectionCoeffsML.m functions updated to refit the complex conjugate dielectric constant.
@@ -8,9 +24,6 @@ Fixes:
 Improvements:
 * Release Notes added to the release package
 
-
-
-##########################  PREVIOUS RELEASES  ############################
 
 v1.0.0 - November 6, 2018
 
