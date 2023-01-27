@@ -1,3 +1,9 @@
+Current Release - January 27, 2023
+v1.0.4
+Fixes : error caused by single-layer module attempting to access uninitiated multilayer module functions
+
+##########################  PREVIOUS RELEASES  ############################
+
 Current Release - June 6, 2020
 v1.0.3
 Improvements:
@@ -8,8 +14,6 @@ Improvements:
 
 Fixes:
 * Corrected an indexing error that is sometimes observed in dielectric slab fit of the multilayer generateDielMLProfiles.m function
-
-##########################  PREVIOUS RELEASES  ############################
 
 v1.0.2 - July 13, 2019
 Fixes:
