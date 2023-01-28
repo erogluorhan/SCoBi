@@ -55,8 +55,11 @@ gnd_structure_id = GndParams.getInstance.gnd_structure_id;
 calc_diel_profile_fit_functions = [];
 if gnd_structure_id == Constants.ID_GND_MULTI_LAYERED
     calc_diel_profile_fit_functions = GndMLParams.getInstance.calc_diel_profile_fit_functions;
+    calculate_penetration_depth = GndMLParams.getInstance.calculate_penetration_depth;
+else
+    calculate_penetration_depth = false ;
+
 end
-calculate_penetration_depth = GndMLParams.getInstance.calculate_penetration_depth;
 % Bistatic Dynamic Parameters
 AllPoints_m = BistaticDynParams.getInstance.AllPoints_m;
 AngS2R_rf = BistaticDynParams.getInstance.AngS2R_rf; % SP->Rx Rotation Angle
@@ -396,6 +399,9 @@ if gnd_structure_id == Constants.ID_GND_SINGLE_LAYERED
     % 4 X 4
     R_sv{1,1} = calcMuller(r_sv{1,1}) ;
     R_sb{1,1} = calcMuller(r_sb{1,1}) ;
+    
+    % empty cell; no penetration depth in single layer mode
+    pd_cell = {};
 
 % Else if multi-layered ground
 elseif gnd_structure_id == Constants.ID_GND_MULTI_LAYERED
